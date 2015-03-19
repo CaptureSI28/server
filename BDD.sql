@@ -8,12 +8,6 @@ CREATE TABLE IF NOT EXISTS couleurequipe (
   PRIMARY KEY (num_equipe)
 );
 
-INSERT INTO couleurequipe (couleur_equipe) VALUES
-('vert'),
-('bleue'),
-('rouge'),
-('jaune');
-
 CREATE TABLE IF NOT EXISTS partie (
   id_partie int NOT NULL AUTO_INCREMENT,
   date_debut date NOT NULL,
@@ -38,8 +32,8 @@ CREATE TABLE IF NOT EXISTS joueur (
 );
 
 CREATE TABLE IF NOT EXISTS zone (
-  zone int NOT NULL,
-  PRIMARY KEY (zone)
+  id_zone int NOT NULL,
+  PRIMARY KEY (id_zone)
 );
 
 CREATE TABLE IF NOT EXISTS qrcode (
@@ -58,5 +52,32 @@ CREATE TABLE IF NOT EXISTS flasher (
   PRIMARY KEY (date_flash,joueur,qrcode)
 );
 
+-- Insertions pour les tests
 
+INSERT INTO couleurequipe (couleur_equipe) VALUES
+('vert'),
+('bleue'),
+('rouge'),
+('jaune');
 
+INSERT INTO partie (date_debut, date_fin) VALUES (NOW(), NOW());
+
+INSERT INTO equipe (partie, equipe) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4);
+
+INSERT INTO joueur (login_joueur, equipe) VALUES
+('joueur1', 1),
+('joueur2', 2),
+('joueur2', 3),
+('joueur2', 4);
+
+INSERT INTO zone () VALUES
+(),
+();
+
+INSERT INTO qrcode (zone) VALUES
+(1),
+(2);
