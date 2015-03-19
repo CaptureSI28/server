@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS zone (
 CREATE TABLE IF NOT EXISTS qrcode (
   id_qrcode int NOT NULL,
   zone int NOT NULL,
-  FOREIGN KEY (zone) REFERENCES zone(zone),
+  FOREIGN KEY (zone) REFERENCES zone(id_zone),
   PRIMARY KEY (id_qrcode)
 );
 
@@ -71,13 +71,13 @@ INSERT INTO equipe (partie, equipe) VALUES
 INSERT INTO joueur (login_joueur, equipe) VALUES
 ('joueur1', 1),
 ('joueur2', 2),
-('joueur2', 3),
-('joueur2', 4);
+('joueur3', 3),
+('joueur4', 4);
 
-INSERT INTO zone () VALUES
-(),
-();
-
-INSERT INTO qrcode (zone) VALUES
+INSERT INTO zone (id_zone) VALUES
 (1),
 (2);
+
+INSERT INTO qrcode (id_qrcode, zone) VALUES
+(42, 1),
+(43, 2);
