@@ -3,22 +3,28 @@
 //connection BDD
 
 $dbhost = 'localhost';
+$dbname = 'si28';
 $dbuser = 'root'; 
 $dbpass = '';
-$dbname = 'si28';
-$connect = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname) or die ('Error connecting to mysql');
+
+try {
+	$bdd = new PDO('mysql:host=' . $dbhost . ';dbname=' . $dbname . ';charset=utf8', $dbuser, $dbpass);
+} catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
 
 //ajout d'un flash dans la BDD
 
-//$login_joueur="joueur3";
-//$qrcode="42";
-$login_joueur=$_POST['login'];
-$qrcode=$_POST['data'];
+$joueur = $_POST['login'];
+$qrcode = $_POST['data'];
 
-$query = "INSERT INTO flasher VALUES (NOW(),'".$login_joueur."','".$qrcode."')";
-echo "<br>$query<br>";
-$result=mysqli_query($connect, $query);
-if (!$result) 
-	{echo "<br>pas bon : ".mysqli_error($connect);}
-
+try {
+	$req = $bdd->prepare('INSERT INTO flasher (date_flash, joueur, qrcode) VALUES (NOW(), :joueur, :qrcode)');
+	$req->execute(array(
+		'joueur' => $joueur,
+		'qrcode' => $qrcode
+	));
+} catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
 ?>
