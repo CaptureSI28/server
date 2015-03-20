@@ -1,6 +1,14 @@
-EMPTY DATABASE;
-DROP SCHEMA PUBLIC CASCADE;
-CREATE SCHEMA public;
+--EMPTY DATABASE;
+--DROP SCHEMA PUBLIC CASCADE;
+--CREATE SCHEMA public;
+
+DROP TABLE IF EXISTS flashes;
+DROP TABLE IF EXISTS qrcodes;
+DROP TABLE IF EXISTS zones;
+DROP TABLE IF EXISTS joueurs;
+DROP TABLE IF EXISTS equipes;
+DROP TABLE IF EXISTS couleurs_equipes;
+DROP TABLE IF EXISTS parties;
 
 CREATE TABLE parties (
 	id_partie SERIAL NOT NULL,
@@ -72,8 +80,8 @@ INSERT INTO couleurs_equipes (couleur) VALUES ('Vert');
 INSERT INTO equipes (partie, couleur_equipe) VALUES (currval('parties_id_partie_seq'), currval('couleurs_equipes_id_couleur_equipe_seq'));
 INSERT INTO joueurs (identifiant, equipe) VALUES ('joueur4', currval('equipes_id_equipe_seq'));
 
-INSERT INTO zones () VALUES ();
+INSERT INTO zones DEFAULT VALUES;
 INSERT INTO qrcodes (zone_ref) VALUES (currval('zones_id_zone_seq'));
 
-INSERT INTO zones () VALUES ();
+INSERT INTO zones DEFAULT VALUES;
 INSERT INTO qrcodes (zone_ref) VALUES (currval('zones_id_zone_seq'));
