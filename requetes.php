@@ -48,4 +48,49 @@ try {
 	die('Error: ' . $e->getMessage());
 }
 
+//récupération du nombre de points total d'une équipe
+
+try {
+	$req = $bdd->prepare("
+		SELECT COUNT(qrcode) as nbQrcode
+		FROM flasher,joueur
+		WHERE flasher.joueur=joueur.login_joueur 
+		AND joueur.equipe=:equipe");
+	$req->execute(array(
+		'equipe' => $equipe
+	));
+	if($req->rowCount()>=1){
+		$ligne=$req->fetch();
+		echo $ligne['nbQrcode'];
+	} 
+	else echo('no result');
+	} 
+catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
+//récupération du nombre de points d'une équipe pour une zone donnée
+
+try {
+	$req = $bdd->prepare("
+		SELECT COUNT(qrcode) as nbQrcode
+		FROM flasher,joueur,qrcode
+		WHERE flasher.joueur=joueur.login_joueur 
+		AND joueur.equipe=:equipe
+		AND qrcode.zone=:zone
+		AND flasher.qrcode=qrcode.id_qrcode");
+	$req->execute(array(
+		'equipe' => $equipe,
+		'zone' => $zone
+	));
+	if($req->rowCount()>=1){
+		$ligne=$req->fetch();
+		echo $ligne['nbQrcode'];
+	} 
+	else echo('no result');
+	} 
+catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
 ?>
