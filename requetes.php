@@ -69,6 +69,26 @@ catch (Exception $e) {
 	die('Error: ' . $e->getMessage());
 }
 
+//récupération du nombre de points total d'un joueur
+
+try {
+	$req = $bdd->prepare("
+		SELECT COUNT(qrcode) as nbPoints
+		FROM flasher
+		WHERE flasher.joueur=:joueur");
+	$req->execute(array(
+		'joueur' => $joueur
+	));
+	if($req->rowCount()>=1){
+		$ligne=$req->fetch();
+		echo $ligne['nbPoints'];
+	} 
+	else echo('no result');
+	} 
+catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
 //récupération du nombre de points d'une équipe pour une zone donnée
 
 try {
@@ -89,6 +109,39 @@ try {
 	} 
 	else echo('no result');
 	} 
+catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
+//classement des équipes
+
+try {
+	$req = $bdd->prepare("
+		SELECT equipe, COUNT(qrcode) as nbPoints
+		FROM flasher,joueur
+		WHERE flasher.joueur=joueur.login_joueur
+		GROUP BY joueur.equipe
+		ORDER BY nbPoints DESC");
+	$req->execute();
+	$result = $req->fetchAll();
+	print_r($result);
+}
+catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
+//classement des joueurs
+
+try {
+	$req = $bdd->prepare("
+		SELECT joueur, COUNT(qrcode) as nbPoints
+		FROM flasher
+		GROUP BY joueur
+		ORDER BY nbPoints DESC");
+	$req->execute();
+	$result = $req->fetchAll();
+	print_r($result);
+}
 catch (Exception $e) {
 	die('Error: ' . $e->getMessage());
 }
