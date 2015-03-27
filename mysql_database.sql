@@ -2,12 +2,6 @@ CREATE DATABASE IF NOT EXISTS si28;
 
 USE si28;
 
-CREATE TABLE IF NOT EXISTS couleurequipe (
-  couleur_equipe varchar(20) NOT NULL UNIQUE,
-  num_equipe int NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (num_equipe)
-);
-
 CREATE TABLE IF NOT EXISTS partie (
   id_partie int NOT NULL AUTO_INCREMENT,
   date_debut date NOT NULL,
@@ -16,11 +10,7 @@ CREATE TABLE IF NOT EXISTS partie (
 );
 
 CREATE TABLE IF NOT EXISTS equipe (
-  id_equipe int NOT NULL AUTO_INCREMENT,
-  partie int NOT NULL,
-  equipe int NOT NULL,
-  FOREIGN KEY (partie) REFERENCES partie(id_partie),
-  FOREIGN KEY (equipe) REFERENCES couleurequipe(num_equipe),
+  id_equipe int NOT NULL,
   PRIMARY KEY (id_equipe)
 );
 
@@ -52,27 +42,34 @@ CREATE TABLE IF NOT EXISTS flasher (
   PRIMARY KEY (date_flash,joueur,qrcode)
 );
 
--- Insertions pour les tests
+CREATE TABLE IF NOT EXISTS inscription (
+  id_inscription int NOT NULL,
+  date_flash date NOT NULL,
+  joueur varchar(20) NOT NULL,
+  partie int NOT NULL,
+  equipe int NOT NULL,
+  FOREIGN KEY (joueur) REFERENCES joueur(login_joueur),
+  FOREIGN KEY (partie) REFERENCES partie(id_partie),
+  FOREIGN KEY (equipe) REFERENCES equipe(id_equipe),
+  PRIMARY KEY (id_inscription)
+);
 
-INSERT INTO couleurequipe (couleur_equipe) VALUES
-('vert'),
-('bleue'),
-('rouge'),
-('jaune');
+-- Insertions pour les tests
 
 INSERT INTO partie (date_debut, date_fin) VALUES (NOW(), NOW());
 
-INSERT INTO equipe (partie, equipe) VALUES
-(1, 1),
-(1, 2),
-(1, 3),
-(1, 4);
+INSERT INTO equipe (id_equipe) VALUES
+(1),
+(2),
+(3),
+(4);
 
 INSERT INTO joueur (login_joueur, equipe) VALUES
 ('joueur1', 1),
 ('joueur2', 2),
 ('joueur3', 3),
-('joueur4', 4);
+('joueur4', 4),
+('joueur5', 1);
 
 INSERT INTO zone (id_zone) VALUES
 (1),
