@@ -1,5 +1,9 @@
 <?php
 
+//connection BDD
+
+require_once('db_connect.php');
+
 //insertion nouvelle partie dans la table PARTIES
 
 try {

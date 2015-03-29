@@ -2,16 +2,7 @@
 
 //connection BDD
 
-$dbhost = 'localhost';
-$dbname = 'si28';
-$dbuser = 'root'; 
-$dbpass = '';
-
-try {
-	$bdd = new PDO('mysql:host=' . $dbhost . ';dbname=' . $dbname . ';charset=utf8', $dbuser, $dbpass);
-} catch (Exception $e) {
-	die('Error: ' . $e->getMessage());
-}
+require_once('db_connect.php');
 
 //affichage joueurs créés
 
