@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS inscriptions (
 	PRIMARY KEY (id_inscription)
 );
 
-CREATE TABLE IF NOT EXISTS flasher (
+CREATE TABLE IF NOT EXISTS flashs (
 	id_flash INT NOT NULL AUTO_INCREMENT,
 	date_flash DATETIME NOT NULL,
 	joueur INT NOT NULL,
