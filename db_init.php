@@ -1,5 +1,5 @@
 <?php
-	require_once('constants.php');
+	require_once('db_constants.php');
 ?>
 	<style type="text/css">
 		ul > li {
