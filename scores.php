@@ -56,6 +56,7 @@
 		} else {
 			echo '<li>QRCode ' . $row['id_qrcode'] . ' n\'a pas encore été capturé</li>';
 		}
+		echo '<ul><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&amp;data=' . $row['id_qrcode'] . '"></ul>';
 	}
 	echo '</ul>';
 	$req->closeCursor();
