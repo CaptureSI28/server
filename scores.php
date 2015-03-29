@@ -32,7 +32,7 @@
 						FROM inscriptions i
 						WHERE j.id_joueur = i.joueur
 							AND i.date_inscription < date_flash
-						ORDER BY date_inscription
+						ORDER BY date_inscription DESC
 						LIMIT 1
 					) AS equipe
 					FROM flashs f, joueurs j
