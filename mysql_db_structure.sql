@@ -1,7 +1,3 @@
-CREATE DATABASE IF NOT EXISTS si28;
-
-USE si28;
-
 CREATE TABLE IF NOT EXISTS partie (
   id_partie int NOT NULL AUTO_INCREMENT,
   date_debut date NOT NULL,
