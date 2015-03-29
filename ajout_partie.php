@@ -1,26 +1,23 @@
 <?php
 
 //connection BDD
-
 require_once('db_connect.php');
 
 //affichage parties créées
-
-$connect = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname) or die ('Error connecting to mysql');
-$req="SELECT * FROM parties";
-$result = mysqli_query($connect,$req);
-while ($row = mysqli_fetch_array($result, MYSQL_NUM))
-	{
-		echo "<br>ID partie : ".$row[0];
-		echo "<br>date debut : ".$row[1];
-		echo "<br>date fin : ".$row[2];
-		echo "<br>-----------------------";
-	} 
+$req = $bdd->query('
+	SELECT *
+	FROM parties;
+');
+while ($row = $req->fetch()) {
+	echo "<br>ID partie : ".$row[0];
+	echo "<br>date debut : ".$row[1];
+	echo "<br>date fin : ".$row[2];
+	echo "<br>-----------------------";
+} 
 
 echo "<br><br><br><br>";
 
 //cases à remplir
-
 ?>
 <form method="post" action="ajout_partie.php">
 
@@ -37,17 +34,15 @@ echo "<br><br><br><br>";
 
 if (!empty($_POST["date_debut"]))
 {
-
-try {
-	$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
-	$req->execute(array(
-		'date_debut' => $_POST["date_debut"],
-		'date_fin' => $_POST["date_fin"]
-	));
-} catch (Exception $e) {
-	die('Error: ' . $e->getMessage());
-}
-
+	try {
+		$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
+		$req->execute(array(
+			'date_debut' => $_POST["date_debut"],
+			'date_fin' => $_POST["date_fin"]
+		));
+	} catch (Exception $e) {
+		die('Error: ' . $e->getMessage());
+	}
 }
 
 ?>
