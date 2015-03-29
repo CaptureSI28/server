@@ -1,9 +1,9 @@
 <?php
 
-//insertion nouvelle partie dans la table PARTIE
+//insertion nouvelle partie dans la table PARTIES
 
 try {
-	$req = $bdd->prepare('INSERT INTO partie (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
+	$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
 	$req->execute(array(
 		'date_debut' => $date_debut,
 		'date_fin' => $date_fin
@@ -12,13 +12,15 @@ try {
 	die('Error: ' . $e->getMessage());
 }
 
-//insertion nouveau joueur dans la table EQUIPE
+//insertion nouveau joueur dans la table INSCRIPTIONS
 
 try {
-	$req = $bdd->prepare('INSERT INTO equipe (partie, equipe) VALUES (:partie, :equipe)');
+	$req = $bdd->prepare('INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) VALUES (:date_insc, :partie, :equipe, :joueur)');
 	$req->execute(array(
+		'date_insc' => $date_insc,
 		'partie' => $partie,
-		'equipe' => $equipe
+		'equipe' => $equipe,
+		'joueur' => $joueur
 	));
 } catch (Exception $e) {
 	die('Error: ' . $e->getMessage());
@@ -27,20 +29,41 @@ try {
 //insertion nouveau joueur dans la table JOUEURS
 
 try {
-	$req = $bdd->prepare('INSERT INTO joueur (login_joueur, equipe) VALUES (:joueur, :equipe)');
+	$req = $bdd->prepare('INSERT INTO joueurs (login) VALUES (:login)');
 	$req->execute(array(
-		'joueur' => $joueur,
-		'equipe' => $equipe
+		'login' => $login
 	));
 } catch (Exception $e) {
 	die('Error: ' . $e->getMessage());
 }
 
-//insertion données dans la table FLASHER
+//insertion nouvelle zone dans la table ZONES
 
 try {
-	$req = $bdd->prepare('INSERT INTO flasher (date_flash, joueur, qrcode) VALUES (NOW(), :joueur, :qrcode)');
+	$req = $bdd->prepare('INSERT INTO zones () VALUES ()');
 	$req->execute(array(
+	));
+} catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
+//insertion nouveau qrcode dans la table QRCODES
+
+try {
+	$req = $bdd->prepare('INSERT INTO qrcodes (zone) VALUES (:zone)');
+	$req->execute(array(
+		'zone' => $zone
+	));
+} catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
+//insertion nouveau flash dans la table FLASHS
+
+try {
+	$req = $bdd->prepare('INSERT INTO flashs (date_flash, joueur, qrcode) VALUES (:date_flash, :joueur, :qrcode)');
+	$req->execute(array(
+		'date_flash' => $date_flash,
 		'joueur' => $joueur,
 		'qrcode' => $qrcode
 	));
@@ -53,9 +76,9 @@ try {
 try {
 	$req = $bdd->prepare("
 		SELECT COUNT(qrcode) as nbQrcode
-		FROM flasher,joueur
-		WHERE flasher.joueur=joueur.login_joueur 
-		AND joueur.equipe=:equipe");
+		FROM flashs,inscriptions
+		WHERE flashs.joueur=inscriptions.joueur 
+		AND inscriptions.equipe=:equipe");
 	$req->execute(array(
 		'equipe' => $equipe
 	));
@@ -74,8 +97,8 @@ catch (Exception $e) {
 try {
 	$req = $bdd->prepare("
 		SELECT COUNT(qrcode) as nbPoints
-		FROM flasher
-		WHERE flasher.joueur=:joueur");
+		FROM flashs
+		WHERE flashs.joueur=:joueur");
 	$req->execute(array(
 		'joueur' => $joueur
 	));
@@ -94,11 +117,11 @@ catch (Exception $e) {
 try {
 	$req = $bdd->prepare("
 		SELECT COUNT(qrcode) as nbQrcode
-		FROM flasher,joueur,qrcode
-		WHERE flasher.joueur=joueur.login_joueur 
-		AND joueur.equipe=:equipe
-		AND qrcode.zone=:zone
-		AND flasher.qrcode=qrcode.id_qrcode");
+		FROM flashs,inscriptions,qrcodes
+		WHERE flashs.joueur=inscriptions.joueur 
+		AND inscriptions.equipe=:equipe
+		AND qrcodes.zone=:zone
+		AND flashs.qrcode=qrcodes.id_qrcode");
 	$req->execute(array(
 		'equipe' => $equipe,
 		'zone' => $zone
@@ -118,9 +141,9 @@ catch (Exception $e) {
 try {
 	$req = $bdd->prepare("
 		SELECT equipe, COUNT(qrcode) as nbPoints
-		FROM flasher,joueur
-		WHERE flasher.joueur=joueur.login_joueur
-		GROUP BY joueur.equipe
+		FROM flashs,inscriptions
+		WHERE flashs.joueur=inscriptions.joueur
+		GROUP BY inscriptions.equipe
 		ORDER BY nbPoints DESC");
 	$req->execute();
 	$result = $req->fetchAll();
@@ -135,7 +158,7 @@ catch (Exception $e) {
 try {
 	$req = $bdd->prepare("
 		SELECT joueur, COUNT(qrcode) as nbPoints
-		FROM flasher
+		FROM flashs
 		GROUP BY joueur
 		ORDER BY nbPoints DESC");
 	$req->execute();
