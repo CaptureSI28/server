@@ -37,79 +37,15 @@
 <?php
 	try {
 		$req = $bdd->prepare('
-			SELECT a.*, i.date_flash, i.id_inscription, i.equipe, i.joueur
+			SELECT a.*, i.date_flash, i.id_inscription, i.equipe, (
+				SELECT login
+				FROM joueurs
+				WHERE i.joueur = id_joueur
+			) AS joueur
 			FROM all_qrcodes a
 			LEFT JOIN infos_flashs i
 			ON a.id_flash = i.id_flash;
 		');
-/*		$req = $bdd->prepare('
-			SELECT p.*, q.*, (
-				SELECT equipe
-				FROM infos_flashs
-				WHERE qrcode = q.id_qrcode
-				ORDER BY date_flash DESC
-				LIMIT 1
-			) AS equipe, (
-				SELECT joueur
-				FROM infos_flashs
-				WHERE qrcode = q.id_qrcode
-				ORDER BY date_flash DESC
-				LIMIT 1
-			) AS equipe
-			FROM parties p, qrcodes q;
-		');*/
-/*		$req = $bdd->prepare('
-			SELECT q.id_partie AS partie, date_debut, date_fin, (
-				SELECT NULL
-			) AS equipe_partie, zone, (
-				SELECT NULL
-			) AS equipe_zone, id_qrcode AS qrcode, equipe, (
-				SELECT hexcolor
-				FROM equipes e
-				WHERE q.equipe = e.id_equipe
-			) AS hexcolor, (
-				SELECT login
-				FROM joueurs j
-				WHERE q.joueur = j.id_joueur
-			) AS joueur
-			FROM parties p, zones z, (
-				SELECT id_partie, zone, id_qrcode, (
-					SELECT (
-						SELECT equipe
-						FROM inscriptions i
-						WHERE j.id_joueur = i.joueur
-							AND i.date_inscription < date_flash
-							AND p.id_partie = i.partie
-						ORDER BY date_inscription DESC
-						LIMIT 1
-					) AS equipe
-					FROM flashs f, joueurs j
-					WHERE q.id_qrcode = f.qrcode
-						AND f.joueur = j.id_joueur
-					ORDER BY date_flash DESC
-					LIMIT 1
-				) AS equipe, (
-					SELECT (
-						SELECT joueur
-						FROM inscriptions i
-						WHERE j.id_joueur = i.joueur
-							AND i.date_inscription < date_flash
-							AND p.id_partie = i.partie
-						ORDER BY date_inscription DESC
-						LIMIT 1
-					) AS joueur
-					FROM flashs f, joueurs j
-					WHERE q.id_qrcode = f.qrcode
-						AND f.joueur = j.id_joueur
-					ORDER BY date_flash DESC
-					LIMIT 1
-				) AS joueur
-				FROM parties p, qrcodes q
-			) q
-			WHERE z.id_zone = q.zone
-				AND p.id_partie = q.id_partie
-			ORDER BY partie, zone, qrcode;
-		');*/
 		$req->execute(array());
 	} catch (Exception $e) {
 		echo $e->getMessage();
