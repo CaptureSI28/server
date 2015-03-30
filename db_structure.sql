@@ -56,7 +56,7 @@ CREATE VIEW flashs_inscriptions AS
 		SELECT id_inscription
 		FROM inscriptions i
 		WHERE i.joueur = f.joueur
-			AND i.date_inscription < f.date_flash
+			AND i.date_inscription <= f.date_flash
 		ORDER BY i.date_inscription DESC
 		LIMIT 1
 	) AS inscription
