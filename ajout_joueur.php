@@ -27,16 +27,30 @@ echo "<br><br><br><br>";
 </form>
 <?php
 
-//insertion nouvelle partie dans la table PARTIE
+//insertion nouveau joueur dans la table JOUEURS
+
 if (!empty($_POST["login"]))
 {
-	try {
-		$req = $bdd->prepare('INSERT INTO joueurs (login) VALUES (:login)');
-		$req->execute(array(
-			'login' => $_POST["login"]
-		));
-	} catch (Exception $e) {
-		die('Error: ' . $e->getMessage());
+	$verif = $bdd->prepare('
+		SELECT COUNT(login)
+		FROM joueurs 
+		WHERE login = :login');
+	$verif->execute(array(
+				'login' => $_POST["login"]
+			));
+	$nb = $verif->fetchColumn();
+
+	if ($nb == 0)
+	{
+		try {
+			$req = $bdd->prepare('INSERT INTO joueurs (login) VALUES (:login)');
+			$req->execute(array(
+				'login' => $_POST["login"]
+			));
+		} catch (Exception $e) {
+			die('Error: ' . $e->getMessage());
+		}
 	}
+	else echo "le joueur existe deja";
 }
 ?>

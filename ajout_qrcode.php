@@ -42,12 +42,25 @@ echo "<br><br><br><br>";
 
 if (!empty($_POST["zone"]))
 {
-	try {
-		$req = $bdd->prepare('INSERT INTO qrcodes (zone) VALUES (:zone)');
-		$req->execute(array(
-			'zone' => $_POST["zone"]
-		));
-	} catch (Exception $e) {
-		die('Error: ' . $e->getMessage());
+	$verif = $bdd->prepare('
+		SELECT COUNT(*)
+		FROM zones 
+		WHERE id_zone = :zone');
+	$verif->execute(array(
+				'zone' => $_POST["zone"]
+			));
+	$nb = $verif->fetchColumn();
+
+	if ($nb != 0)
+	{
+		try {
+			$req = $bdd->prepare('INSERT INTO qrcodes (zone) VALUES (:zone)');
+			$req->execute(array(
+				'zone' => $_POST["zone"]
+			));
+		} catch (Exception $e) {
+			die('Error: ' . $e->getMessage());
+		}
 	}
+	else echo "zone inexistante";
 }

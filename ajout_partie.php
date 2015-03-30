@@ -32,17 +32,21 @@ echo "<br><br><br><br>";
 
 //insertion nouvelle partie dans la table PARTIE
 
-if (!empty($_POST["date_debut"]))
+if ((!empty($_POST["date_debut"])))
 {
-	try {
-		$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
-		$req->execute(array(
-			'date_debut' => $_POST["date_debut"],
-			'date_fin' => $_POST["date_fin"]
-		));
-	} catch (Exception $e) {
-		die('Error: ' . $e->getMessage());
+	if ($_POST["date_debut"]<$_POST["date_fin"])
+	{
+		try {
+			$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
+			$req->execute(array(
+				'date_debut' => $_POST["date_debut"],
+				'date_fin' => $_POST["date_fin"]
+			));
+		} catch (Exception $e) {
+			die('Error: ' . $e->getMessage());
+		}
 	}
+	else echo "dates incompatibles";
 }
 
 ?>
