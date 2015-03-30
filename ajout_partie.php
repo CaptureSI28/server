@@ -20,14 +20,14 @@ echo "<br><br><br><br>";
 //cases à remplir
 ?>
 <form method="post" action="ajout_partie.php">
-
-<input type="text" placeholder="date_debut (Y-m-d H:m:s)" name="date_debut">
-<br><br>
-<input type="text" placeholder="date_fin (Y-m-d H:m:s)" name="date_fin">
-<br><br>
-<input type="submit" value="inserer">
-<br>
-<input type="reset" value="effacer">
+	<input type="text" placeholder="date_debut (Y-m-d H:m:s)" name="date_debut">
+	<br><br>
+	<input type="text" placeholder="date_fin (Y-m-d H:m:s)" name="date_fin">
+	<br><br>
+	<input type="submit" value="inserer">
+	<br>
+	<input type="reset" value="effacer">
+</form>
 <?php
 
 //insertion nouvelle partie dans la table PARTIE
