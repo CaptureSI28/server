@@ -38,19 +38,43 @@ echo "<br><br><br><br>";
 </form>
 <?php
 
-//insertion nouvelle partie dans la table INSCRIPTIONS
+//insertion nouvelle inscription dans la table INSCRIPTIONS
+
 if (!empty($_POST["partie"]))
 {
-	try {
-		$req = $bdd->prepare('INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) VALUES (:date_insc, :partie, :equipe, :joueur)');
-		$req->execute(array(
-			'date_insc' => $_POST["date_insc"],
-			'partie' => $_POST["partie"],
-			'equipe' => $_POST["equipe"],
-			'joueur' => $_POST["joueur"]
-		));
-	} catch (Exception $e) {
-		die('Error: ' . $e->getMessage());
-}
+	$verif = $bdd->prepare('
+		SELECT COUNT(id_partie)
+		FROM parties 
+		WHERE id_partie = :partie');
+	$verif->execute(array(
+				'partie' => $_POST["partie"]
+			));
+	$nb = $verif->fetchColumn();
+
+	$verif2 = $bdd->prepare('
+		SELECT COUNT(id_joueur)
+		FROM joueurs 
+		WHERE id_joueur = :joueur');
+	$verif2->execute(array(
+				'joueur' => $_POST["joueur"]
+			));
+	$nb2 = $verif2->fetchColumn();
+	
+	if (($nb != 0)&&($_POST["equipe"]>=1)&&($_POST["equipe"]<=4)&&($nb2 != 0))
+	{
+		try {
+			$req = $bdd->prepare('INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) VALUES (:date_insc, :partie, :equipe, :joueur)');
+			$req->execute(array(
+				'date_insc' => $_POST["date_insc"],
+				'partie' => $_POST["partie"],
+				'equipe' => $_POST["equipe"],
+				'joueur' => $_POST["joueur"]
+			));
+		} catch (Exception $e) {
+			die('Error: ' . $e->getMessage());
+		}
+	}
+	else echo "la partie, l'equipe ou le joueur n'existe pas";
+
 }
 ?>
