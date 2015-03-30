@@ -34,6 +34,7 @@ echo "<br><br><br><br>";
 
 if ((!empty($_POST["date_debut"])))
 {
+	if ($_POST["date_debut"]<$_POST["date_fin"])
 	{
 		try {
 			$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
