@@ -51,6 +51,40 @@ CREATE TABLE IF NOT EXISTS flashs (
 	PRIMARY KEY (id_flash)
 );
 
+CREATE VIEW flashs_inscriptions AS
+	SELECT f.*, (
+		SELECT id_inscription
+		FROM inscriptions i
+		WHERE i.joueur = f.joueur
+			AND i.date_inscription < f.date_flash
+		ORDER BY i.date_inscription DESC
+		LIMIT 1
+	) AS inscription
+	FROM flashs f
+	ORDER BY date_flash;
+
+CREATE VIEW infos_flashs AS
+	SELECT f.id_flash AS id_flash, f.date_flash AS date_flash, (
+		SELECT zone
+		FROM qrcodes
+		WHERE id_qrcode = f.qrcode
+	) AS zone, f.qrcode AS qrcode, i.id_inscription AS id_inscription, i.partie AS partie, i.equipe AS equipe, i.joueur AS joueur
+	FROM flashs_inscriptions f, inscriptions i
+	WHERE f.inscription = i.id_inscription
+	ORDER BY date_flash;
+
+CREATE VIEW all_qrcodes AS
+	SELECT p.id_partie AS partie, p.date_debut AS date_debut, p.date_fin AS date_fin, q.zone AS zone, q.id_qrcode AS qrcode, (
+		SELECT id_flash
+		FROM infos_flashs i
+		WHERE p.id_partie = i.partie
+			AND q.id_qrcode = i.qrcode
+		ORDER BY date_flash DESC, id_flash DESC
+		LIMIT 1
+	) id_flash
+	FROM parties p, qrcodes q
+	ORDER BY p.id_partie, q.zone, q.id_qrcode;
+
 INSERT INTO equipes (hexcolor) VALUES ('#FF0055');
 INSERT INTO equipes (hexcolor) VALUES ('#0077DD');
 INSERT INTO equipes (hexcolor) VALUES ('#00CC66');
