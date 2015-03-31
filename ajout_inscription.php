@@ -8,8 +8,7 @@ require_once('db_connect.php');
 
 $req = $bdd->query('
 	SELECT *
-	FROM inscriptions;
-');
+	FROM inscriptions;');
 while ($row = $req->fetch()) {
 		echo "<br>ID inscription : ".$row[0];
 		echo "<br>date d'inscription : ".$row[1];
@@ -70,7 +69,10 @@ if (!empty($_POST["partie"]))
 	{
 		//recherche du mot de passe de la partie
 		try {
-				$req = $bdd->prepare('SELECT password FROM parties WHERE id_partie=:partie');
+				$req = $bdd->prepare('
+					SELECT password 
+					FROM parties 
+					WHERE id_partie = :partie');
 				$req->execute(array(
 					'partie' => $_POST["partie"]
 				));
@@ -87,7 +89,9 @@ if (!empty($_POST["partie"]))
 			else 
 			{
 				try {
-					$req = $bdd->prepare('INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) VALUES (:date_insc, :partie, :equipe, :joueur)');
+					$req = $bdd->prepare('
+						INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) 
+						VALUES (:date_insc, :partie, :equipe, :joueur)');
 					$req->execute(array(
 						'date_insc' => $_POST["date_insc"],
 						'partie' => $_POST["partie"],

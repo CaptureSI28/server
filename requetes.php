@@ -4,10 +4,12 @@
 
 require_once('db_connect.php');
 
-//insertion nouvelle partie dans la table PARTIES sans mot de passe
+//insertion nouvelle partie dans la table PARTIES sans mot de passe (NULL par défaut)
 
 try {
-	$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
+	$req = $bdd->prepare('
+		INSERT INTO parties (date_debut, date_fin) 
+		VALUES (:date_debut, :date_fin)');
 	$req->execute(array(
 		'date_debut' => $date_debut,
 		'date_fin' => $date_fin
@@ -19,7 +21,9 @@ try {
 //insertion nouvelle partie dans la table PARTIES avec mot de passe
 
 try {
-	$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin, password) VALUES (:date_debut, :date_fin, :password)');
+	$req = $bdd->prepare('
+		INSERT INTO parties (date_debut, date_fin, password) 
+		VALUES (:date_debut, :date_fin, :password)');
 	$req->execute(array(
 		'date_debut' => $_POST["date_debut"],
 		'date_fin' => $_POST["date_fin"],
@@ -32,7 +36,9 @@ try {
 //insertion nouveau joueur dans la table INSCRIPTIONS
 
 try {
-	$req = $bdd->prepare('INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) VALUES (:date_insc, :partie, :equipe, :joueur)');
+	$req = $bdd->prepare('
+		INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) 
+		VALUES (:date_insc, :partie, :equipe, :joueur)');
 	$req->execute(array(
 		'date_insc' => $date_insc,
 		'partie' => $partie,
@@ -46,7 +52,9 @@ try {
 //insertion nouveau joueur dans la table JOUEURS
 
 try {
-	$req = $bdd->prepare('INSERT INTO joueurs (login) VALUES (:login)');
+	$req = $bdd->prepare('
+		INSERT INTO joueurs (login) 
+		VALUES (:login)');
 	$req->execute(array(
 		'login' => $login
 	));
@@ -57,7 +65,9 @@ try {
 //insertion nouvelle zone dans la table ZONES
 
 try {
-	$req = $bdd->prepare('INSERT INTO zones () VALUES ()');
+	$req = $bdd->prepare('
+		INSERT INTO zones () 
+		VALUES ()');
 	$req->execute(array(
 	));
 } catch (Exception $e) {
@@ -67,7 +77,9 @@ try {
 //insertion nouveau qrcode dans la table QRCODES
 
 try {
-	$req = $bdd->prepare('INSERT INTO qrcodes (zone) VALUES (:zone)');
+	$req = $bdd->prepare('
+		INSERT INTO qrcodes (zone) 
+		VALUES (:zone)');
 	$req->execute(array(
 		'zone' => $zone
 	));
@@ -78,7 +90,9 @@ try {
 //insertion nouveau flash dans la table FLASHS
 
 try {
-	$req = $bdd->prepare('INSERT INTO flashs (date_flash, joueur, qrcode) VALUES (:date_flash, :joueur, :qrcode)');
+	$req = $bdd->prepare('
+		INSERT INTO flashs (date_flash, joueur, qrcode) 
+		VALUES (:date_flash, :joueur, :qrcode)');
 	$req->execute(array(
 		'date_flash' => $date_flash,
 		'joueur' => $joueur,

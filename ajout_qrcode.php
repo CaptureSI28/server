@@ -8,8 +8,7 @@ require_once('db_connect.php');
 
 $req = $bdd->query('
 	SELECT *
-	FROM qrcodes;
-');
+	FROM qrcodes;');
 
 $zone_prec="-1";
 
@@ -54,7 +53,9 @@ if (!empty($_POST["zone"]))
 	if ($nb != 0)
 	{
 		try {
-			$req = $bdd->prepare('INSERT INTO qrcodes (zone) VALUES (:zone)');
+			$req = $bdd->prepare('
+				INSERT INTO qrcodes (zone) 
+				VALUES (:zone)');
 			$req->execute(array(
 				'zone' => $_POST["zone"]
 			));

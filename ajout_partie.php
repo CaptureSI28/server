@@ -6,8 +6,7 @@ require_once('db_connect.php');
 //affichage parties créées
 $req = $bdd->query('
 	SELECT *
-	FROM parties;
-');
+	FROM parties;');
 while ($row = $req->fetch()) {
 	echo "<br>ID partie : ".$row[0];
 	echo "<br>date debut : ".$row[1];
@@ -41,7 +40,9 @@ if ((!empty($_POST["date_debut"])))
 		if (empty($_POST["password"]))
 		{
 			try {
-				$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
+				$req = $bdd->prepare('
+					INSERT INTO parties (date_debut, date_fin) 
+					VALUES (:date_debut, :date_fin)');
 				$req->execute(array(
 					'date_debut' => $_POST["date_debut"],
 					'date_fin' => $_POST["date_fin"]
@@ -53,7 +54,9 @@ if ((!empty($_POST["date_debut"])))
 		else
 		{
 			try {
-				$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin, password) VALUES (:date_debut, :date_fin, :password)');
+				$req = $bdd->prepare('
+					INSERT INTO parties (date_debut, date_fin, password) 
+					VALUES (:date_debut, :date_fin, :password)');
 				$req->execute(array(
 					'date_debut' => $_POST["date_debut"],
 					'date_fin' => $_POST["date_fin"],

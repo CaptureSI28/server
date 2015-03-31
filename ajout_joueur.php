@@ -6,8 +6,7 @@ require_once('db_connect.php');
 //affichage joueurs créés
 $req = $bdd->query('
 	SELECT *
-	FROM joueurs;
-');
+	FROM joueurs;');
 while ($row = $req->fetch()) {
 	echo "<br>ID joueur : ".$row[0];
 	echo "<br>login : ".$row[1];
@@ -43,7 +42,9 @@ if (!empty($_POST["login"]))
 	if ($nb == 0)
 	{
 		try {
-			$req = $bdd->prepare('INSERT INTO joueurs (login) VALUES (:login)');
+			$req = $bdd->prepare('
+				INSERT INTO joueurs (login) 
+				VALUES (:login)');
 			$req->execute(array(
 				'login' => $_POST["login"]
 			));
