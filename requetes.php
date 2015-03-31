@@ -4,13 +4,26 @@
 
 require_once('db_connect.php');
 
-//insertion nouvelle partie dans la table PARTIES
+//insertion nouvelle partie dans la table PARTIES sans mot de passe
 
 try {
 	$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin) VALUES (:date_debut, :date_fin)');
 	$req->execute(array(
 		'date_debut' => $date_debut,
 		'date_fin' => $date_fin
+	));
+} catch (Exception $e) {
+	die('Error: ' . $e->getMessage());
+}
+
+//insertion nouvelle partie dans la table PARTIES avec mot de passe
+
+try {
+	$req = $bdd->prepare('INSERT INTO parties (date_debut, date_fin, password) VALUES (:date_debut, :date_fin, :password)');
+	$req->execute(array(
+		'date_debut' => $_POST["date_debut"],
+		'date_fin' => $_POST["date_fin"],
+		'password' => $_POST["password"]
 	));
 } catch (Exception $e) {
 	die('Error: ' . $e->getMessage());
