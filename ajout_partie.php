@@ -33,9 +33,16 @@ echo "<br><br><br><br>";
 
 //insertion nouvelle partie dans la table PARTIE
 
+
+
+
 if ((!empty($_POST["date_debut"])))
 {
-	if ($_POST["date_debut"]<$_POST["date_fin"])
+
+	$NOW = new DateTime(null, new DateTimeZone('Europe/Paris'));
+	$date_deb = new DateTime($_POST["date_debut"]);					//création d'un objet de type DateTime
+
+	if (($_POST["date_debut"]<$_POST["date_fin"])&&($date_deb >= $NOW))
 	{
 		if (empty($_POST["password"]))
 		{
