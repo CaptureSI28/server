@@ -233,9 +233,13 @@ function inscrire ($date_insc, $partie, $equipe, $joueur, $password) {
 function getPartieActiveJoueur ($joueurID) {
 	global $bdd;
 	$req = $bdd->prepare('
-		');
+		SELECT partie
+		FROM inscriptions
+		WHERE joueur = :joueur
+		ORDER BY date_inscription DESC
+		LIMIT 1');
 	$req->execute(array(
-		'equipe' => $equipeID
+		'joueur' => $joueurID
 	));
 	if ($row = $req->fetch()) {
 		return $row['partie'];
