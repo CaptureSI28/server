@@ -22,6 +22,8 @@ require_once('db_connect.php');
 /* TEMPLATE fonction
 function nomFonction ($argument) {
 	global $bdd;
+
+
 }
 */
 
@@ -93,9 +95,41 @@ function creerPartie ($nom, $date_debut, $date_fin, $password) {
 }
 
 
+/* 
+ * Input:
+ * - login: login du joueur à ajouter
+ *
+ * Output:
+ * -booléen: true si tout se passe bien, false sinon 
+ */
+function creerJoueur ($login) {
+	global $bdd;
+	$verif = $bdd->prepare('
+			SELECT COUNT(login)
+			FROM joueurs 
+			WHERE login = :login');
+		$verif->execute(array(
+					'login' => $login
+				));
+		$nb = $verif->fetchColumn();
 
-
-
+	if ($nb == 0)
+	{
+		try {
+			$req = $bdd->prepare('
+				INSERT INTO joueurs (login) 
+				VALUES (:login)');
+			$req->execute(array(
+				'login' => $login
+			));
+		} catch (Exception $e) {
+			die('Error: ' . $e->getMessage());
+		}
+		return true;
+	}
+	else
+		return false;
+}
 
 
 
@@ -109,6 +143,7 @@ function creerPartie ($nom, $date_debut, $date_fin, $password) {
  * - partieID: identifiant de la partie à laquelle est actuellement inscrit le joueur
  */
 function getPartieActiveJoueur ($joueurID) {
+	global $bdd;
 	$req = $bdd->prepare('
 		');
 	$req->execute(array(
@@ -120,5 +155,67 @@ function getPartieActiveJoueur ($joueurID) {
 		return 0;
 	}
 }
+
+/* TEMPLATE
+ * Input:
+ * - param1: description du param1
+ * - param2: description du param2
+ *
+ * Output:
+ * - sortie: description de la sortie (specifier lorsque c'est un tableau)
+ */
+
+/* TEMPLATE fonction
+function historique ($argument) {
+	global $bdd;
+
+
+}
+*/
+
+/* TEMPLATE
+ * Input:
+ * - param1: description du param1
+ * - param2: description du param2
+ *
+ * Output:
+ * - sortie: description de la sortie (specifier lorsque c'est un tableau)
+ */
+
+/* TEMPLATE fonction
+function loggerCAS ($argument) {
+	global $bdd;
+
+
+}
+*/
+
+/* TEMPLATE
+ * Input:
+ * - param1: description du param1
+ * - param2: description du param2
+ *
+ * Output:
+ * - sortie: description de la sortie (specifier lorsque c'est un tableau)
+ */
+
+/* TEMPLATE fonction
+function getEquipeJoueur ($argument) {
+	global $bdd;
+
+
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
 
 ?>
