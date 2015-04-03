@@ -38,9 +38,6 @@ echo "<br><br><br><br>";
 //insertion nouvelle partie dans la table PARTIE
 
 if(!empty($_POST["date_debut"]))
-	creerPartie($_POST["nom"], $_POST["date_debut"], $_POST["date_fin"], $_POST["password"]);
-
-
-
-
+	if (creerPartie($_POST["nom"], $_POST["date_debut"], $_POST["date_fin"], $_POST["password"]) == false)
+		echo "probleme";
 ?>
