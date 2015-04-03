@@ -248,24 +248,25 @@ function getPartieActiveJoueur ($joueurID) {
 	}
 }
 
-/* TEMPLATE
+/* 
  * Input:
  * - param1: description du param1
  * - param2: description du param2
  *
  * Output:
- * - sortie: description de la sortie (specifier lorsque c'est un tableau)
+ * - historiquePartie: tableau comprenant les actions effectuées au cours de la partie (ordre décroissant de temps)
  */
 
-/* TEMPLATE fonction
-function historique ($argument) {
+
+function historiquePartie ($argument) {
 	global $bdd;
 
 
 }
-*/
 
-/* TEMPLATE
+
+
+/* 
  * Input:
  * - param1: description du param1
  * - param2: description du param2
@@ -274,38 +275,29 @@ function historique ($argument) {
  * - sortie: description de la sortie (specifier lorsque c'est un tableau)
  */
 
-/* TEMPLATE fonction
+
 function loggerCAS ($argument) {
 	global $bdd;
 
 
 }
-*/
 
-/* TEMPLATE
+
+/* 
  * Input:
  * - param1: description du param1
  * - param2: description du param2
  *
  * Output:
- * - sortie: description de la sortie (specifier lorsque c'est un tableau)
+ * - equipe: numero de l'équipe dans laquelle est le joueur à cette partie
  */
 
-/* TEMPLATE fonction
-function getEquipeJoueur ($argument) {
+
+function getEquipeJoueurPartie ($argument) {
 	global $bdd;
 
 
 }
-*/
-
-
-
-
-
-
-
-
 
 
 
