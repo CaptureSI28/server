@@ -1,7 +1,7 @@
 <?php
 
 //connection BDD
-require_once('db_connect.php');
+require_once('fonctions.php');
 
 //affichage joueurs créés
 $req = $bdd->query('
@@ -28,30 +28,8 @@ echo "<br><br><br><br>";
 
 //insertion nouveau joueur dans la table JOUEURS
 
-if (!empty($_POST["login"]))
-{
-	$verif = $bdd->prepare('
-		SELECT COUNT(login)
-		FROM joueurs 
-		WHERE login = :login');
-	$verif->execute(array(
-				'login' => $_POST["login"]
-			));
-	$nb = $verif->fetchColumn();
+if(!empty($_POST["login"]))
+	if (creerJoueur ($_POST["login"]) == false)
+		echo "problem";
 
-	if ($nb == 0)
-	{
-		try {
-			$req = $bdd->prepare('
-				INSERT INTO joueurs (login) 
-				VALUES (:login)');
-			$req->execute(array(
-				'login' => $_POST["login"]
-			));
-		} catch (Exception $e) {
-			die('Error: ' . $e->getMessage());
-		}
-	}
-	else echo "le joueur existe deja";
-}
 ?>
