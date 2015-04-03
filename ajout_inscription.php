@@ -2,7 +2,7 @@
 
 //connection BDD
 
-require_once('db_connect.php');
+require_once('fonctions.php');
 
 //affichage inscriptions créées
 
@@ -42,83 +42,8 @@ echo "<br><br><br><br>";
 
 //insertion nouvelle inscription dans la table INSCRIPTIONS
 
-//vérif : la partie à laquelle on s'inscrit doit exister
-
 if (!empty($_POST["partie"]))
-{
-	$verif = $bdd->prepare('
-		SELECT COUNT(id_partie)
-		FROM parties 
-		WHERE id_partie = :partie');
-	$verif->execute(array(
-				'partie' => $_POST["partie"]
-			));
-	$nb = $verif->fetchColumn();	//nombre de parties correspondant à l'ID entré (0 ou 1)
+	if (inscrire ($_POST["date_insc"], $_POST["partie"], $_POST["equipe"], $_POST["joueur"], $_POST["password"]) == false)
+		echo "problem";
 
-//verif2 : le joueur qu'on veut inscrire doit exister
-
-	$verif2 = $bdd->prepare('
-		SELECT COUNT(id_joueur)
-		FROM joueurs 
-		WHERE id_joueur = :joueur');
-	$verif2->execute(array(
-				'joueur' => $_POST["joueur"]
-			));
-	$nb2 = $verif2->fetchColumn();	//nombre de joueurs correspondant à l'ID entré (0 ou 1)
-
-//verif3 : le joueur ne doit pas déjà être inscrit à la partie
-	$verif3 = $bdd->prepare('
-		SELECT COUNT(id_inscription)
-		FROM inscriptions 
-		WHERE partie = :partie
-		AND joueur = :joueur');
-	$verif3->execute(array(
-				'partie' => $_POST["partie"],
-				'joueur' => $_POST["joueur"]
-			));
-	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit à la partie (0 ou 1)
-
-	
-	if (($nb != 0)&&($_POST["equipe"]>=1)&&($_POST["equipe"]<=4)&&($nb2 != 0)&&($nb3 != 1))
-	{
-		//recherche du mot de passe de la partie
-		try {
-				$req = $bdd->prepare('
-					SELECT password 
-					FROM parties 
-					WHERE id_partie = :partie');
-				$req->execute(array(
-					'partie' => $_POST["partie"]
-				));
-			} catch (Exception $e) {
-				die('Error: ' . $e->getMessage());
-			}
-
-		while ($row = $req->fetch()) {
-			//vérification de la correspondance du mot de passe
-			if (($row[0]!=NULL)&&($row[0]!=sha1($_POST["password"])))
-			{
-				echo"mauvais mot de passe";
-			}
-			else 
-			{
-				try {
-					$req = $bdd->prepare('
-						INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) 
-						VALUES (:date_insc, :partie, :equipe, :joueur)');
-					$req->execute(array(
-						'date_insc' => $_POST["date_insc"],
-						'partie' => $_POST["partie"],
-						'equipe' => $_POST["equipe"],
-						'joueur' => $_POST["joueur"]
-					));
-				} catch (Exception $e) {
-					die('Error: ' . $e->getMessage());
-				}
-			}
-		}
-	}
-	else echo "ce joueur est deja inscrit à la partie, ou bien la partie, l'equipe ou le joueur n'existe pas";
-
-}
 ?>

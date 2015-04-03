@@ -131,6 +131,94 @@ function creerJoueur ($login) {
 		return false;
 }
 
+/* 
+ * Input:
+ * - date_insc: date d'inscription du joueur (DATETIME)
+ * - partie: ID de la partie à laquelle s'inscrire
+ * - equipe: équipe dans laquelle s'inscrire
+ * - joueur: ID du joueur à inscrire
+ * - password: chaine de caractères ('NULL' si non renseigné)
+ *
+ * Output:
+ * -booléen: true si tout se passe bien, false sinon
+ */
+
+function inscrire ($date_insc, $partie, $equipe, $joueur, $password) {
+	global $bdd;	
+
+	//vérif : la partie à laquelle on s'inscrit doit exister
+	$verif = $bdd->prepare('
+		SELECT COUNT(id_partie)
+		FROM parties 
+		WHERE id_partie = :partie');
+	$verif->execute(array(
+				'partie' => $partie
+			));
+	$nb = $verif->fetchColumn();	//nombre de parties correspondant à l'ID entré (0 ou 1)
+
+	//verif2 : le joueur qu'on veut inscrire doit exister
+	$verif2 = $bdd->prepare('
+		SELECT COUNT(id_joueur)
+		FROM joueurs 
+		WHERE id_joueur = :joueur');
+	$verif2->execute(array(
+				'joueur' => $joueur
+			));
+	$nb2 = $verif2->fetchColumn();	//nombre de joueurs correspondant à l'ID entré (0 ou 1)
+
+	//verif3 : le joueur ne doit pas déjà être inscrit à la partie
+	$verif3 = $bdd->prepare('
+		SELECT COUNT(id_inscription)
+		FROM inscriptions 
+		WHERE partie = :partie
+		AND joueur = :joueur');
+	$verif3->execute(array(
+				'partie' => $partie,
+				'joueur' => $joueur
+			));
+	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit à la partie (0 ou 1)
+	
+	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0)&&($nb3 != 1))
+	{
+		//recherche du mot de passe de la partie
+		try {
+				$req = $bdd->prepare('
+					SELECT password 
+					FROM parties 
+					WHERE id_partie = :partie');
+				$req->execute(array(
+					'partie' => $partie
+				));
+			} catch (Exception $e) {
+				die('Error: ' . $e->getMessage());
+			}
+		while ($row = $req->fetch()) 
+		{
+			//vérification de la correspondance du mot de passe
+				if (($row[0] != NULL)&&($row[0]!=sha1($password)))
+				{
+					return false;
+				}
+				else 
+				{
+					try {
+							$req = $bdd->prepare('
+								INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) 
+								VALUES (:date_insc, :partie, :equipe, :joueur)');
+							$req->execute(array(
+								'date_insc' => $date_insc,
+								'partie' => $partie,
+								'equipe' => $equipe,
+								'joueur' => $joueur
+							));
+						} catch (Exception $e) {
+							die('Error: ' . $e->getMessage());
+						}
+					return true;
+				}
+		}
+	}
+}
 
 
 
