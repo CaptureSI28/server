@@ -4,64 +4,6 @@
 
 require_once('db_connect.php');
 
-//insertion nouvelle partie dans la table PARTIES sans mot de passe (NULL par défaut)
-
-try {
-	$req = $bdd->prepare('
-		INSERT INTO parties (date_debut, date_fin) 
-		VALUES (:date_debut, :date_fin)');
-	$req->execute(array(
-		'date_debut' => $date_debut,
-		'date_fin' => $date_fin
-	));
-} catch (Exception $e) {
-	die('Error: ' . $e->getMessage());
-}
-
-//insertion nouvelle partie dans la table PARTIES avec mot de passe
-
-try {
-	$req = $bdd->prepare('
-		INSERT INTO parties (date_debut, date_fin, password) 
-		VALUES (:date_debut, :date_fin, :password)');
-	$req->execute(array(
-		'date_debut' => $_POST["date_debut"],
-		'date_fin' => $_POST["date_fin"],
-		'password' => $_POST["password"]
-	));
-} catch (Exception $e) {
-	die('Error: ' . $e->getMessage());
-}
-
-//insertion nouveau joueur dans la table INSCRIPTIONS
-
-try {
-	$req = $bdd->prepare('
-		INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) 
-		VALUES (:date_insc, :partie, :equipe, :joueur)');
-	$req->execute(array(
-		'date_insc' => $date_insc,
-		'partie' => $partie,
-		'equipe' => $equipe,
-		'joueur' => $joueur
-	));
-} catch (Exception $e) {
-	die('Error: ' . $e->getMessage());
-}
-
-//insertion nouveau joueur dans la table JOUEURS
-
-try {
-	$req = $bdd->prepare('
-		INSERT INTO joueurs (login) 
-		VALUES (:login)');
-	$req->execute(array(
-		'login' => $login
-	));
-} catch (Exception $e) {
-	die('Error: ' . $e->getMessage());
-}
-
 //insertion nouvelle zone dans la table ZONES
 
 try {
@@ -74,6 +16,7 @@ try {
 	die('Error: ' . $e->getMessage());
 }
 
+/*
 //insertion nouveau qrcode dans la table QRCODES
 
 try {
@@ -86,6 +29,7 @@ try {
 } catch (Exception $e) {
 	die('Error: ' . $e->getMessage());
 }
+*/
 
 //insertion nouveau flash dans la table FLASHS
 
