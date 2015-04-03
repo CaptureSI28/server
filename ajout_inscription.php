@@ -21,6 +21,7 @@ while ($row = $req->fetch()) {
 echo "<br><br><br><br>";
 
 //cases à remplir
+
 ?>
 <form method="post" action="ajout_inscription.php">
 	<input type="text" placeholder="date_inscription (Y-m-d H:m:s)" name="date_insc">	
@@ -64,8 +65,21 @@ if (!empty($_POST["partie"]))
 				'joueur' => $_POST["joueur"]
 			));
 	$nb2 = $verif2->fetchColumn();	//nombre de joueurs correspondant à l'ID entré (0 ou 1)
+
+//verif3 : le joueur ne doit pas déjà être inscrit à la partie
+	$verif3 = $bdd->prepare('
+		SELECT COUNT(id_inscription)
+		FROM inscriptions 
+		WHERE partie = :partie
+		AND joueur = :joueur');
+	$verif3->execute(array(
+				'partie' => $_POST["partie"],
+				'joueur' => $_POST["joueur"]
+			));
+	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit à la partie (0 ou 1)
+
 	
-	if (($nb != 0)&&($_POST["equipe"]>=1)&&($_POST["equipe"]<=4)&&($nb2 != 0))
+	if (($nb != 0)&&($_POST["equipe"]>=1)&&($_POST["equipe"]<=4)&&($nb2 != 0)&&($nb3 != 1))
 	{
 		//recherche du mot de passe de la partie
 		try {
@@ -104,7 +118,7 @@ if (!empty($_POST["partie"]))
 			}
 		}
 	}
-	else echo "la partie, l'equipe ou le joueur n'existe pas";
+	else echo "ce joueur est deja inscrit à la partie, ou bien la partie, l'equipe ou le joueur n'existe pas";
 
 }
 ?>
