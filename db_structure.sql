@@ -1,5 +1,7 @@
 CREATE TABLE IF NOT EXISTS parties (
 	id_partie INT NOT NULL AUTO_INCREMENT,
+	nom VARCHAR(255),
+	password VARCHAR(255),
 	date_debut DATETIME NOT NULL,
 	date_fin DATETIME NOT NULL,
 	PRIMARY KEY (id_partie)
