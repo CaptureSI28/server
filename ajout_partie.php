@@ -1,7 +1,8 @@
 <?php
 
 //connection BDD
-require_once('db_connect.php');
+require_once('fonctions.php');
+
 
 //affichage parties créées
 $req = $bdd->query('
@@ -9,8 +10,9 @@ $req = $bdd->query('
 	FROM parties;');
 while ($row = $req->fetch()) {
 	echo "<br>ID partie : ".$row[0];
-	echo "<br>date debut : ".$row[1];
-	echo "<br>date fin : ".$row[2];
+	echo "<br>nom : ".$row[1];
+	echo "<br>date debut : ".$row[3];
+	echo "<br>date fin : ".$row[4];
 	echo "<br>-----------------------";
 } 
 
@@ -19,6 +21,8 @@ echo "<br><br><br><br>";
 //cases à remplir
 ?>
 <form method="post" action="ajout_partie.php">
+	<input type="text" placeholder="nom de la partie" name="nom">
+	<br><br>
 	<input type="text" placeholder="date_debut (Y-m-d H:m:s)" name="date_debut">
 	<br><br>
 	<input type="text" placeholder="date_fin (Y-m-d H:m:s)" name="date_fin">
@@ -33,48 +37,10 @@ echo "<br><br><br><br>";
 
 //insertion nouvelle partie dans la table PARTIE
 
+if(!empty($_POST["date_debut"]))
+	creerPartie($_POST["nom"], $_POST["date_debut"], $_POST["date_fin"], $_POST["password"]);
 
 
 
-if ((!empty($_POST["date_debut"])))
-{
-
-	$NOW = new DateTime(null, new DateTimeZone('Europe/Paris'));
-	$date_deb = new DateTime($_POST["date_debut"]);					//création d'un objet de type DateTime
-
-	if (($_POST["date_debut"]<$_POST["date_fin"])&&($date_deb >= $NOW))
-	{
-		if (empty($_POST["password"]))
-		{
-			try {
-				$req = $bdd->prepare('
-					INSERT INTO parties (date_debut, date_fin) 
-					VALUES (:date_debut, :date_fin)');
-				$req->execute(array(
-					'date_debut' => $_POST["date_debut"],
-					'date_fin' => $_POST["date_fin"]
-				));
-			} catch (Exception $e) {
-				die('Error: ' . $e->getMessage());
-			}
-		}
-		else
-		{
-			try {
-				$req = $bdd->prepare('
-					INSERT INTO parties (date_debut, date_fin, password) 
-					VALUES (:date_debut, :date_fin, :password)');
-				$req->execute(array(
-					'date_debut' => $_POST["date_debut"],
-					'date_fin' => $_POST["date_fin"],
-					'password' => sha1($_POST["password"])
-				));
-			} catch (Exception $e) {
-				die('Error: ' . $e->getMessage());
-			}
-		}
-	}
-	else echo "dates incompatibles";
-}
 
 ?>
