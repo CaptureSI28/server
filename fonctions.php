@@ -143,7 +143,7 @@ function creerJoueur ($login) {
  * -booléen: true si tout se passe bien, false sinon
  */
 
-function inscrire ($date_insc, $partie, $equipe, $joueur, $password) {
+function rejoindrePartie ($date_insc, $partie, $equipe, $joueur, $password) {
 	global $bdd;	
 
 	//vérif : la partie à laquelle on s'inscrit doit exister
@@ -221,9 +221,7 @@ function inscrire ($date_insc, $partie, $equipe, $joueur, $password) {
 }
 
 
-
-
-/* A FINIR
+/*
  * Input:
  * - joueurID: identifiant du joueur
  *
@@ -247,6 +245,54 @@ function getPartieActiveJoueur ($joueurID) {
 		return 0;
 	}
 }
+
+
+/* 
+ * Output:
+ * - partiesActives : tableau contenant toutes les parties non terminées
+ * (id_partie, nom, password, date_debut, date_fin)
+ */
+function getListePartiesActives () {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT *
+		FROM parties 
+		WHERE date_fin > now()');
+	$req->execute();
+	if ($row = $req->fetch()) {
+		return $row;
+	} else {
+		return 0;
+	}
+}
+
+
+/* 
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login, et id equipe
+ */
+
+
+function getListeJoueursPartie ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT i.joueur, j.login, i.equipe
+		FROM inscriptions i, joueurs j
+		WHERE i.joueur=j.id_joueur and partie = :id_partie');
+	$req->execute(array(
+		'id_partie' => $id_partie
+	));
+	if ($row = $req->fetch()) {
+		return $row;
+	} else {
+		return 0;
+	}
+
+}
+
 
 /* 
  * Input:
@@ -282,22 +328,6 @@ function loggerCAS ($argument) {
 
 }
 
-
-/* 
- * Input:
- * - param1: description du param1
- * - param2: description du param2
- *
- * Output:
- * - equipe: numero de l'équipe dans laquelle est le joueur à cette partie
- */
-
-
-function getEquipeJoueurPartie ($argument) {
-	global $bdd;
-
-
-}
 
 
 
