@@ -30,6 +30,35 @@ function nomFonction ($argument) {
 
 /*
  * Input:
+ * - ticket: ticket CAS valide
+ * - service: service CAS
+ *
+ * Output:
+ * - Array contenant (champs facultatifs selon reussite):
+ *  - success: login CAS
+ *  - session_id: id de session PHP
+ *  - failure: code d'erreur CAS
+ */
+function validateCasTicket ($ticket, $service) {
+	$casURL = 'https://cas.utc.fr/cas/';
+	$casResponse = file_get_contents($casURL . 'serviceValidate?ticket=' . urlencode($ticket) . '&service=' . urlencode($service));
+	$casResponse = preg_replace('/(?<=\\<)(\/?)cas:/', '$1', $casResponse);
+	$xml = simplexml_load_string($casResponse);
+	$response = array();
+	if ($xml->authenticationSuccess) {
+		$login = (string) $xml->authenticationSuccess[0]->user[0];
+		$_SESSION['login'] = $login;
+		$response['success'] = $login;
+		$response['session_id'] = session_id();
+	}
+	if ($xml->authenticationFailure) {
+		$response['failure'] = (string) $xml->authenticationFailure[0]->attributes()['code'];
+	}
+	return $response;
+}
+
+/*
+ * Input:
  * - equipeID: identifiant d'une equipe
  *
  * Output:
@@ -143,7 +172,7 @@ function creerJoueur ($login) {
  * -booléen: true si tout se passe bien, false sinon
  */
 
-function inscrire ($date_insc, $partie, $equipe, $joueur, $password) {
+function rejoindrePartie ($date_insc, $partie, $equipe, $joueur, $password) {
 	global $bdd;	
 
 	//vérif : la partie à laquelle on s'inscrit doit exister
@@ -221,9 +250,7 @@ function inscrire ($date_insc, $partie, $equipe, $joueur, $password) {
 }
 
 
-
-
-/* A FINIR
+/*
  * Input:
  * - joueurID: identifiant du joueur
  *
@@ -248,6 +275,54 @@ function getPartieActiveJoueur ($joueurID) {
 	}
 }
 
+
+/* 
+ * Output:
+ * - partiesActives : tableau contenant toutes les parties non terminées
+ * (id_partie, nom, password, date_debut, date_fin)
+ */
+function getListePartiesActives () {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT *
+		FROM parties 
+		WHERE date_fin > now()');
+	$req->execute();
+	if ($row = $req->fetch()) {
+		return $row;
+	} else {
+		return 0;
+	}
+}
+
+
+/* 
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login, et id equipe
+ */
+
+
+function getListeJoueursPartie ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT i.joueur, j.login, i.equipe
+		FROM inscriptions i, joueurs j
+		WHERE i.joueur=j.id_joueur and partie = :id_partie');
+	$req->execute(array(
+		'id_partie' => $id_partie
+	));
+	if ($row = $req->fetch()) {
+		return $row;
+	} else {
+		return 0;
+	}
+
+}
+
+
 /* 
  * Input:
  * - param1: description du param1
@@ -256,61 +331,11 @@ function getPartieActiveJoueur ($joueurID) {
  * Output:
  * - historiquePartie: tableau comprenant les actions effectuées au cours de la partie (ordre décroissant de temps)
  */
-
-
 function historiquePartie ($argument) {
 	global $bdd;
-
-
 }
 
 
-
-/* 
- * Input:
- * - ticket: ticket CAS valide
- * - service: service CAS
- *
- * Output:
- * - Array contenant (champs facultatifs selon reussite):
- *  - success: login CAS
- *  - session_id: id de session PHP
- *  - failure: code d'erreur CAS
- */
-function validateCasTicket ($ticket, $service) {
-	$casURL = 'https://cas.utc.fr/cas/';
-	$casResponse = file_get_contents($casURL . 'serviceValidate?ticket=' . urlencode($ticket) . '&service=' . urlencode($service));
-	$casResponse = preg_replace('/(?<=\\<)(\/?)cas:/', '$1', $casResponse);
-	$xml = simplexml_load_string($casResponse);
-	$response = array();
-	if ($xml->authenticationSuccess) {
-		$login = (string) $xml->authenticationSuccess[0]->user[0];
-		$_SESSION['login'] = $login;
-		$response['success'] = $login;
-		$response['session_id'] = session_id();
-	}
-	if ($xml->authenticationFailure) {
-		$response['failure'] = (string) $xml->authenticationFailure[0]->attributes()['code'];
-	}
-	return $response;
-}
-
-
-/* 
- * Input:
- * - param1: description du param1
- * - param2: description du param2
- *
- * Output:
- * - equipe: numero de l'équipe dans laquelle est le joueur à cette partie
- */
-
-
-function getEquipeJoueurPartie ($argument) {
-	global $bdd;
-
-
-}
 
 
 
