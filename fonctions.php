@@ -268,18 +268,31 @@ function historiquePartie ($argument) {
 
 /* 
  * Input:
- * - param1: description du param1
- * - param2: description du param2
+ * - ticket: ticket CAS valide
+ * - service: service CAS
  *
  * Output:
- * - sortie: description de la sortie (specifier lorsque c'est un tableau)
+ * - Array contenant (champs facultatifs selon reussite):
+ *  - success: login CAS
+ *  - session_id: id de session PHP
+ *  - failure: code d'erreur CAS
  */
-
-
-function loggerCAS ($argument) {
-	global $bdd;
-
-
+function validateCasTicket ($ticket, $service) {
+	$casURL = 'https://cas.utc.fr/cas/';
+	$casResponse = file_get_contents($casURL . 'serviceValidate?ticket=' . urlencode($ticket) . '&service=' . urlencode($service));
+	$casResponse = preg_replace('/(?<=\\<)(\/?)cas:/', '$1', $casResponse);
+	$xml = simplexml_load_string($casResponse);
+	$response = array();
+	if ($xml->authenticationSuccess) {
+		$login = (string) $xml->authenticationSuccess[0]->user[0];
+		$_SESSION['login'] = $login;
+		$response['success'] = $login;
+		$response['session_id'] = session_id();
+	}
+	if ($xml->authenticationFailure) {
+		$response['failure'] = (string) $xml->authenticationFailure[0]->attributes()['code'];
+	}
+	return $response;
 }
 
 
