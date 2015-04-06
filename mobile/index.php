@@ -15,6 +15,11 @@
 				$response['success'] = 'YES';
 				$response['games_list'] = getActiveGamesList();
 				break;
+			case 'createNewGame':
+				$newGame = newGame($_POST['name'], date('Y-m-d H:m:s', time()), date('Y-m-d H:m:s', time() + 7 * 24 * 60 * 60), $_POST['password']);
+				$response['success'] = $newGame ? 'YES' : 'NO';
+				$response['new_game'] = $newGame;
+				break;
 			default:
 				$response['failure'] = 'Unknown service';
 				break;
