@@ -273,7 +273,12 @@ function getActiveGamesList () {
 	$req->execute();
 	$list = array();
 	if ($row = $req->fetch()) {
-		$list[] = $row;
+		$list[] = array(
+			'id_partie' => $row['id_partie'],
+			'nom' => $row['nom'],
+			'date_debut' => $row['date_debut'],
+			'date_fin' => $row['date_fin']
+		);
 	}
 	return $list;
 }
