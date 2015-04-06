@@ -286,7 +286,7 @@ function getActiveGamesList () {
 	');
 	$req->execute();
 	$list = array();
-	if ($row = $req->fetch()) {
+	while ($row = $req->fetch()) {
 		$list[] = array(
 			'id_partie' => $row['id_partie'],
 			'nom' => $row['nom'],
