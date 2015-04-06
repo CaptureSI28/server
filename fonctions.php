@@ -102,15 +102,15 @@ function getNbFlashsEquipe ($equipeID) {
 /*
  * Input:
  * -nom: nom de la partie
- * -date_debut: Y-m-d H:m:s
- * -date_fin: Y-m-d H:m:s
+ * -date_debut: Y-m-d H:i:s
+ * -date_fin: Y-m-d H:i:s
  * -password: chaine de caracteres ('NULL' si non renseigne)
  * Output:
  * -booleen: true si tout se passe bien, false sinon
  */
 function newGame ($nom, $date_debut, $date_fin, $password) {
 	global $bdd;
-	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:m:s', time()))) {
+	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:i:s', time()))) {
 		if ($password == 'NULL') {
 			$req = $bdd->prepare('
 				INSERT INTO parties (nom, date_debut, date_fin) 
