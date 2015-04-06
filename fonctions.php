@@ -193,7 +193,7 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
  * -booleen: true si tout se passe bien, false sinon
  */
 
-function rejoindrePartie ($date_insc, $partie, $equipe, $joueur, $password) {
+function joinGame ($date_insc, $partie, $equipe, $joueur, $password) {
 	global $bdd;	
 
 	//verif : la partie a laquelle on s'inscrit doit exister

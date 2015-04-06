@@ -43,7 +43,7 @@ echo "<br><br><br><br>";
 //insertion nouvelle inscription dans la table INSCRIPTIONS
 
 if (!empty($_POST["partie"]))
-	if (rejoindrePartie($_POST["date_insc"], $_POST["partie"], $_POST["equipe"], $_POST["joueur"], $_POST["password"]) == false)
+	if (joinGame($_POST["date_insc"], $_POST["partie"], $_POST["equipe"], $_POST["joueur"], $_POST["password"]) == false)
 		echo "problem";
 
 ?>
