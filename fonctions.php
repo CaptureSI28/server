@@ -108,36 +108,49 @@ function getNbFlashsEquipe ($equipeID) {
  * Output:
  * -booleen: true si tout se passe bien, false sinon
  */
-function creerPartie ($nom, $date_debut, $date_fin, $password) {
+function newGame ($nom, $date_debut, $date_fin, $password) {
 	global $bdd;
-	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:m:s', time())))
-		{
-			if ($password == 'NULL')
-				{
-					$req = $bdd->prepare('
-						INSERT INTO parties (nom, date_debut, date_fin) 
-						VALUES (:nom, :date_debut, :date_fin)');
-					$req->execute(array(
-						'nom' => $nom,
-						'date_debut' => $date_debut,
-						'date_fin' => $date_fin
-					));
-				}
-			else
-				{
-					$req = $bdd->prepare('
-						INSERT INTO parties (nom, date_debut, date_fin, password) 
-						VALUES (:nom, :date_debut, :date_fin, :password)');
-					$req->execute(array(
-						'nom' => $nom,
-						'date_debut' => $_POST["date_debut"],
-						'date_fin' => $_POST["date_fin"],
-						'password' => sha1($_POST["password"])
-					));
-				}
-			return true;
+	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:m:s', time()))) {
+		if ($password == 'NULL') {
+			$req = $bdd->prepare('
+				INSERT INTO parties (nom, date_debut, date_fin) 
+				VALUES (:nom, :date_debut, :date_fin)');
+			$req->execute(array(
+				'nom' => $nom,
+				'date_debut' => $date_debut,
+				'date_fin' => $date_fin
+			));
+		} else {
+			$req = $bdd->prepare('
+				INSERT INTO parties (nom, date_debut, date_fin, password)
+				VALUES (:nom, :date_debut, :date_fin, :password)
+			');
+			$req->execute(array(
+				'nom' => $nom,
+				'date_debut' => $date_debut,
+				'date_fin' => $date_fin,
+				'password' => sha1($password)
+			));
 		}
-	else
+		$req = $bdd->prepare('
+			SELECT *
+			FROM parties
+			WHERE id_partie = LAST_INSERT_ID()
+			LIMIT 1;
+		');
+		$req->execute();
+		$newGame = false;
+		if ($row = $req->fetch()) {
+			$newGame = array(
+				'id_partie' => $row['id_partie'],
+				'nom' => $row['nom'],
+				'date_debut' => $row['date_debut'],
+				'date_fin' => $row['date_fin'],
+				'partie_privee' => $row['password'] === NULL ? 'NO' : 'YES'
+			);
+		}
+		return $newGame;
+	} else
 		return false;
 }
 
@@ -269,6 +282,7 @@ function getActiveGamesList () {
 		FROM parties
 		WHERE date_debut <= NOW()
 			AND date_fin >= NOW()
+		ORDER BY id_partie;
 	');
 	$req->execute();
 	$list = array();
