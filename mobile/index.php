@@ -12,7 +12,8 @@
 	} else if (isset($_SESSION['login'])) {
 		switch ($_POST['service']) {
 			case 'fetchGamesList':
-				$response['success'] = 'List';
+				$response['success'] = 'YES';
+				$response['games_list'] = getActiveGamesList();
 				break;
 			default:
 				$response['failure'] = 'Unknown service';
