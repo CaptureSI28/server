@@ -2,7 +2,7 @@
 
 //connection BDD
 
-require_once('db_connect.php');
+require_once('fonctions.php');
 
 //affichage inscriptions créées
 
@@ -39,7 +39,7 @@ echo "<br><br><br><br>";
 
 if (!empty($_POST["qrcode"]))
 {
-	try {
+	/*try {
 		$req = $bdd->prepare('
 			INSERT INTO flashs (date_flash, joueur, qrcode) 
 			VALUES (:date_flash, :joueur, :qrcode)');
@@ -50,6 +50,14 @@ if (!empty($_POST["qrcode"]))
 		));
 	} catch (Exception $e) {
 		die('Error: ' . $e->getMessage());
-	}
+	}*/
+	if (newFlash($_POST["date_flash"], $_POST["joueur"], $_POST["qrcode"]) == false)
+		echo "problem";
 }
+
+
+
+
+
+
 ?>

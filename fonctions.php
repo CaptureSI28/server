@@ -41,7 +41,30 @@ function newPlayer ($login) {
 			'login' => $login
 		));
 	} catch (Exception $e) {
+		return false;
 	}
+	return true;
+}
+
+/*
+ * Input:
+ * -date: date du flash DATETIME
+ * -joueur: id du joueur qui flash
+ * -qrcode: id du qrcode flashé
+ *
+ * Output:
+ * -booleen: true si tout se passe bien, false sinon 
+ */
+function newFlash ($date, $joueur, $qrcode) {
+	global $bdd;
+	$req = $bdd->prepare('
+			INSERT INTO flashs (date_flash, joueur, qrcode) 
+			VALUES (:date, :joueur, :qrcode)');
+		$req->execute(array(
+			'date' => $date,
+			'joueur' => $joueur,
+			'qrcode' => $qrcode
+		));
 	return true;
 }
 
