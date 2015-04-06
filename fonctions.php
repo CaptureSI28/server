@@ -57,6 +57,7 @@ function newPlayer ($login) {
  */
 function newFlash ($date, $joueur, $qrcode) {
 	global $bdd;
+	try {
 	$req = $bdd->prepare('
 			INSERT INTO flashs (date_flash, joueur, qrcode) 
 			VALUES (:date, :joueur, :qrcode)');
@@ -65,6 +66,9 @@ function newFlash ($date, $joueur, $qrcode) {
 			'joueur' => $joueur,
 			'qrcode' => $qrcode
 		));
+	} catch (Exception $e) {
+		return false;
+	}
 	return true;
 }
 
