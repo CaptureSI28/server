@@ -277,7 +277,8 @@ function getActiveGamesList () {
 			'id_partie' => $row['id_partie'],
 			'nom' => $row['nom'],
 			'date_debut' => $row['date_debut'],
-			'date_fin' => $row['date_fin']
+			'date_fin' => $row['date_fin'],
+			'partie_privee' => $row['password'] === NULL ? 'NO' : 'YES'
 		);
 	}
 	return $list;
