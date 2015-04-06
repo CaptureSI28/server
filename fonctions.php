@@ -213,7 +213,7 @@ function rejoindrePartie ($date_insc, $partie, $equipe, $joueur, $password) {
 					'partie' => $partie
 				));
 			} catch (Exception $e) {
-				die('Error: ' . $e->getMessage());
+				return false;
 			}
 		while ($row = $req->fetch()) 
 		{
@@ -235,7 +235,7 @@ function rejoindrePartie ($date_insc, $partie, $equipe, $joueur, $password) {
 								'joueur' => $joueur
 							));
 						} catch (Exception $e) {
-							die('Error: ' . $e->getMessage());
+							return false;
 						}
 					return true;
 				}

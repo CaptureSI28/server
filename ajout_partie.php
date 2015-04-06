@@ -41,12 +41,12 @@ if(!empty($_POST["date_debut"]))
 	{
 		if (!empty($_POST["password"]))
 			{
-				if (creerPartie($_POST["nom"], $_POST["date_debut"], $_POST["date_fin"], $_POST["password"]) == false)
+				if (newGame($_POST["nom"], $_POST["date_debut"], $_POST["date_fin"], $_POST["password"]) == false)
 					echo "probleme";
 			}
 		else
 			{
-				if (creerPartie($_POST["nom"], $_POST["date_debut"], $_POST["date_fin"], 'NULL') == false)
+				if (newGame($_POST["nom"], $_POST["date_debut"], $_POST["date_fin"], 'NULL') == false)
 					echo "probleme";
 			}
 	}

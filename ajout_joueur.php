@@ -6,7 +6,8 @@ require_once('fonctions.php');
 //affichage joueurs créés
 $req = $bdd->query('
 	SELECT *
-	FROM joueurs;');
+	FROM joueurs
+	ORDER BY id_joueur;');
 while ($row = $req->fetch()) {
 	echo "<br>ID joueur : ".$row[0];
 	echo "<br>login : ".$row[1];
@@ -29,7 +30,7 @@ echo "<br><br><br><br>";
 //insertion nouveau joueur dans la table JOUEURS
 
 if(!empty($_POST["login"]))
-	if (creerJoueur ($_POST["login"]) == false)
+	if (newPlayer($_POST["login"]) == false)
 		echo "problem";
 
 ?>
