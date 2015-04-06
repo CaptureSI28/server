@@ -355,19 +355,31 @@ function getListeJoueursPartie ($id_partie) {
 
 /*
  * Input:
- * - param1: description du param1
- * - param2: description du param2
+ * - id_partie: id de la partie à laquelle on est inscrit
  *
  * Output:
- * - historiquePartie: tableau comprenant les actions effectuees au cours de la partie (ordre decroissant de temps)
+ * - tempRestant: temps restant avant la fin de la partie
  */
-function historiquePartie ($argument) {
+function getTempsRestantPartie ($id_partie) {
 	global $bdd;
+	$req = $bdd->prepare('
+	SELECT date_fin
+	FROM parties
+	WHERE id_partie = :id_partie');
+	$req->execute(array(
+			'id_partie' => $id_partie
+		));
+	while ($row = $req->fetch()) {
+		$date_fin = $row[0];
+	}
+	$date_fin2 = new DateTime(trim($date_fin));		//création de l'objet DATETIME
+	$time = new DateTimeZone("Europe/Paris"); 
+	$now = new DateTime(date("Y-m-d H:i:s"), $time);
+	$tempsRestant = $now->diff($date_fin2);	
+	return $tempsRestant;
+	/* l'affichage se fera comme suit : 
+	echo $tempsRestant->format('%d jours %h heures %i minutes %s secondes');
+	*/
 }
-
-
-
-
-
 
 ?>
