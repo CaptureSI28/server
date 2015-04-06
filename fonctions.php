@@ -262,18 +262,20 @@ function getPartieActiveJoueur ($joueurID) {
  * - partiesActives : tableau contenant toutes les parties non terminees
  * (id_partie, nom, password, date_debut, date_fin)
  */
-function getListePartiesActives () {
+function getActiveGamesList () {
 	global $bdd;
 	$req = $bdd->prepare('
 		SELECT *
-		FROM parties 
-		WHERE date_fin > now()');
+		FROM parties
+		WHERE date_debut <= NOW()
+			AND date_fin >= NOW()
+	');
 	$req->execute();
+	$list = array();
 	if ($row = $req->fetch()) {
-		return $row;
-	} else {
-		return 0;
+		$list[] = $row;
 	}
+	return $list;
 }
 
 
