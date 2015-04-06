@@ -20,6 +20,10 @@
 				$response['success'] = $newGame ? 'YES' : 'NO';
 				$response['new_game'] = $newGame;
 				break;
+			case 'joinGame':
+				$success = joinGame(date('Y-m-d H:i:s', time()), $_POST['game_id'], $_POST['team_id'], getIdForPlayer($_SESSION['login']), $_POST['password']);
+				$response['success'] = $success ? 'YES' : 'NO';
+				break;
 			default:
 				$response['failure'] = 'Unknown service';
 				break;

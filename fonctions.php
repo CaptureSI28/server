@@ -104,6 +104,28 @@ function validateCasTicket ($ticket, $service) {
 
 /*
  * Input:
+ * - login: login du joueur
+ *
+ * Output:
+ * - player_id: identifiant du joueur correspondant, false si le joueur n'existe pas
+ */
+function getIdForPlayer ($login) {
+	global $bdd;
+	$player_id = false;
+	$req = $bdd->prepare('
+		SELECT id_joueur
+		FROM joueurs
+		WHERE login = ?;
+	');
+	$req->execute(array($login));
+	if ($row = $req->fetch()) {
+		$player_id = $row['id_joueur'];
+	}
+	return $player_id;
+}
+
+/*
+ * Input:
  * - equipeID: identifiant d'une equipe
  *
  * Output:
