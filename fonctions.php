@@ -250,7 +250,7 @@ function joinGame ($date_insc, $partie, $equipe, $joueur, $password) {
 			));
 	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit a la partie (0 ou 1)*/
 	
-	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0)&&/*($nb3 != 1)*/)
+	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0)/*&&($nb3 != 1)*/)
 	{
 		//recherche du mot de passe de la partie
 		try {
@@ -345,6 +345,37 @@ function getActiveGamesList () {
 		);
 	}
 	return $list;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie active (récupérée avec getPartieActiveJoueur)
+ * - id_joueur: identifiant du joueur
+ *
+ * Output:
+ * - equipe : numero de l'équipe dans laquelle est actuellement inscrit le joueur 
+ */
+
+
+function getEquipeJoueurPartieActive ($id_partie, $id_joueur) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT equipe
+		FROM inscriptions
+		WHERE joueur = :joueur
+		AND partie = :partie
+		ORDER BY date_inscription DESC
+		LIMIT 1');
+	$req->execute(array(
+		'joueur' => $id_joueur,
+		'partie' => $id_partie
+	));
+	if ($row = $req->fetch()) {
+		return $row['equipe'];
+	} else {
+		return 0;
+	}
+
 }
 
 
