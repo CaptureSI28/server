@@ -6,5 +6,5 @@
 	if ($row = $req->fetch()) {
 		echo '<p>Time (via MySQL): ' . $row['time'] . '</p>';
 	}
-	echo '<p>Time (via MySQL): ' . date('Y-m-d H:i:s', time()) . '</p>';
+	echo '<p>Time (via PHP): ' . date('Y-m-d H:i:s', time()) . '</p>';
 ?>
