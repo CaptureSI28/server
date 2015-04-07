@@ -412,7 +412,7 @@ function getListeJoueursPartie ($id_partie) {
 			echo $row[1];
 			$temp = $row[0];
 		}
-	} 
+	}*/
 
 }
 
