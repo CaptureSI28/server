@@ -238,7 +238,7 @@ function joinGame ($date_insc, $partie, $equipe, $joueur, $password) {
 			));
 	$nb2 = $verif2->fetchColumn();	//nombre de joueurs correspondant a l'ID entre (0 ou 1)
 
-	//verif3 : le joueur ne doit pas deja etre inscrit a la partie
+	/*//verif3 : le joueur ne doit pas deja etre inscrit a la partie
 	$verif3 = $bdd->prepare('
 		SELECT COUNT(id_inscription)
 		FROM inscriptions 
@@ -248,9 +248,9 @@ function joinGame ($date_insc, $partie, $equipe, $joueur, $password) {
 				'partie' => $partie,
 				'joueur' => $joueur
 			));
-	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit a la partie (0 ou 1)
+	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit a la partie (0 ou 1)*/
 	
-	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0)&&($nb3 != 1))
+	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0)&&/*($nb3 != 1)*/)
 	{
 		//recherche du mot de passe de la partie
 		try {
