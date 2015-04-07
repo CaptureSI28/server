@@ -380,6 +380,29 @@ function getListeJoueursPartie ($id_partie) {
  * - id_partie: id de la partie à laquelle on est inscrit
  *
  * Output:
+ * - date_debut: date_debut de la partie (DATETIME)
+ */
+function getDateDebutPartie ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
+	SELECT date_debut
+	FROM parties
+	WHERE id_partie = :id_partie');
+	$req->execute(array(
+			'id_partie' => $_POST["id_partie"]
+		));
+	while ($row = $req->fetch()) {
+		$date_debut = $row[0];
+	}
+	$date_debut2 = new DateTime(trim($date_debut));		//création de l'objet DATETIME
+	return $date_debut2;
+}
+
+/*
+ * Input:
+ * - id_partie: id de la partie à laquelle on est inscrit
+ *
+ * Output:
  * - tempRestant: temps restant avant la fin de la partie
  */
 function getTempsRestantPartie ($id_partie) {
