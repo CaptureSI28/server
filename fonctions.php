@@ -349,6 +349,36 @@ function getActiveGamesList () {
 
 /*
  * Input:
+ * - nbParties: nombre de parties qu'on veut afficher dans l'historique
+ * Output:
+ * - historique des "nbParties" parties : tableau contenant les "nbParties" dernières parties terminees
+ */
+function getHistoriqueParties ($nbParties) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT *
+		FROM parties
+		WHERE date_fin <= NOW()
+		ORDER BY date_fin DESC
+		LIMIT :nbParties
+	');
+	$req->execute(array(
+		'nbParties' => $nbParties
+	));
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'id_partie' => $row['id_partie'],
+			'nom' => $row['nom'],
+			'date_debut' => $row['date_debut'],
+			'date_fin' => $row['date_fin']
+		);
+	}
+	return $list;
+}
+
+/*
+ * Input:
  * - id_partie: identifiant de la partie active (récupérée avec getPartieActiveJoueur)
  * - id_joueur: identifiant du joueur
  *
