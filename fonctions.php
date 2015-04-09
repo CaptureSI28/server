@@ -449,6 +449,45 @@ function getListeJoueursPartie ($id_partie) {
 
 }
 
+/* 
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs ACTIFS de la partie id_partie : login du joueur et équipe
+ */
+function getListeJoueursActifsPartie ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT j.login, i.equipe
+		FROM (SELECT *
+			FROM inscriptions
+			ORDER BY date_inscription DESC) i
+			JOIN joueurs j
+		ON i.joueur=j.id_joueur
+		WHERE i.partie=:id_partie
+		GROUP BY joueur');
+	$success = $req->execute(array(
+		'id_partie' => $id_partie));
+	if ($success) {
+		return $req->fetchAll();
+	} else {
+		return 0;
+	}
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ *
+ * Output:
+ * - nbJoueurs : nombre de joueurs actifs dans la partie
+ */
+function getNbJoueursActifsPartie ($id_partie) {
+	global $bdd;
+	$joueurs = getListeJoueursActifsPartie ($id_partie);
+	return count($joueurs);
+}
 
 /*
  * Input:
