@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS zones (
 CREATE TABLE IF NOT EXISTS qrcodes (
 	id_qrcode INT NOT NULL AUTO_INCREMENT,
 	zone INT NOT NULL,
-	FOREIGN KEY (zone) REFERENCES zones (id_zone),
+	FOREIGN KEY (zone) REFERENCES zones (id_zone) ON DELETE CASCADE,
 	PRIMARY KEY (id_qrcode)
 );
 
@@ -37,9 +37,9 @@ CREATE TABLE IF NOT EXISTS inscriptions (
 	partie INT NOT NULL,
 	equipe INT NOT NULL,
 	joueur INT NOT NULL,
-	FOREIGN KEY (partie) REFERENCES parties (id_partie),
-	FOREIGN KEY (equipe) REFERENCES equipes (id_equipe),
-	FOREIGN KEY (joueur) REFERENCES joueurs (id_joueur),
+	FOREIGN KEY (partie) REFERENCES parties (id_partie) ON DELETE CASCADE,
+	FOREIGN KEY (equipe) REFERENCES equipes (id_equipe) ON DELETE CASCADE,
+	FOREIGN KEY (joueur) REFERENCES joueurs (id_joueur) ON DELETE CASCADE,
 	PRIMARY KEY (id_inscription)
 );
 
@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS flashs (
 	date_flash DATETIME NOT NULL,
 	joueur INT NOT NULL,
 	qrcode INT NOT NULL,
-	FOREIGN KEY (joueur) REFERENCES joueurs (id_joueur),
-	FOREIGN KEY (qrcode) REFERENCES qrcodes (id_qrcode),
+	FOREIGN KEY (joueur) REFERENCES joueurs (id_joueur) ON DELETE CASCADE,
+	FOREIGN KEY (qrcode) REFERENCES qrcodes (id_qrcode) ON DELETE CASCADE,
 	PRIMARY KEY (id_flash)
 );
 
