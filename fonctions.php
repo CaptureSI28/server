@@ -207,7 +207,7 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
  * Input:
  * - date_insc: date d'inscription du joueur (DATETIME)
  * - partie: ID de la partie a laquelle s'inscrire
- * - equipe: equipe dans laquelle s'inscrire
+ * - index_equipe: index de l'equipe dans laquelle s'inscrire
  * - joueur: ID du joueur a inscrire
  * - password: chaine de caracteres ('NULL' si non renseigne)
  *
@@ -215,8 +215,10 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
  * -booleen: true si tout se passe bien, false sinon
  */
 
-function joinGame ($date_insc, $partie, $equipe, $joueur, $password) {
-	global $bdd;	
+function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
+	global $bdd;
+	
+	$equipe = $index_equipe + 1;
 
 	//verif : la partie a laquelle on s'inscrit doit exister
 	$verif = $bdd->prepare('
@@ -290,6 +292,7 @@ function joinGame ($date_insc, $partie, $equipe, $joueur, $password) {
 				}
 		}
 	}
+	return false;
 }
 
 
