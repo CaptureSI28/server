@@ -24,6 +24,10 @@
 				$success = joinGame(date('Y-m-d H:i:s', time()), $_POST['game_id'], $_POST['team_id'], getIdForPlayer($_SESSION['login']), $_POST['password']);
 				$response['success'] = $success ? 'YES' : 'NO';
 				break;
+			case 'flash':
+				$success = newFlash(date('Y-m-d H:i:s', time()), getIdForPlayer($_SESSION['login']), $_POST['qrcode']);
+				$response['success'] = $success ? 'YES' : 'NO';
+				break;
 			default:
 				$response['failure'] = 'Unknown service';
 				break;
