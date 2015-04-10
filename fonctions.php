@@ -435,21 +435,22 @@ function getListeJoueursActifsPartie ($id_partie) {
 	} else {
 		return 0;
 	}
-	/*ici on affiche tous les joueurs s'étant inscrit à la partie, y compris ceux qui s'en sont désinscrit.
-	l'affichage est donc à limiter : 
-
-	$temp = "";
-	while ($row = $req->fetch()) {
-		if ((getPartieActiveJoueur($row[0]) == $_POST["id_partie"])&&($temp != $row[0]))	//si le joueur est encore inscrit à la partie
-		{																					//$temp sert à ne pas répéter le nom du joueur
-			echo $row[0];
-			echo $row[1];
-			$temp = $row[0];
-		}
-	}*/
-
 }
 
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_equipe : identifiant de l'équipe
+ *
+ * Output:
+ * - 
+ */
+function getNombrePointsEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+
+	
+}
 
 /*
  * Input:
