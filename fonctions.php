@@ -463,6 +463,49 @@ function getNombreFlashsEquipe ($id_partie, $id_equipe) {
 
 /*
  * Input:
+ * - id_partie : identifiant de la partie
+ * - id_joueur : identifiant du joueur
+ *
+ * Output:
+ * - 
+ */
+function getNombreFlashsJoueurPartie ($id_partie, $id_joueur) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT COUNT(id_flash) AS nbFlashs
+		FROM infos_flashs
+		WHERE partie = :id_partie
+		AND joueur = :id_joueur');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_joueur' => $id_joueur
+	));
+	$nb = $req->fetchColumn();
+	return $nb;	
+}
+
+/*
+ * Input:
+ * - id_joueur : identifiant du joueur
+ *
+ * Output:
+ * - 
+ */
+function getNombreFlashsJoueur ($id_joueur) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT COUNT(id_flash) AS nbFlashs
+		FROM infos_flashs
+		WHERE joueur = :id_joueur');
+	$req->execute(array(
+		'id_joueur' => $id_joueur
+	));
+	$nb = $req->fetchColumn();
+	return $nb;	
+}
+
+/*
+ * Input:
  * - id_partie: identifiant de la partie
  *
  * Output:
