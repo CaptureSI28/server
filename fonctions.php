@@ -456,7 +456,7 @@ function getListeJoueursPartie ($id_partie) {
  * Output:
  * - joueurs : retourne un tableau contenant la liste des joueurs ACTIFS de la partie id_partie : login du joueur et équipe
  */
-function getListeJoueursActifsPartie ($id_partie) {
+function getListeJoueursActifsPartie ($id_partie) {		//renvoie aussi les joueurs qui se sont désinscrits de la partie
 	global $bdd;
 	$req = $bdd->prepare('
 		SELECT j.login, i.equipe
