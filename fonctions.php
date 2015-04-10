@@ -438,6 +438,7 @@ function getListeJoueursPartie ($id_partie) {
 	/*ici on affiche tous les joueurs s'étant inscrit à la partie, y compris ceux qui s'en sont désinscrit.
 	l'affichage est donc à limiter : 
 
+	$temp = "";
 	while ($row = $req->fetch()) {
 		if ((getPartieActiveJoueur($row[0]) == $_POST["id_partie"])&&($temp != $row[0]))	//si le joueur est encore inscrit à la partie
 		{																					//$temp sert à ne pas répéter le nom du joueur
