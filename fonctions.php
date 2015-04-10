@@ -446,10 +446,19 @@ function getListeJoueursActifsPartie ($id_partie) {
  * Output:
  * - 
  */
-function getNombrePointsEquipe ($id_partie, $id_equipe) {
+function getNombreFlashsEquipe ($id_partie, $id_equipe) {
 	global $bdd;
-
-	
+	$req = $bdd->prepare('
+		SELECT COUNT(id_flash) AS nbFlashs
+		FROM infos_flashs
+		WHERE partie = :id_partie
+		AND equipe = :id_equipe');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	$nb = $req->fetchColumn();
+	return $nb;	
 }
 
 /*
