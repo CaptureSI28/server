@@ -421,7 +421,7 @@ function getEquipeJoueurPartieActive ($id_partie, $id_joueur) {
  */
 
 
-function getListeJoueursPartie ($id_partie) {
+function getListeJoueursActifsPartie ($id_partie) {
 	global $bdd;
 	$req = $bdd->prepare('
 		SELECT i.joueur, j.login
@@ -435,45 +435,21 @@ function getListeJoueursPartie ($id_partie) {
 	} else {
 		return 0;
 	}
-	/*ici on affiche tous les joueurs s'étant inscrit à la partie, y compris ceux qui s'en sont désinscrit.
-	l'affichage est donc à limiter : 
-
-	while ($row = $req->fetch()) {
-		if ((getPartieActiveJoueur($row[0]) == $_POST["id_partie"])&&($temp != $row[0]))	//si le joueur est encore inscrit à la partie
-		{																					//$temp sert à ne pas répéter le nom du joueur
-			echo $row[0];
-			echo $row[1];
-			$temp = $row[0];
-		}
-	}*/
-
 }
 
-/* 
+
+/*
  * Input:
- * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ * - id_partie : identifiant de la partie
+ * - id_equipe : identifiant de l'équipe
  *
  * Output:
- * - joueurs : retourne un tableau contenant la liste des joueurs ACTIFS de la partie id_partie : login du joueur et équipe
+ * - 
  */
-function getListeJoueursActifsPartie ($id_partie) {
+function getNombrePointsEquipe ($id_partie, $id_equipe) {
 	global $bdd;
-	$req = $bdd->prepare('
-		SELECT j.login, i.equipe
-		FROM (SELECT *
-			FROM inscriptions
-			ORDER BY date_inscription DESC) i
-			JOIN joueurs j
-		ON i.joueur=j.id_joueur
-		WHERE i.partie=:id_partie
-		GROUP BY joueur');
-	$success = $req->execute(array(
-		'id_partie' => $id_partie));
-	if ($success) {
-		return $req->fetchAll();
-	} else {
-		return 0;
-	}
+
+	
 }
 
 /*
