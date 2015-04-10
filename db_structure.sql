@@ -91,3 +91,10 @@ INSERT INTO equipes (hexcolor) VALUES ('#FF0055');
 INSERT INTO equipes (hexcolor) VALUES ('#0077DD');
 INSERT INTO equipes (hexcolor) VALUES ('#00CC66');
 INSERT INTO equipes (hexcolor) VALUES ('#EEEE22');
+
+INSERT INTO zones () VALUES ();
+
+INSERT INTO qrcodes (zone) VALUES (1);
+INSERT INTO qrcodes (zone) VALUES (1);
+INSERT INTO qrcodes (zone) VALUES (1);
+INSERT INTO qrcodes (zone) VALUES (1);
