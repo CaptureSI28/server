@@ -417,14 +417,14 @@ function getEquipeJoueurPartieActive ($id_partie, $id_joueur) {
  * - id_partie: identifiant de la partie dont on veut la liste des joueurs
  *
  * Output:
- * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
  */
 
 
 function getListeJoueursActifsPartie ($id_partie) {
 	global $bdd;
 	$req = $bdd->prepare('
-		SELECT i.joueur, j.login
+		SELECT i.joueur, j.login, i.equipe
 		FROM inscriptions i, joueurs j
 		WHERE i.joueur=j.id_joueur and partie = :id_partie');
 	$req->execute(array(
@@ -434,7 +434,8 @@ function getListeJoueursActifsPartie ($id_partie) {
 	while ($row = $req->fetch()) {
 		$list[] = array(
 			'id_joueur' => $row['joueur'],
-			'login' => $row['login']
+			'login' => $row['login'],
+			'equipe' => $row['equipe']
 		);
 	}
 	return $list;
@@ -522,6 +523,30 @@ function getMeilleurFlasheurPartie ($id_partie) {
 	foreach($row as $joueur)
 		{
 			if ($nbFlashsMax < getNombreFlashsJoueur($joueur["id_joueur"]))
+				{
+					$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
+					$meilleurFlasheur = $joueur["login"];
+				}
+		}
+	return $meilleurFlasheur;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_equipe : identifiant de l'équipe
+ *
+ * Output:
+ * - meilleurFlasheur : login du joueur qui a fait le plus de flashs dans la partie et dans l'équipe
+ */
+function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
+	global $bdd;
+	$row = getListeJoueursActifsPartie($id_partie);
+	$meilleurFlasheur = "";
+	$nbFlashsMax = 0;
+	foreach($row as $joueur)
+		{
+			if (($id_equipe == $joueur["equipe"])&&($nbFlashsMax < getNombreFlashsJoueur($joueur["id_joueur"])))
 				{
 					$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
 					$meilleurFlasheur = $joueur["login"];
