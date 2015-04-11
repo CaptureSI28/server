@@ -542,7 +542,7 @@ function getCouleurZone ($id_partie, $id_zone) {
  * - id_joueur : identifiant du joueur
  *
  * Output:
- * - 
+ * - nb : nombre de flashs d'un joueur dans une partie
  */
 function getNombreFlashsJoueurPartie ($id_partie, $id_joueur) {
 	global $bdd;
