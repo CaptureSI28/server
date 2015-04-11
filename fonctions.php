@@ -494,6 +494,51 @@ function getNombreFlashsEquipeZonePartie ($id_partie, $id_equipe, $id_zone) {
 /*
  * Input:
  * - id_partie : identifiant de la partie
+ * - id_zone : numéro de la zone
+ *
+ * Output:
+ * - meilleureEquipe : identifiant de l'équipe qui détient la zone (qui a le plus flashé cette zone)
+ */
+function getMeilleureEquipeZone ($id_partie, $id_zone) {
+	global $bdd;
+	$max=0;
+	$meilleureEquipe=0;
+	for ($i=1;$i<=4;$i++)
+		{
+			if ($max < getNombreFlashsEquipeZonePartie ($id_partie, $i, $id_zone))
+				{
+					$max = getNombreFlashsEquipeZonePartie ($id_partie, $i, $id_zone);
+					$meilleureEquipe = $i;
+				}				
+		}
+	return $meilleureEquipe;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_zone : numéro de la zone
+ *
+ * Output:
+ * - couleurZone : couleur de l'équipe qui détient la zone (qui a le plus flashé cette zone)
+ */
+function getCouleurZone ($id_partie, $id_zone) {
+	global $bdd;
+	$meilleureEquipe=getMeilleureEquipeZone ($id_partie, $id_zone);
+	$req = $bdd->prepare('
+		SELECT hexcolor
+		FROM equipes
+		WHERE id_equipe = :id_equipe');
+	$req->execute(array(
+		'id_equipe' => $meilleureEquipe
+	));
+	$couleurZone = $req->fetchColumn();
+	return $couleurZone;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
  * - id_joueur : identifiant du joueur
  *
  * Output:
