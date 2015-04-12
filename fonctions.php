@@ -701,21 +701,21 @@ function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
  * Output:
  * - meilleurFlasheur : login du joueur qui a fait le plus de flashs dans la partie et dans l'équipe
  */
-/*function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
+function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 	global $bdd;
 	$row = getListeJoueursActifsPartie($id_partie);
 	$meilleurFlasheur = "";
 	$nbFlashsMax = 0;
 	foreach($row as $joueur)
 		{
-			if (($nbFlashsMax < getNombreFlashsJoueur($joueur["id_joueur"]))
+			if ($nbFlashsMax < getNombreFlashsJoueurQRCodePartie($id_partie, $joueur["id_joueur"], $id_qrcode))
 				{
-					$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
+					$nbFlashsMax = getNombreFlashsJoueurQRCodePartie($id_partie, $joueur["id_joueur"], $id_qrcode);
 					$meilleurFlasheur = $joueur["login"];
 				}
 		}
 	return $meilleurFlasheur;
-}*/
+}
 
 /*
  * Input:
