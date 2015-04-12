@@ -218,7 +218,7 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	global $bdd;
 	
-	$equipe = $index_equipe + 1;
+	$equipe = $index_equipe;
 
 	//verif : la partie a laquelle on s'inscrit doit exister
 	$verif = $bdd->prepare('
