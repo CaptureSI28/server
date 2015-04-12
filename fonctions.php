@@ -517,6 +517,28 @@ function getMeilleureEquipeZone ($id_partie, $id_zone) {
 /*
  * Input:
  * - id_partie : identifiant de la partie
+ *
+ * Output:
+ * - meilleureEquipe : identifiant de l'équipe qui a le plus de points dans la partie
+ */
+function getMeilleureEquipePartie ($id_partie) {
+	global $bdd;
+	$max=0;
+	$meilleureEquipe=0;
+	for ($i=1;$i<=4;$i++)
+		{
+			if ($max < getNombreFlashsEquipePartie ($id_partie, $i))
+				{
+					$max = getNombreFlashsEquipePartie ($id_partie, $i);
+					$meilleureEquipe = $i;
+				}				
+		}
+	return $meilleureEquipe;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
  * - id_zone : numéro de la zone
  *
  * Output:
