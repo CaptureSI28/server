@@ -539,6 +539,25 @@ function getMeilleureEquipePartie ($id_partie) {
 /*
  * Input:
  * - id_partie : identifiant de la partie
+ *
+ * Output:
+ * - array: tableau des équipes avec leur score (clé : équipe_numéro, valeur : score)
+ */
+function getClassementGeneralPartie ($id_partie) {
+	global $bdd;
+	$array = array(
+    "equipe_1" => getNombreFlashsEquipePartie($id_partie, 1),
+    "equipe_2" => getNombreFlashsEquipePartie($id_partie, 2),
+    "equipe_3" => getNombreFlashsEquipePartie($id_partie, 3),
+    "equipe_4" => getNombreFlashsEquipePartie($id_partie, 4)
+	);
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
  * - id_zone : numéro de la zone
  *
  * Output:
