@@ -605,7 +605,7 @@ function getNombreFlashsJoueurPartie ($id_partie, $id_joueur) {
  * - id_joueur : identifiant du joueur
  *
  * Output:
- * - 
+ * - nb : nombre total des flashs du joueur
  */
 function getNombreFlashsJoueur ($id_joueur) {
 	global $bdd;
@@ -615,6 +615,32 @@ function getNombreFlashsJoueur ($id_joueur) {
 		WHERE joueur = :id_joueur');
 	$req->execute(array(
 		'id_joueur' => $id_joueur
+	));
+	$nb = $req->fetchColumn();
+	return $nb;	
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_joueur : identifiant du joueur
+ * - id_qrcode : numéro du QRcode concerné
+ *
+ * Output:
+ * - nb : nombre de flashs d'un QRcode du joueur 
+ */
+function getNombreFlashsJoueurQRCodePartie ($id_partie, $id_joueur, $id_qrcode) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT COUNT(id_flash) AS nbFlashs
+		FROM infos_flashs
+		WHERE partie = :id_partie
+		AND joueur = :id_joueur
+		AND qrcode = :id_qrcode');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_joueur' => $id_joueur,
+		'id_qrcode' => $id_qrcode
 	));
 	$nb = $req->fetchColumn();
 	return $nb;	
@@ -682,7 +708,7 @@ function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
 	$nbFlashsMax = 0;
 	foreach($row as $joueur)
 		{
-			if (($id_equipe == $joueur["equipe"])&&($nbFlashsMax < getNombreFlashsJoueur($joueur["id_joueur"])))
+			if (($nbFlashsMax < getNombreFlashsJoueur($joueur["id_joueur"]))
 				{
 					$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
 					$meilleurFlasheur = $joueur["login"];
