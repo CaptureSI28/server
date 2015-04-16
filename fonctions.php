@@ -497,21 +497,27 @@ function getNombreFlashsEquipeZonePartie ($id_partie, $id_equipe, $id_zone) {
  * - id_zone : numéro de la zone
  *
  * Output:
- * - meilleureEquipe : identifiant de l'équipe qui détient la zone (qui a le plus flashé cette zone)
+ * - meilleuresEquipes : TABLEAU contenant l'identifiant de l'équipe (ou des équipes ex-aequo) qui détient la zone (qui a le plus flashé cette zone)
  */
 function getMeilleureEquipeZone ($id_partie, $id_zone) {
 	global $bdd;
-	$max=0;
-	$meilleureEquipe=0;
+	$max=0;	
+	$compteur=0;
+	$meilleuresEquipes = array();
 	for ($i=1;$i<=4;$i++)
 		{
 			if ($max < getNombreFlashsEquipeZonePartie ($id_partie, $i, $id_zone))
-				{
-					$max = getNombreFlashsEquipeZonePartie ($id_partie, $i, $id_zone);
-					$meilleureEquipe = $i;
-				}				
+				$max = getNombreFlashsEquipeZonePartie ($id_partie, $i, $id_zone);		
 		}
-	return $meilleureEquipe;
+	for ($i=1;$i<=4;$i++)
+		{
+			if ($max == getNombreFlashsEquipeZonePartie ($id_partie, $i, $id_zone))
+				{
+					$meilleuresEquipes[$compteur]=$i;
+					$compteur++;
+				}
+		}
+	return $meilleuresEquipes;
 }
 
 /*
@@ -519,21 +525,27 @@ function getMeilleureEquipeZone ($id_partie, $id_zone) {
  * - id_partie : identifiant de la partie
  *
  * Output:
- * - meilleureEquipe : identifiant de l'équipe qui a le plus de points dans la partie
+ * - meilleuresEquipes : TABLEAU contenant l'identifiant de l'équipe (ou des équipes ex-aequo) qui a (ou ont) le plus de points dans la partie
  */
 function getMeilleureEquipePartie ($id_partie) {
 	global $bdd;
 	$max=0;
-	$meilleureEquipe=0;
+	$compteur=0;
+	$meilleuresEquipes = array();
 	for ($i=1;$i<=4;$i++)
 		{
 			if ($max < getNombreFlashsEquipePartie ($id_partie, $i))
-				{
-					$max = getNombreFlashsEquipePartie ($id_partie, $i);
-					$meilleureEquipe = $i;
-				}				
+				$max = getNombreFlashsEquipePartie ($id_partie, $i);
 		}
-	return $meilleureEquipe;
+	for ($i=1;$i<=4;$i++)
+		{
+			if ($max == getNombreFlashsEquipePartie ($id_partie, $i))
+				{
+					$meilleuresEquipes[$compteur]=$i;
+					$compteur++;
+				}
+		}
+	return $meilleuresEquipes;
 }
 
 /*
@@ -651,22 +663,28 @@ function getNombreFlashsJoueurQRCodePartie ($id_partie, $id_joueur, $id_qrcode) 
  * - id_partie : identifiant de la partie
  *
  * Output:
- * - meilleurFlasheur : login du joueur qui a fait le plus de flashs dans la partie
+ * - meilleursFlasheurs : TABLEAU contenant le (ou les) login du (ou des) joueur qui a fait le plus de flashs dans la partie
  */
 function getMeilleurFlasheurPartie ($id_partie) {
 	global $bdd;
 	$row = getListeJoueursActifsPartie($id_partie);
-	$meilleurFlasheur = "";
 	$nbFlashsMax = 0;
+	$compteur=0;
+	$meilleursFlasheurs = array();
 	foreach($row as $joueur)
 		{
 			if ($nbFlashsMax < getNombreFlashsJoueur($joueur["id_joueur"]))
+				$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
+		}
+	foreach($row as $joueur)
+		{
+			if ($nbFlashsMax == getNombreFlashsJoueur($joueur["id_joueur"]))
 				{
-					$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
-					$meilleurFlasheur = $joueur["login"];
+					$meilleursFlasheurs[$compteur]=$joueur["login"];
+					$compteur++;
 				}
 		}
-	return $meilleurFlasheur;
+	return $meilleursFlasheurs;
 }
 
 /*
@@ -675,22 +693,28 @@ function getMeilleurFlasheurPartie ($id_partie) {
  * - id_equipe : identifiant de l'équipe
  *
  * Output:
- * - meilleurFlasheur : login du joueur qui a fait le plus de flashs dans la partie et dans l'équipe
+ * - meilleursFlasheurs : TABLEAU contenant le (ou les) login du (ou des) joueur qui a fait le plus de flashs dans la partie et dans l'équipe
  */
 function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
 	global $bdd;
 	$row = getListeJoueursActifsPartie($id_partie);
-	$meilleurFlasheur = "";
 	$nbFlashsMax = 0;
+	$compteur=0;
+	$meilleursFlasheurs = array();
 	foreach($row as $joueur)
 		{
 			if (($id_equipe == $joueur["equipe"])&&($nbFlashsMax < getNombreFlashsJoueur($joueur["id_joueur"])))
+				$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
+		}
+	foreach($row as $joueur)
+		{
+			if ($id_equipe == $joueur["equipe"])&&($nbFlashsMax == getNombreFlashsJoueur($joueur["id_joueur"]))
 				{
-					$nbFlashsMax = getNombreFlashsJoueur($joueur["id_joueur"]);
-					$meilleurFlasheur = $joueur["login"];
+					$meilleursFlasheurs[$compteur]=$joueur["login"];
+					$compteur++;
 				}
 		}
-	return $meilleurFlasheur;
+	return $meilleursFlasheurs;
 }
 
 /*
@@ -699,22 +723,28 @@ function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
  * - id_qrcode : identifiant du qrcode
  *
  * Output:
- * - meilleurFlasheur : login du joueur qui a fait le plus de flashs dans la partie et dans l'équipe
+ * - meilleursFlasheurs : TABLEAU contenant le (ou les) login du (ou des) joueur qui a fait le plus de flashs dans la partie et dans l'équipe
  */
 function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 	global $bdd;
 	$row = getListeJoueursActifsPartie($id_partie);
-	$meilleurFlasheur = "";
 	$nbFlashsMax = 0;
+	$compteur=0;
+	$meilleursFlasheurs = array();
 	foreach($row as $joueur)
 		{
 			if ($nbFlashsMax < getNombreFlashsJoueurQRCodePartie($id_partie, $joueur["id_joueur"], $id_qrcode))
+				$nbFlashsMax = getNombreFlashsJoueurQRCodePartie($id_partie, $joueur["id_joueur"], $id_qrcode);
+		}
+	foreach($row as $joueur)
+		{
+			if ($nbFlashsMax == getNombreFlashsJoueurQRCodePartie($id_partie, $joueur["id_joueur"], $id_qrcode))
 				{
-					$nbFlashsMax = getNombreFlashsJoueurQRCodePartie($id_partie, $joueur["id_joueur"], $id_qrcode);
-					$meilleurFlasheur = $joueur["login"];
+					$meilleursFlasheurs[$compteur]=$joueur["login"];
+					$compteur++;
 				}
 		}
-	return $meilleurFlasheur;
+	return $meilleursFlasheurs;
 }
 
 /*
