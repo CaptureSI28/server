@@ -97,7 +97,8 @@ function validateCasTicket ($ticket, $service) {
 		newPlayer($login);
 	}
 	if ($xml->authenticationFailure) {
-		$response['failure'] = (string) $xml->authenticationFailure[0]->attributes()['code'];
+		$attributes = $xml->authenticationFailure[0]->attributes();
+		$response['failure'] = (string) $attributes['code'];
 	}
 	return $response;
 }
