@@ -709,7 +709,7 @@ function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
 		}
 	foreach($row as $joueur)
 		{
-			if ($id_equipe == $joueur["equipe"])&&($nbFlashsMax == getNombreFlashsJoueur($joueur["id_joueur"]))
+			if (($id_equipe == $joueur["equipe"])&&($nbFlashsMax == getNombreFlashsJoueur($joueur["id_joueur"])))
 				{
 					$meilleursFlasheurs[$compteur]=$joueur["login"];
 					$compteur++;
