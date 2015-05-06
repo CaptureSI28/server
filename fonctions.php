@@ -322,6 +322,28 @@ function getPartieActiveJoueur ($joueurID) {
 	}
 }
 
+/*
+ * Input:
+ * - partie: identifiant de la partie
+ * - equipe: identifiant de l'équipe
+ *
+ * Output:
+ * - nbJoueurs: nombre de joueurs de l'équipe
+ */
+function getNbJoueursEquipe ($partie, $equipe) {
+	global $bdd;
+	$nb=0;
+	$temp=0;
+	$joueurs = getListeJoueursActifsPartie ($partie);	//liste des joueurs de la partie ordonnés par équipe
+	foreach ($joueurs as $j)
+		{
+			if (($j["id_joueur"]!=$temp)&&($j["equipe"]==$equipe))			//si un joueur s'est inscrit plusieurs fois on ne 
+				$nb++;													//le compte qu'une seule fois
+			$temp=$j["id_joueur"];
+		}
+	return $nb;
+}
+
 
 /*
  * Output:
@@ -427,7 +449,8 @@ function getListeJoueursActifsPartie ($id_partie) {
 	$req = $bdd->prepare('
 		SELECT i.joueur, j.login, i.equipe
 		FROM inscriptions i, joueurs j
-		WHERE i.joueur=j.id_joueur and partie = :id_partie');
+		WHERE i.joueur=j.id_joueur and partie = :id_partie
+		ORDER BY equipe');			//l'ordre sert pour getNbJoueursEquipe
 	$req->execute(array(
 		'id_partie' => $id_partie
 	));

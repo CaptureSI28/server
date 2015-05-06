@@ -28,6 +28,22 @@
 				$success = newFlash(date('Y-m-d H:i:s', time()), getIdForPlayer($_SESSION['login']), $_POST['qrcode']);
 				$response['success'] = $success ? 'YES' : 'NO';
 				break;
+			case 'service_infos' :		//je sais pas comment l'appeler
+				$nbJoueurs=getNbJoueursEquipe($_POST["game_id"],$_POST["team_id"]);
+				$response['nbJoueurs'] = $nbJoueurs;				
+				$scoreEquipe=getNombreFlashsEquipeZonePartie (($_POST["game_id"], $_POST["team_id"], $_POST["zone"]) 
+				//je sais pas comment est appelée zone dans l'appli => à vérifier
+				$response['scoreEquipe'] = $scoreEquipe;
+				$scoreJoueur=getNombreFlashsJoueurPartie ($_POST["game_id"],$_POST["player_id"]);
+				//je sais pas comment est appelée id_joueur dans l'appli => à vérifier				
+				$response['scoreJoueur'] = $scoreJoueur;
+				$couleurZone=getCouleurZone ($_POST["game_id"], $_POST["zone"]);
+				$response['couleurZone'] = $couleurZone;
+				if ($nbJoueurs && $scoreEquipe && $scoreJoueur && $couleurZone)
+					$response['success'] = 'YES';
+				else
+				 	$response['success'] = 'NO';
+				break;
 			default:
 				$response['failure'] = 'Unknown service';
 				break;
