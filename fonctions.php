@@ -489,6 +489,14 @@ function getNombreFlashsEquipePartie ($id_partie, $id_equipe) {
 	return $nb;	
 }
 
+function getScoreEquipePartie ($id_partie, $id_equipe) {
+	// TODO
+}
+
+function getScoreJoueur ($id_partie, $id_joueur) {
+	// TODO
+}
+
 /*
  * Input:
  * - id_partie : identifiant de la partie
