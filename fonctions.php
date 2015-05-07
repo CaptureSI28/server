@@ -411,8 +411,6 @@ function getHistoriqueParties ($nbParties) {
  * Output:
  * - equipe : numero de l'équipe dans laquelle est actuellement inscrit le joueur 
  */
-
-
 function getEquipeJoueurPartieActive ($id_partie, $id_joueur) {
 	global $bdd;
 	$req = $bdd->prepare('
@@ -442,8 +440,6 @@ function getEquipeJoueurPartieActive ($id_partie, $id_joueur) {
  * Output:
  * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
  */
-
-
 function getListeJoueursActifsPartie ($id_partie) {
 	global $bdd;
 	$req = $bdd->prepare('
@@ -489,12 +485,56 @@ function getNombreFlashsEquipePartie ($id_partie, $id_equipe) {
 	return $nb;	
 }
 
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ * - id_equipe : identifiant de l'équipe
+ *
+ * Output:
+ * - score : score de l'équipe (chaque flash rapporte autant de points que le nombre de zones capturées à ce moment)
+ */
 function getScoreEquipePartie ($id_partie, $id_equipe) {
-	// TODO
+	$score=0;
+	$req = $bdd->prepare('		
+		SELECT nbZonesEquipe
+		FROM infos_flashs
+		WHERE partie = :id_partie
+		AND equipe = :id_equipe');
+	/*nbZonesEquipe est un champ à rajouter dans la BDD*/
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	while ($row = $req->fetch()) {
+		$score += $row[0];
+	}
+	return $score;
 }
 
-function getScoreJoueur ($id_partie, $id_joueur) {
-	// TODO
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ * - id_joueur : identifiant du joueur
+ *
+ * Output:
+ * - score : score du joueur (chaque flash rapporte autant de points que le nombre de zones capturées par l'équipe à ce moment)
+ */
+function getScoreJoueurPartie ($id_partie, $id_joueur) {
+	$score=0;
+	$req = $bdd->prepare('		
+		SELECT nbZonesEquipe
+		FROM infos_flashs
+		WHERE partie = :id_partie
+		AND joueur = :id_joueur');
+	/*nbZonesEquipe est un champ à rajouter dans la BDD*/
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'joueur' => $id_joueur
+	));
+	while ($row = $req->fetch()) {
+		$score += $row[0];
+	}
+	return $score;
 }
 
 /*
