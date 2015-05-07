@@ -609,7 +609,8 @@ function getClassementGeneralPartie ($id_partie) {
  */
 function getCouleurZone ($id_partie, $id_zone) {
 	global $bdd;
-	$meilleureEquipe=getMeilleureEquipeZone ($id_partie, $id_zone);
+	$meilleureEquipeTab=getMeilleureEquipeZone($id_partie, $id_zone);
+	$meilleureEquipe=$meilleureEquipeTab[0];		//faut bien trancher à un moment
 	$req = $bdd->prepare('
 		SELECT hexcolor
 		FROM equipes
@@ -620,6 +621,44 @@ function getCouleurZone ($id_partie, $id_zone) {
 	$couleurZone = $req->fetchColumn();
 	return $couleurZone;
 }
+/*
+ * Input:
+ * - id_equipe : identifiant de l'équipe
+ *
+ * Output:
+ * - couleurEquipe : couleur de l'équipe 
+ */
+function getCouleurEquipe($id_equipe){
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT hexcolor
+		FROM equipes
+		WHERE id_equipe = :id_equipe');
+	$req->execute(array(
+		'id_equipe' => $id_equipe
+	));
+	$couleurEquipe = $req->fetchColumn();
+	return $couleurEquipe;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_equipe : identifiant de l'équipe
+ *
+ * Output:
+ * - nbZonesEquipe : nombre de zones capturées par l'équipe
+ */
+function getNbZonesEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$nbZonesEquipe=0;
+	$nbZones=2;		//il faudra se mettre d'accord sur le nombre total de zones (qui restera fixe)
+	for($i=1;$i<=$nbZones;$i++)
+		if(getCouleurEquipe($id_equipe)==getCouleurZone($id_partie,$i))
+			$nbZonesEquipe++;
+	return $nbZonesEquipe;
+}
+
 
 /*
  * Input:
