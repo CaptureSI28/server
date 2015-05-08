@@ -1075,6 +1075,25 @@ function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 
 /*
  * Input:
+ * - id_partie : identifiant de la partie
+ * - id_qrcode : identifiant du qrcode
+ *
+ * Output:
+ * - array: tableau des joueurs avec leur score sur un QRCode (clé : id_joueur, valeur : score)
+ */
+function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
+	global $bdd;
+	$array = array();
+	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+		{
+			$array[$i] = getNombreFlashsJoueurQRCodePartie ($id_partie, $i, $id_qrcode);
+		}
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
  * - id_partie: identifiant de la partie
  *
  * Output:
