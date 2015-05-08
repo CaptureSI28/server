@@ -330,29 +330,6 @@ function getPartieActiveJoueur ($joueurID) {
 }
 
 /*
- * Input:
- * - partie: identifiant de la partie
- * - equipe: identifiant de l'équipe
- *
- * Output:
- * - nbJoueurs: nombre de joueurs de l'équipe
- */
-function getNbJoueursEquipe ($partie, $equipe) {
-	global $bdd;
-	$nb=0;
-	$temp=0;
-	$joueurs = getListeJoueursActifsPartie ($partie);	//liste des joueurs de la partie ordonnés par équipe
-	foreach ($joueurs as $j)
-		{
-			if (($j["id_joueur"]!=$temp)&&($j["equipe"]==$equipe))			//si un joueur s'est inscrit plusieurs fois on ne 
-				$nb++;													//le compte qu'une seule fois
-			$temp=$j["id_joueur"];
-		}
-	return $nb;
-}
-
-
-/*
  * Output:
  * - partiesActives : tableau contenant toutes les parties non terminees
  * (id_partie, nom, password, date_debut, date_fin)
@@ -450,6 +427,129 @@ function getEquipeJoueurPartieActive ($id_partie, $id_joueur) {
 function getListeJoueursActifsPartie ($id_partie) {
 	global $bdd;
 	$req = $bdd->prepare('
+		SELECT k.joueur, k.equipe, j.login
+		FROM (
+			SELECT *
+			FROM( 
+				SELECT *
+				FROM inscriptions
+				ORDER BY date_inscription DESC) i
+			GROUP BY i.joueur) k, joueurs j
+		WHERE k.joueur=j.id_joueur AND k.partie=:id_partie');
+	$req->execute(array(
+		'id_partie' => $id_partie
+	));
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'id_joueur' => $row['joueur'],
+			'login' => $row['login'],
+			'equipe' => $row['equipe']
+		);
+	}
+	return $list;
+}
+
+
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
+ */
+function getListeJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT k.joueur, k.equipe, j.login
+		FROM (
+			SELECT *
+			FROM( 
+				SELECT *
+				FROM inscriptions
+				ORDER BY date_inscription DESC) i
+			GROUP BY i.joueur) k, joueurs j
+		WHERE k.joueur=j.id_joueur AND k.partie=:id_partie AND k.equipe=:id_equipe');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'id_joueur' => $row['joueur'],
+			'login' => $row['login'],
+			'equipe' => $row['equipe']
+		);
+	}
+	return $list;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
+ */
+function getNombreJoueursActifsPartieEquipes ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT k.equipe, COUNT(DISTINCT(k.joueur)) as nbJoueurs
+		FROM (
+			SELECT *
+			FROM( 
+				SELECT *
+				FROM inscriptions
+				ORDER BY date_inscription DESC) i
+			GROUP BY i.joueur) k
+		WHERE k.partie=:id_partie
+        GROUP BY k.equipe
+        ');
+	$req->execute(array(
+		'id_partie' => $id_partie
+	));
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'equipe' => $row['equipe'],
+			'nbJoueurs' => $row['nbJoueurs']
+		);
+	}
+	return $list;
+}
+
+
+/*
+ * Input:
+ * - partie: identifiant de la partie
+ * - equipe: identifiant de l'équipe
+ *
+ * Output:
+ * - nbJoueurs: nombre de joueurs de l'équipe
+ */
+function getNombreJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$joueurs = getListeJoueursActifsPartieEquipe($id_partie, $id_equipe);
+	return count($joueurs);
+}
+
+
+
+
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
+ */
+ /*
+function getListeJoueursActifsPartie ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
 		SELECT i.joueur, j.login, i.equipe
 		FROM inscriptions i, joueurs j
 		WHERE i.joueur=j.id_joueur and partie = :id_partie
@@ -466,7 +566,7 @@ function getListeJoueursActifsPartie ($id_partie) {
 		);
 	}
 	return $list;
-}
+}*/
 
 
 /*
@@ -500,14 +600,22 @@ function getNombreFlashsEquipePartie ($id_partie, $id_equipe) {
 * Output:
 * Score actuel d'une équipe dans une partie = somme des points gagnés grâce à un flash
 */
-function getScoreEquipePartie ($id_partie, $id_zone) {
+function getScoreEquipePartie ($id_partie, $id_equipe) {
 	global $bdd;
+	$score = 0;
 	$req = $bdd->prepare('
 		SELECT SUM(nbpoints) as score
 		FROM infos_flashs
 		WHERE equipe=:id_equipe
-		AND partie = :id_partie;');	
-	$score = $req->fetchColumn();
+		AND partie = :id_partie;');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	if ($row = $req->fetch()) {
+		$score = $row['score'];
+	}
+	if ($score == null) $score=0;
 	return $score;	
 }
 
@@ -519,7 +627,7 @@ function getScoreEquipePartie ($id_partie, $id_zone) {
 * Output:
 * TABLEAU contenant les scores actuels de chaque équipe dans une partie = somme des points gagnés grâce à un flash
 */
-function getScoresEquipesPartie ($id_partie) {
+function getScoreEquipesPartie ($id_partie) {
 	global $bdd;
 	$scores = array(
     "1" => getScoreEquipePartie($id_partie, 1),
@@ -527,8 +635,8 @@ function getScoresEquipesPartie ($id_partie) {
     "3" => getScoreEquipePartie($id_partie, 3),
     "4" => getScoreEquipePartie($id_partie, 4)
 	);
-	arsort($array);
-	return $array;
+	arsort($scores);
+	return $scores;
 }
 
 /*
@@ -633,7 +741,6 @@ function getMeilleureEquipeZone ($id_partie, $id_zone) {
 	));
 	if ($row = $req->fetch())
 		$meilleureEquipe = $row['equipe'];
-	echo "<br>La meilleure équipe de la zone ".$id_zone." est l'équipe ".$meilleureEquipe;
 	return($meilleureEquipe);
 }
 
@@ -699,22 +806,55 @@ function getClassementGeneralPartie ($id_partie) {
  * - id_zone : numéro de la zone
  *
  * Output:
- * - couleurZone : couleur de l'équipe qui détient la zone (qui a le plus flashé cette zone)
+ * - couleurZone : couleur de l'équipe qui détient la zone (qui a le plus flashé cette zone et a flashé en dernier)
  */
 function getCouleurZone ($id_partie, $id_zone) {
 	global $bdd;
-	$meilleureEquipeTab=getMeilleureEquipeZone($id_partie, $id_zone);
-	$meilleureEquipe=$meilleureEquipeTab[0];		//faut bien trancher à un moment
-	$req = $bdd->prepare('
-		SELECT hexcolor
-		FROM equipes
-		WHERE id_equipe = :id_equipe');
-	$req->execute(array(
-		'id_equipe' => $meilleureEquipe
-	));
-	$couleurZone = $req->fetchColumn();
+	$meilleureEquipe=getMeilleureEquipeZone($id_partie, $id_zone);
+	if($meilleureEquipe != 0) {
+		$couleurZone = getCouleurEquipe($meilleureEquipe);
+	}
+	else {
+		$couleurZone = 0;
+	}
 	return $couleurZone;
 }
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ *
+ * Output:
+ * - couleurZone : TABLEAU contenant l'identifiant de chaque zone ainsi que la couleur de l'équipe qui détient la zone (qui a le plus flashé cette zone et a flashé en dernier)
+ */
+function getCouleursZones ($id_partie) {
+	$nbTotalZones = getNombreZones();
+	$couleursTab = array();
+	for ($zone=1; $zone<=$nbTotalZones; $zone++) {
+		$meilleureEquipe = getMeilleureEquipeZone($id_partie, $zone);
+		$couleursTab[$zone]=getCouleurEquipe($meilleureEquipe);
+	}
+	print_r($couleursTab);
+	return $couleursTab;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ *
+ * Output:
+ * - couleurZone : TABLEAU contenant l'identifiant de chaque zone ainsi que l'identifiant de l'équipe qui détient la zone (qui a le plus flashé cette zone et a flashé en dernier)
+ */
+function getIdEquipeParZone ($id_partie) {
+	$nbTotalZones = getNombreZones();
+	$equipesZonesTab = array();
+	for ($zone=1; $zone<=$nbTotalZones; $zone++) {
+		$equipesZonesTab[$zone] = getMeilleureEquipeZone($id_partie, $zone);
+	}
+	print_r($equipesZonesTab);
+	return $equipesZonesTab;
+}
+
 /*
  * Input:
  * - id_equipe : identifiant de l'équipe

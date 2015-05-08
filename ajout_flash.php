@@ -23,6 +23,7 @@ echo getNombreZonesEquipePartie(1,1);
 echo getNombreZonesEquipePartie(1,2);
 echo getNombreZonesEquipePartie(1,3);
 echo getNombreZonesEquipePartie(1,4);
+echo getIdEquipeParZone(1);
 
 echo "<br><br><br><br>";
 

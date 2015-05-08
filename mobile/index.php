@@ -44,45 +44,24 @@
 				// Sous services permettant de récupérer différentes infos
 			
 				// Nombre de joueurs et score de chaque équipe
-				if($_POST["nb_joueurs_equipe"] == "true") {
-					$nbJoueurs1=getNbJoueursEquipe($_POST["game_id"],"1");
-					$response['nbJoueursEquipe1'] = $nbJoueurs1;
+				if($_POST["infos_equipes"] == "true") {
+					$nbJoueurs=getNombreJoueursActifsPartieEquipes($_POST["game_id"]);
+					$response['nbJoueursEquipes'] = $nbJoueursEquipe;
 					
-					$nbJoueurs2=getNbJoueursEquipe($_POST["game_id"],"2");
-					$response['nbJoueursEquipe2'] = $nbJoueurs2;
-					
-					$nbJoueurs3=getNbJoueursEquipe($_POST["game_id"],"3");
-					$response['nbJoueursEquipe3'] = $nbJoueurs3;
-					
-					$nbJoueurs4=getNbJoueursEquipe($_POST["game_id"],"4");
-					$response['nbJoueursEquipe4'] = $nbJoueurs4;
-					
-					if(!$nbJoueurs1 || !$nbJoueurs2 || !$nbJoueurs3 || !$nbJoueurs4) {
+					if(!$nbJoueurs) {
 						$success = false;
 					}
-				}
 				
-				// Score de chaque équipe
-				if($_POST["score_equipes"] == "true") {
-					$scoreEquipe1=getScoreEquipe($_POST["game_id"],"1");
-					$response['scoreEquipe1'] = $scoreEquipe1;
+					$scoreEquipes=getScoreEquipesPartie($_POST["game_id"]);
+					$response['scoreEquipes'] = $scoreEquipes;
 					
-					$scoreEquipe2=getScoreEquipe($_POST["game_id"],"2");
-					$response['scoreEquipe2'] = $scoreEquipe2;
-					
-					$scoreEquipe3=getScoreEquipe($_POST["game_id"],"3");
-					$response['scoreEquipe3'] = $scoreEquipe3;
-					
-					$scoreEquipe4=getScoreEquipe($_POST["game_id"],"4");
-					$response['scoreEquipe4'] = $scoreEquipe4;
-					
-					if(!$scoreEquipe1 || !$scoreEquipe2 || !$scoreEquipe3 || !$scoreEquipe4) {
+					if(!$scoreEquipes) {
 						$success = false;
 					}
 				}
 				
 				// Score du joueur
-				if($_POST["score_joueur"] == "true") {
+				if($_POST["equipe_zones"] == "true") {
 					$scoreJoueur=getScoreJoueur($_POST["game_id"],$_POST["player_id"]);
 					$response['scoreJoueur'] = $scoreJoueur;
 					if(!$scoreJoueur) {
@@ -90,20 +69,31 @@
 					}
 				}
 				
-				// Couleur de la zone			
-				else if($_POST["couleur_zones"] == "true") {
-					// TODO Récuperer couleur de chaque zone, pas que d'une seule, à modifier :
-					$couleurZone=getCouleurZone($_POST["game_id"], $_POST["zone"]);
-					$response['couleurZone'] = $couleurZone;
-					if(!$couleurZone) {
+				// TODO Je ne sais pas si c'est plus pratique pour toi Joseph d'avoir la couleur ou l'identifiant de l'équipe ? Je mets les deux on supprimera la partie inutile après
+				// Couleur de chaque zone			
+				if($_POST["couleur_zone"] == "true") {
+					$couleursZones=getCouleursZones($_POST["game_id"]);
+					$response['couleursZones'] = $couleursZones;
+					if(!$couleursZones) {
 						$success = false;
 					}
 				}
 				
-				if ($success)
+				// Id équipe ayant capturé chaque zone
+				if($_POST["equipe_zone"] == "true") {
+					$equipesZones=getIdEquipeParZone($_POST["game_id"]);
+					$response['equipesZones'] = $equipesZones;
+					if(!$equipesZones) {
+						$success = false;
+					}
+				}
+				
+				if ($success) {
 						$response['success'] = 'YES';
-				else
+				}
+				else {
 					 	$response['success'] = 'NO';
+				}
 					 	
 			break;
 					
