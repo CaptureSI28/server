@@ -803,6 +803,26 @@ function getClassementEquipesPartie ($id_partie) {
 /*
  * Input:
  * - id_partie : identifiant de la partie
+ * - id_zone : identifiant de la zone
+ *
+ * Output:
+ * - array: tableau des équipes avec leur score sur une zone (clé : équipe_numéro, valeur : score)
+ */
+function getClassementEquipesZonePartie ($id_partie, $id_zone) {
+	global $bdd;
+	$array = array(
+    "1" => getNombreFlashsEquipeZonePartie ($id_partie, 1, $id_zone),
+    "2" => getNombreFlashsEquipeZonePartie ($id_partie, 2, $id_zone),
+    "3" => getNombreFlashsEquipeZonePartie ($id_partie, 3, $id_zone),
+    "4" => getNombreFlashsEquipeZonePartie ($id_partie, 4, $id_zone)
+	);
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
  * - id_zone : numéro de la zone
  *
  * Output:
