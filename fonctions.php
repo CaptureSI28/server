@@ -1045,10 +1045,29 @@ function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 function getClassementJoueursPartie ($id_partie) {
 	global $bdd;
 	$array = array();
-	echo getNbJoueursActifsPartie($id_partie);
 	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
 		{
 			$array[$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+		}
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_equipe : identifiant de l'équipe
+ *
+ * Output:
+ * - array: tableau des joueurs dans l'équipe avec leur score (clé : id_joueur, valeur : score)
+ */
+function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
+	global $bdd;
+	$array = array();
+	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+		{
+			if($id_equipe == getEquipeJoueurPartieActive ($id_partie, $i))
+				$array[$i] = getNombreFlashsJoueurPartie($id_partie,$i);
 		}
 	arsort($array);
 	return $array;
