@@ -788,7 +788,7 @@ function getNombreZonesEquipePartie ($id_partie, $id_equipe) {
  * Output:
  * - array: tableau des équipes avec leur score (clé : équipe_numéro, valeur : score)
  */
-function getClassementGeneralPartie ($id_partie) {
+function getClassementEquipesPartie ($id_partie) {
 	global $bdd;
 	$array = array(
     "1" => getScoreEquipePartie($id_partie, 1),
@@ -1033,6 +1033,25 @@ function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 				}
 		}
 	return $meilleursFlasheurs;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ *
+ * Output:
+ * - array: tableau des joueurs avec leur score (clé : id_joueur, valeur : score)
+ */
+function getClassementJoueursPartie ($id_partie) {
+	global $bdd;
+	$array = array();
+	echo getNbJoueursActifsPartie($id_partie);
+	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+		{
+			$array[$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+		}
+	arsort($array);
+	return $array;
 }
 
 /*
