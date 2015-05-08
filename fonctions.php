@@ -53,24 +53,31 @@ function newPlayer ($login) {
  * -qrcode: id du qrcode flashé
  *
  * Output:
- * -booleen: true si tout se passe bien, false sinon 
+ * -booleen: true si tout se passe bien, false sinon, l'équipe gagne autant de points par flash que ce qu'elle possède de zones (1 zone = 1 point par flash, 2 zones = 2 points par flash etc.)
  */
-function newFlash ($date, $joueur, $qrcode) {
+function newFlash ($date, $id_joueur, $qrcode) {
 	global $bdd;
+	$partieActiveJoueur = getPartieActiveJoueur ($id_joueur);
+	$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
+	$nbZones = 1+getNombreZonesEquipePartie ($partieActiveJoueur, $equipe);
+	echo "Nombre de points : ".$nbZones;
 	try {
 	$req = $bdd->prepare('
-			INSERT INTO flashs (date_flash, joueur, qrcode) 
-			VALUES (:date, :joueur, :qrcode)');
+			INSERT INTO flashs (date_flash, joueur, qrcode, nbpoints) 
+			VALUES (:date, :id_joueur, :qrcode, :nbPoints)');
 		$req->execute(array(
 			'date' => $date,
-			'joueur' => $joueur,
-			'qrcode' => $qrcode
+			'id_joueur' => $id_joueur,
+			'qrcode' => $qrcode,
+			'nbPoints' => $nbZones
 		));
 	} catch (Exception $e) {
+		echo $e;
 		return false;
 	}
 	return true;
 }
+
 
 /*
  * Input:
@@ -486,29 +493,42 @@ function getNombreFlashsEquipePartie ($id_partie, $id_equipe) {
 }
 
 /*
- * Input:
- * - id_partie: identifiant de la partie
- * - id_equipe : identifiant de l'équipe
- *
- * Output:
- * - score : score de l'équipe (chaque flash rapporte autant de points que le nombre de zones capturées à ce moment)
- */
-function getScoreEquipePartie ($id_partie, $id_equipe) {
-	$score=0;
-	$req = $bdd->prepare('		
-		SELECT nbZonesEquipe
+* Input:
+* -id_partie : identifiant de la partie
+* -id_zone: identifiant de la zone
+*
+* Output:
+* Score actuel d'une équipe dans une partie = somme des points gagnés grâce à un flash
+*/
+function getScoreEquipePartie ($id_partie, $id_zone) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT SUM(nbpoints) as score
 		FROM infos_flashs
-		WHERE partie = :id_partie
-		AND equipe = :id_equipe');
-	/*nbZonesEquipe est un champ à rajouter dans la BDD*/
-	$req->execute(array(
-		'id_partie' => $id_partie,
-		'id_equipe' => $id_equipe
-	));
-	while ($row = $req->fetch()) {
-		$score += $row[0];
-	}
-	return $score;
+		WHERE equipe=:id_equipe
+		AND partie = :id_partie;');	
+	$score = $req->fetchColumn();
+	return $score;	
+}
+
+/*
+* Input:
+* -id_partie : identifiant de la partie
+* -id_zone: identifiant de la zone
+*
+* Output:
+* TABLEAU contenant les scores actuels de chaque équipe dans une partie = somme des points gagnés grâce à un flash
+*/
+function getScoresEquipesPartie ($id_partie) {
+	global $bdd;
+	$scores = array(
+    "1" => getScoreEquipePartie($id_partie, 1),
+    "2" => getScoreEquipePartie($id_partie, 2),
+    "3" => getScoreEquipePartie($id_partie, 3),
+    "4" => getScoreEquipePartie($id_partie, 4)
+	);
+	arsort($array);
+	return $array;
 }
 
 /*
@@ -522,19 +542,16 @@ function getScoreEquipePartie ($id_partie, $id_equipe) {
 function getScoreJoueurPartie ($id_partie, $id_joueur) {
 	$score=0;
 	$req = $bdd->prepare('		
-		SELECT nbZonesEquipe
+		SELECT SUM(nbpoints) as score
 		FROM infos_flashs
 		WHERE partie = :id_partie
 		AND joueur = :id_joueur');
-	/*nbZonesEquipe est un champ à rajouter dans la BDD*/
 	$req->execute(array(
 		'id_partie' => $id_partie,
 		'joueur' => $id_joueur
 	));
-	while ($row = $req->fetch()) {
-		$score += $row[0];
-	}
-	return $score;
+	$score = $req->fetchColumn();
+	return $score;	
 }
 
 /*
@@ -571,7 +588,7 @@ function getNombreFlashsEquipeZonePartie ($id_partie, $id_equipe, $id_zone) {
  * Output:
  * - meilleuresEquipes : TABLEAU contenant l'identifiant de l'équipe (ou des équipes ex-aequo) qui détient la zone (qui a le plus flashé cette zone)
  */
-function getMeilleureEquipeZone ($id_partie, $id_zone) {
+function getMeilleuresEquipesZone ($id_partie, $id_zone) {
 	global $bdd;
 	$max=0;	
 	$compteur=0;
@@ -595,29 +612,66 @@ function getMeilleureEquipeZone ($id_partie, $id_zone) {
 /*
  * Input:
  * - id_partie : identifiant de la partie
+ * - id_zone : identifiant de la zone
  *
  * Output:
- * - meilleuresEquipes : TABLEAU contenant l'identifiant de l'équipe (ou des équipes ex-aequo) qui a (ou ont) le plus de points dans la partie
+ * - meilleuresEquipes : identifiant de l'équipe qui a flashé le plus de fois une zone, en cas d'égalité, renvoie l'équipe qui a flashé en dernier la zone
  */
-function getMeilleureEquipePartie ($id_partie) {
+function getMeilleureEquipeZone ($id_partie, $id_zone) {
 	global $bdd;
-	$max=0;
-	$compteur=0;
-	$meilleuresEquipes = array();
-	for ($i=1;$i<=4;$i++)
-		{
-			if ($max < getNombreFlashsEquipePartie ($id_partie, $i))
-				$max = getNombreFlashsEquipePartie ($id_partie, $i);
+	$meilleureEquipe = 0;
+	$req = $bdd->prepare('
+		SELECT equipe, MAX(date_flash) as date_flash, COUNT(id_flash) as nb_flashs
+		FROM infos_flashs
+		WHERE partie=:id_partie AND zone=:id_zone
+		GROUP BY equipe
+		ORDER BY nb_flashs DESC, date_flash DESC
+		LIMIT 1');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_zone' => $id_zone
+	));
+	if ($row = $req->fetch())
+		$meilleureEquipe = $row['equipe'];
+	echo "<br>La meilleure équipe de la zone ".$id_zone." est l'équipe ".$meilleureEquipe;
+	return($meilleureEquipe);
+}
+
+/*
+* Output:
+* - $nbzones : nombre de zones dans le jeu
+*/
+function getNombreZones() {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT COUNT(id_zone)
+		FROM zones;
+	');
+	$req->execute();
+	$nbzones = $req->fetchColumn();
+	return $nbzones;
+}
+
+
+/*
+* Input:
+* - id_partie : identifiant de la partie
+* - id_equipe : identifiant de l'équipe
+*
+* Output:
+* - nbZonesEquipes : nombre de zones actuellement détenues par une équipe
+*/
+function getNombreZonesEquipePartie ($id_partie, $id_equipe) {
+	$nbTotalZones = getNombreZones();
+	$nbZonesEquipe = 0;
+	for ($i=1; $i<=$nbTotalZones; $i++) {
+		$meilleureEquipe = getMeilleureEquipeZone($id_partie, $i);
+		if($meilleureEquipe != 0 && $meilleureEquipe==$id_equipe) {
+			$nbZonesEquipe++;
 		}
-	for ($i=1;$i<=4;$i++)
-		{
-			if ($max == getNombreFlashsEquipePartie ($id_partie, $i))
-				{
-					$meilleuresEquipes[$compteur]=$i;
-					$compteur++;
-				}
-		}
-	return $meilleuresEquipes;
+	}
+	echo "<br> L'équipe ".$id_equipe." détient ".$nbZonesEquipe." zones";
+	return $nbZonesEquipe;
 }
 
 /*
@@ -630,10 +684,10 @@ function getMeilleureEquipePartie ($id_partie) {
 function getClassementGeneralPartie ($id_partie) {
 	global $bdd;
 	$array = array(
-    "equipe_1" => getNombreFlashsEquipePartie($id_partie, 1),
-    "equipe_2" => getNombreFlashsEquipePartie($id_partie, 2),
-    "equipe_3" => getNombreFlashsEquipePartie($id_partie, 3),
-    "equipe_4" => getNombreFlashsEquipePartie($id_partie, 4)
+    "1" => getScoreEquipePartie($id_partie, 1),
+    "2" => getScoreEquipePartie($id_partie, 2),
+    "3" => getScoreEquipePartie($id_partie, 3),
+    "4" => getScoreEquipePartie($id_partie, 4)
 	);
 	arsort($array);
 	return $array;
@@ -681,23 +735,6 @@ function getCouleurEquipe($id_equipe){
 	return $couleurEquipe;
 }
 
-/*
- * Input:
- * - id_partie : identifiant de la partie
- * - id_equipe : identifiant de l'équipe
- *
- * Output:
- * - nbZonesEquipe : nombre de zones capturées par l'équipe
- */
-function getNbZonesEquipe ($id_partie, $id_equipe) {
-	global $bdd;
-	$nbZonesEquipe=0;
-	$nbZones=2;		//il faudra se mettre d'accord sur le nombre total de zones (qui restera fixe)
-	for($i=1;$i<=$nbZones;$i++)
-		if(getCouleurEquipe($id_equipe)==getCouleurZone($id_partie,$i))
-			$nbZonesEquipe++;
-	return $nbZonesEquipe;
-}
 
 
 /*

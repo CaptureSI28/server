@@ -14,8 +14,15 @@ while ($row = $req->fetch()) {
 		echo "<br>date flash : ".$row[1];
 		echo "<br>joueur : ".$row[2];
 		echo "<br>qrcode : ".$row[3];
+		echo "<br>nbpoint : ".$row[4];
 		echo "<br>-----------------------";
 }
+
+echo getScoreEquipesPartie(1);
+echo getNombreZonesEquipePartie(1,1);
+echo getNombreZonesEquipePartie(1,2);
+echo getNombreZonesEquipePartie(1,3);
+echo getNombreZonesEquipePartie(1,4);
 
 echo "<br><br><br><br>";
 
