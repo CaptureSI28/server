@@ -622,7 +622,6 @@ function getScoreEquipePartie ($id_partie, $id_equipe) {
 /*
 * Input:
 * -id_partie : identifiant de la partie
-* -id_zone: identifiant de la zone
 *
 * Output:
 * TABLEAU contenant les scores actuels de chaque équipe dans une partie = somme des points gagnés grâce à un flash
@@ -1183,6 +1182,24 @@ function getDerniersFlashsEquipe ($id_partie, $id_equipe) {
 		);
 	}
 	return $derniersFlashs;
+}
+
+/*
+* Input:
+* -id_partie : identifiant de la partie
+*
+* Output:
+* TABLEAU contenant les derniers flashs de chaque équipe (chaque case du tableau est un tableau)
+*/
+function getDerniersFlashsEquipes ($id_partie) {
+	global $bdd;
+	$derniersFlashsEquipes = array(
+    "1" => getDerniersFlashsEquipe($id_partie, 1),
+    "2" => getDerniersFlashsEquipe($id_partie, 2),
+    "3" => getDerniersFlashsEquipe($id_partie, 3),
+    "4" => getDerniersFlashsEquipe($id_partie, 4)
+	);
+	return $derniersFlashsEquipes;
 }
 
 /*
