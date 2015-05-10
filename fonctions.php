@@ -1127,6 +1127,98 @@ function getNbJoueursActifsPartie ($id_partie) {
 
 /*
  * Input:
+ * - id_partie: identifiant de la partie
+ *
+ * Output:
+ * - derniersFlashs : tableau contenant les 50 derniers flashs de la partie
+ */
+function getDerniersFlashs ($id_partie) {
+	global $bdd;
+	$derniersFlashs=array();
+	$req = $bdd->prepare('
+		SELECT date_flash, qrcode, equipe, joueur
+		FROM infos_flashs
+		WHERE partie = :id_partie		
+		ORDER BY date_flash DESC');
+	$req->execute(array(
+		'id_partie' => $id_partie
+	));
+	while ($row = $req->fetch()) {
+		$derniersFlashs[] = array(
+			'date_flash' => $row['date_flash'],
+			'qrcode' => $row['qrcode'],
+			'equipe' => $row['equipe'],
+			'joueur' => $row['joueur']
+		);
+	}
+	return $derniersFlashs;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ * - id_equipe: identifiant de l'équipe
+ *
+ * Output:
+ * - derniersFlashs : tableau contenant les 50 derniers flashs de la partie par l'équipe
+ */
+function getDerniersFlashsEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$derniersFlashs=array();
+	$req = $bdd->prepare('
+		SELECT date_flash, qrcode, joueur
+		FROM infos_flashs
+		WHERE partie = :id_partie	
+		AND equipe = :id_equipe	
+		ORDER BY date_flash DESC');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	while ($row = $req->fetch()) {
+		$derniersFlashs[] = array(
+			'date_flash' => $row['date_flash'],
+			'qrcode' => $row['qrcode'],
+			'joueur' => $row['joueur']
+		);
+	}
+	return $derniersFlashs;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ * - id_joueur: identifiant du joueur
+ *
+ * Output:
+ * - derniersFlashs : tableau contenant les 50 derniers flashs de la partie par le joueur
+ */
+function getDerniersFlashsJoueur ($id_partie, $id_joueur) {
+	global $bdd;
+	$derniersFlashs=array();
+	$req = $bdd->prepare('
+		SELECT date_flash, qrcode, equipe
+		FROM infos_flashs
+		WHERE partie = :id_partie	
+		AND joueur = :id_joueur	
+		ORDER BY date_flash DESC');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_joueur' => $id_joueur
+	));
+	while ($row = $req->fetch()) {
+		$derniersFlashs[] = array(
+			'date_flash' => $row['date_flash'],
+			'qrcode' => $row['qrcode'],
+			'equipe' => $row['equipe']
+		);
+	}
+	return $derniersFlashs;
+}
+
+
+/*
+ * Input:
  * - id_partie: id de la partie à laquelle on est inscrit
  *
  * Output:
