@@ -43,7 +43,7 @@
 				
 				// Sous services permettant de récupérer différentes infos
 			
-				// Nombre de joueurs et score de chaque équipe
+				// Nombre de joueurs, score, derniers flashs de chaque équipe + classement
 				if($_POST["infos_equipes"] == "true") {
 					$nbJoueurs=getNombreJoueursActifsPartieEquipes($_POST["game_id"]);
 					$response['nbJoueursEquipes'] = $nbJoueursEquipe;
@@ -58,16 +58,39 @@
 					if(!$scoreEquipes) {
 						$success = false;
 					}
-				}
-				
-				// Score du joueur
-				if($_POST["score_joueur"] == "true") {
-					$scoreJoueur=getScoreJoueur($_POST["game_id"],$_POST["player_id"]);
-					$response['scoreJoueur'] = $scoreJoueur;
-					if(!$scoreJoueur) {
+
+					$derniersFlashsEquipes=getDerniersFlashsEquipes($_POST["game_id"]);
+					$response['derniersFlashsEquipes'] = $derniersFlashsEquipes;
+					
+					if(!$derniersFlashsEquipes) {
+						$success = false;
+					}
+
+					$classementEquipesPartie=getClassementEquipesPartie($_POST["game_id"]);
+					$response['classementEquipesPartie'] = $classementEquipesPartie;
+					
+					if(!$classementEquipesPartie) {
 						$success = false;
 					}
 				}
+
+				// Score et derniers flashs du joueur
+				if($_POST["infos_joueur"] == "true") {
+					$scoreJoueur=getScoreJoueur($_POST["game_id"],$_POST["player_id"]);
+					$response['scoreJoueur'] = $scoreJoueur;
+
+					if(!$scoreJoueur) {
+						$success = false;
+					}
+
+					$derniersFlashsJoueur=getDerniersFlashsJoueur($_POST["game_id"],$_POST["player_id"]);
+					$response['derniersFlashsJoueur'] = $derniersFlashsJoueur;
+
+					if(!$derniersFlashsJoueur) {
+						$success = false;
+					}
+				}
+				
 				
 				// TODO Je ne sais pas si c'est plus pratique pour toi Joseph d'avoir la couleur ou l'identifiant de l'équipe ? Je mets les deux on supprimera la partie inutile après
 				// Couleur de chaque zone			
@@ -84,6 +107,15 @@
 					$equipesZones=getIdEquipeParZone($_POST["game_id"]);
 					$response['equipesZones'] = $equipesZones;
 					if(!$equipesZones) {
+						$success = false;
+					}
+				}
+
+				// Derniers flashs de la partie
+				if($_POST["flashs_partie"] == "true") {
+					$derniersFlashs=getDerniersFlashs($_POST["game_id"]);
+					$response['derniersFlashs'] = $derniersFlashs;
+					if(!$derniersFlashs) {
 						$success = false;
 					}
 				}
