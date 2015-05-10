@@ -119,6 +119,15 @@
 						$success = false;
 					}
 				}
+
+				//Classement des joueurs
+				if($_POST["classement_joueurs"] == "true") {
+					$classementJoueursPartie=getClassementJoueursPartie($_POST["game_id"]);
+					$response['classementJoueursPartie'] = $classementJoueursPartie;
+					if(!$classementJoueursPartie) {
+						$success = false;
+					}
+				}
 				
 				if ($success) {
 						$response['success'] = 'YES';
