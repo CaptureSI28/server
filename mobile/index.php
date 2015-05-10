@@ -61,7 +61,7 @@
 				}
 				
 				// Score du joueur
-				if($_POST["equipe_zones"] == "true") {
+				if($_POST["score_joueur"] == "true") {
 					$scoreJoueur=getScoreJoueur($_POST["game_id"],$_POST["player_id"]);
 					$response['scoreJoueur'] = $scoreJoueur;
 					if(!$scoreJoueur) {
