@@ -163,7 +163,7 @@ function getNbFlashsEquipe ($equipeID) {
  * -date_fin: Y-m-d H:i:s
  * -password: chaine de caracteres ('NULL' si non renseigne)
  * Output:
- * -booleen: true si tout se passe bien, false sinon
+ * -booleen: un tableau contenant les infos de la nouvelle partie si tout se passe bien, false sinon
  */
 function newGame ($nom, $date_debut, $date_fin, $password) {
 	global $bdd;
@@ -225,6 +225,74 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 
 function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	global $bdd;
+	$result = false;
+	
+	$equipe = $index_equipe + 1; // $index_equipe (0 -> 3)
+
+	// Verif : la partie existe
+	$verif = $bdd->prepare('
+		SELECT id_partie, password
+		FROM parties 
+		WHERE id_partie = :partie');
+	$verif->execute(array(
+				'partie' => $partie
+			));
+	if ($row = $verif->fetch()) {
+		// Verif : Le mot de passe est correct
+		if(sha1($password) == $row['password']) {
+			// Verif : Le joueur existe
+			$verif2 = $bdd->prepare('
+				SELECT id_joueur
+				FROM joueurs 
+				WHERE id_joueur = :joueur');
+			$verif2->execute(array(
+					'joueur' => $joueur
+			));
+			if ($row2 = $verif2->fetch()) {
+				try {
+					// Insertion
+					$req = $bdd->prepare('
+						INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) 
+						VALUES (:date_insc, :partie, :equipe, :joueur)');
+					$req->execute(array(
+						'date_insc' => $date_insc,
+						'partie' => $partie,
+						'equipe' => $equipe,
+						'joueur' => $joueur
+					));
+					$result = true;
+				} catch (Exception $e) {
+					echo $e;
+					return false;
+				}
+			} else {
+				echo "Joueur inexistant";
+			}
+		} else {
+				echo "MDP invalide";
+		}
+	} else {
+				echo "Partie inexistante";
+	}
+	
+	return $result;
+}
+
+
+/*
+ * Input:
+ * - date_insc: date d'inscription du joueur (DATETIME)
+ * - partie: ID de la partie a laquelle s'inscrire
+ * - index_equipe: index de l'equipe dans laquelle s'inscrire (0 -> 3)
+ * - joueur: ID du joueur a inscrire
+ * - password: chaine de caracteres ('NULL' si non renseigne)
+ *
+ * Output:
+ * -booleen: true si tout se passe bien, false sinon
+ */
+/*
+function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
+	global $bdd;
 	
 	$equipe = $index_equipe + 1; // $index_equipe (0 -> 3)
 
@@ -248,7 +316,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 			));
 	$nb2 = $verif2->fetchColumn();	//nombre de joueurs correspondant a l'ID entre (0 ou 1)
 
-	/*//verif3 : le joueur ne doit pas deja etre inscrit a la partie
+	//verif3 : le joueur ne doit pas deja etre inscrit a la partie
 	$verif3 = $bdd->prepare('
 		SELECT COUNT(id_inscription)
 		FROM inscriptions 
@@ -258,9 +326,9 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 				'partie' => $partie,
 				'joueur' => $joueur
 			));
-	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit a la partie (0 ou 1)*/
+	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit a la partie (0 ou 1)
 	
-	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0)/*&&($nb3 != 1)*/)
+	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0))
 	{
 		//recherche du mot de passe de la partie
 		try {
@@ -302,7 +370,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	}
 	return false;
 }
-
+*/
 
 /*
  * Input:
@@ -486,6 +554,7 @@ function getListeJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
 	return $list;
 }
 
+
 /*
  * Input:
  * - id_partie: identifiant de la partie dont on veut la liste des joueurs
@@ -493,6 +562,7 @@ function getListeJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
  * Output:
  * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
  */
+ /*
 function getNombreJoueursActifsPartieEquipes ($id_partie) {
 	global $bdd;
 	$req = $bdd->prepare('
@@ -517,9 +587,27 @@ function getNombreJoueursActifsPartieEquipes ($id_partie) {
 			'nbJoueurs' => $row['nbJoueurs']
 		);
 	}
+	print_r($list);
 	return $list;
 }
-
+*/
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
+ */
+function getNombreJoueursActifsPartieEquipes ($id_partie) {
+	$nombreTab = array();
+	for ($i=1;$i<=4;$i++) {
+		$nombreTab[] = array(
+			'equipe' => $i,
+			'nbJoueurs' => getNombreJoueursActifsPartieEquipe($id_partie, $i)
+		);
+	}
+	return $nombreTab;
+}
 
 /*
  * Input:
@@ -629,13 +717,13 @@ function getScoreEquipePartie ($id_partie, $id_equipe) {
 */
 function getScoreEquipesPartie ($id_partie) {
 	global $bdd;
-	$scores = array(
-    "1" => getScoreEquipePartie($id_partie, 1),
-    "2" => getScoreEquipePartie($id_partie, 2),
-    "3" => getScoreEquipePartie($id_partie, 3),
-    "4" => getScoreEquipePartie($id_partie, 4)
-	);
-	arsort($scores);
+	$scores = array();
+	for($i=1; $i<=4; $i++) {
+		$scores[] = array(
+			'equipe' => $i,
+			'score' => getScoreEquipePartie($id_partie, $i)
+		);
+	}
 	return $scores;
 }
 
@@ -648,18 +736,21 @@ function getScoreEquipesPartie ($id_partie) {
  * - score : score du joueur (chaque flash rapporte autant de points que le nombre de zones capturées par l'équipe à ce moment)
  */
 function getScoreJoueurPartie ($id_partie, $id_joueur) {
-	$score=0;
+	global $bdd;
 	$req = $bdd->prepare('		
-		SELECT SUM(nbpoints) as score
+		SELECT SUM(nbpoints) AS score
 		FROM infos_flashs
 		WHERE partie = :id_partie
 		AND joueur = :id_joueur');
 	$req->execute(array(
 		'id_partie' => $id_partie,
-		'joueur' => $id_joueur
+		'id_joueur' => $id_joueur
 	));
-	$score = $req->fetchColumn();
-	return $score;	
+	if ($row = $req->fetchColumn()) {
+		return $row['score'];
+	} else {
+		return 0;
+	}
 }
 
 /*
@@ -832,9 +923,11 @@ function getCouleursZones ($id_partie) {
 	$couleursTab = array();
 	for ($zone=1; $zone<=$nbTotalZones; $zone++) {
 		$meilleureEquipe = getMeilleureEquipeZone($id_partie, $zone);
-		$couleursTab[$zone]=getCouleurEquipe($meilleureEquipe);
+			$couleursTab[] = array(
+				'zone' => $zone,
+				'couleur' => getCouleurEquipe($meilleureEquipe)
+		);
 	}
-	print_r($couleursTab);
 	return $couleursTab;
 }
 
@@ -849,9 +942,11 @@ function getIdEquipeParZone ($id_partie) {
 	$nbTotalZones = getNombreZones();
 	$equipesZonesTab = array();
 	for ($zone=1; $zone<=$nbTotalZones; $zone++) {
-		$equipesZonesTab[$zone] = getMeilleureEquipeZone($id_partie, $zone);
+		$equipesZonesTab[] = array(
+			'zone' => $zone,
+			'equipe' => getMeilleureEquipeZone($id_partie, $zone)
+		);
 	}
-	print_r($equipesZonesTab);
 	return $equipesZonesTab;
 }
 
@@ -871,8 +966,11 @@ function getCouleurEquipe($id_equipe){
 	$req->execute(array(
 		'id_equipe' => $id_equipe
 	));
-	$couleurEquipe = $req->fetchColumn();
-	return $couleurEquipe;
+	if ($row = $req->fetchColumn()) {
+		return $row['hexcolor'];
+	} else {
+		return "null";
+	}
 }
 
 

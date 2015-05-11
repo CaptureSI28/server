@@ -6,6 +6,17 @@
 	require_once('../fonctions.php');
 	
 	$response = array();
+	/*
+	$_SESSION['login']='aperdria';
+	$_POST['game_id']='1';
+	$_POST["player_id"]=1;
+	$_POST['service'] = 'infos_partie';
+	$_POST["infos_equipes"] = true;
+	$_POST["infos_joueur"] = true;
+	$_POST["couleur_zones"] = true;
+	$_POST["equipe_zones"] = true;
+	$_POST["password"] = 'test';
+	*/
 	
 	if ($_POST['service'] === 'login' && !isset($_POST['session_id'])) {
 		$response = validateCasTicket($_POST['cas_ticket'], $_POST['cas_service']);
@@ -19,7 +30,7 @@
 				
 			// Créer une nouvelle partie
 			case 'createNewGame':
-				$newGame = newGame($_POST['name'], date('Y-m-d H:i:s', time()), date('Y-m-d H:i:s', time() + 7 * 24 * 60 * 60), $_POST['password']);
+				$newGame = newGame($_POST['name'], $_POST['debut'], $_POST['fin'], $_POST['password']);
 				$response['success'] = $newGame ? 'YES' : 'NO';
 				$response['new_game'] = $newGame;
 				break;
@@ -27,7 +38,9 @@
 			// Rejoindre une partie
 			case 'joinGame':
 				$success = joinGame(date('Y-m-d H:i:s', time()), $_POST['game_id'], $_POST['team_id'], getIdForPlayer($_SESSION['login']), $_POST['password']);
-				$response['success'] = $success ? 'YES' : 'NO';
+				$succes = array();
+				$succes[] = $success ? 'YES' : 'NO';
+				$response['success'] = $succes;
 				break;
 				
 			// Flasher un QRCode
@@ -40,19 +53,22 @@
 			case 'infos_partie' :
 			
 				$success = true;
-				
+				$playerid = getIdForPlayer($_SESSION['login']);
+				$gameid = getPartieActiveJoueur($playerid);
+								
 				// Sous services permettant de récupérer différentes infos
 			
 				// Nombre de joueurs et score de chaque équipe
+				// "nbJoueursEquipes":[{"equipe":1,"nbJoueurs":0},...]
 				if($_POST["infos_equipes"] == "true") {
-					$nbJoueurs=getNombreJoueursActifsPartieEquipes($_POST["game_id"]);
-					$response['nbJoueursEquipes'] = $nbJoueursEquipe;
+					$nbJoueurs=getNombreJoueursActifsPartieEquipes($gameid);
+					$response['nbJoueursEquipes'] = $nbJoueurs;
 					
 					if(!$nbJoueurs) {
 						$success = false;
 					}
 				
-					$scoreEquipes=getScoreEquipesPartie($_POST["game_id"]);
+					$scoreEquipes=getScoreEquipesPartie($gameid);
 					$response['scoreEquipes'] = $scoreEquipes;
 					
 					if(!$scoreEquipes) {
@@ -61,18 +77,18 @@
 				}
 				
 				// Score du joueur
-				if($_POST["equipe_zones"] == "true") {
-					$scoreJoueur=getScoreJoueur($_POST["game_id"],$_POST["player_id"]);
+				// "scoreEquipes":[{"equipe":1,"score":0}...]
+				if($_POST["infos_joueur"] == "true") {
+					$scoreJoueur=getScoreJoueurPartie($gameid,$playerid);
 					$response['scoreJoueur'] = $scoreJoueur;
-					if(!$scoreJoueur) {
-						$success = false;
-					}
 				}
 				
 				// TODO Je ne sais pas si c'est plus pratique pour toi Joseph d'avoir la couleur ou l'identifiant de l'équipe ? Je mets les deux on supprimera la partie inutile après
-				// Couleur de chaque zone			
-				if($_POST["couleur_zone"] == "true") {
-					$couleursZones=getCouleursZones($_POST["game_id"]);
+				
+				// Couleur de chaque zone
+				// "couleursZones":[{"zone":1,...]	
+				if($_POST["couleur_zones"] == "true") {
+					$couleursZones=getCouleursZones($gameid);
 					$response['couleursZones'] = $couleursZones;
 					if(!$couleursZones) {
 						$success = false;
@@ -80,8 +96,9 @@
 				}
 				
 				// Id équipe ayant capturé chaque zone
-				if($_POST["equipe_zone"] == "true") {
-					$equipesZones=getIdEquipeParZone($_POST["game_id"]);
+				// "equipesZones":[{"zone":1,"equipe":"2"},...]
+				if($_POST["equipe_zones"] == "true") {
+					$equipesZones=getIdEquipeParZone($gameid);
 					$response['equipesZones'] = $equipesZones;
 					if(!$equipesZones) {
 						$success = false;
