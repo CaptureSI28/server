@@ -710,7 +710,6 @@ function getScoreEquipePartie ($id_partie, $id_equipe) {
 /*
 * Input:
 * -id_partie : identifiant de la partie
-* -id_zone: identifiant de la zone
 *
 * Output:
 * TABLEAU contenant les scores actuels de chaque équipe dans une partie = somme des points gagnés grâce à un flash
@@ -879,13 +878,33 @@ function getNombreZonesEquipePartie ($id_partie, $id_equipe) {
  * Output:
  * - array: tableau des équipes avec leur score (clé : équipe_numéro, valeur : score)
  */
-function getClassementGeneralPartie ($id_partie) {
+function getClassementEquipesPartie ($id_partie) {
 	global $bdd;
 	$array = array(
     "1" => getScoreEquipePartie($id_partie, 1),
     "2" => getScoreEquipePartie($id_partie, 2),
     "3" => getScoreEquipePartie($id_partie, 3),
     "4" => getScoreEquipePartie($id_partie, 4)
+	);
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_zone : identifiant de la zone
+ *
+ * Output:
+ * - array: tableau des équipes avec leur score sur une zone (clé : équipe_numéro, valeur : score)
+ */
+function getClassementEquipesZonePartie ($id_partie, $id_zone) {
+	global $bdd;
+	$array = array(
+    "1" => getNombreFlashsEquipeZonePartie ($id_partie, 1, $id_zone),
+    "2" => getNombreFlashsEquipeZonePartie ($id_partie, 2, $id_zone),
+    "3" => getNombreFlashsEquipeZonePartie ($id_partie, 3, $id_zone),
+    "4" => getNombreFlashsEquipeZonePartie ($id_partie, 4, $id_zone)
 	);
 	arsort($array);
 	return $array;
@@ -1135,6 +1154,63 @@ function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 
 /*
  * Input:
+ * - id_partie : identifiant de la partie
+ *
+ * Output:
+ * - array: tableau des joueurs avec leur score (clé : id_joueur, valeur : score)
+ */
+function getClassementJoueursPartie ($id_partie) {
+	global $bdd;
+	$array = array();
+	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+		{
+			$array[$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+		}
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_equipe : identifiant de l'équipe
+ *
+ * Output:
+ * - array: tableau des joueurs dans l'équipe avec leur score (clé : id_joueur, valeur : score)
+ */
+function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
+	global $bdd;
+	$array = array();
+	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+		{
+			if($id_equipe == getEquipeJoueurPartieActive ($id_partie, $i))
+				$array[$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+		}
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
+ * - id_partie : identifiant de la partie
+ * - id_qrcode : identifiant du qrcode
+ *
+ * Output:
+ * - array: tableau des joueurs avec leur score sur un QRCode (clé : id_joueur, valeur : score)
+ */
+function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
+	global $bdd;
+	$array = array();
+	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+		{
+			$array[$i] = getNombreFlashsJoueurQRCodePartie ($id_partie, $i, $id_qrcode);
+		}
+	arsort($array);
+	return $array;
+}
+
+/*
+ * Input:
  * - id_partie: identifiant de la partie
  *
  * Output:
@@ -1145,6 +1221,116 @@ function getNbJoueursActifsPartie ($id_partie) {
 	$joueurs = getListeJoueursActifsPartie ($id_partie);
 	return count($joueurs);
 }
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ *
+ * Output:
+ * - derniersFlashs : tableau contenant les 50 derniers flashs de la partie
+ */
+function getDerniersFlashs ($id_partie) {
+	global $bdd;
+	$derniersFlashs=array();
+	$req = $bdd->prepare('
+		SELECT date_flash, qrcode, equipe, joueur
+		FROM infos_flashs
+		WHERE partie = :id_partie		
+		ORDER BY date_flash DESC');
+	$req->execute(array(
+		'id_partie' => $id_partie
+	));
+	while ($row = $req->fetch()) {
+		$derniersFlashs[] = array(
+			'date_flash' => $row['date_flash'],
+			'qrcode' => $row['qrcode'],
+			'equipe' => $row['equipe'],
+			'joueur' => $row['joueur']
+		);
+	}
+	return $derniersFlashs;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ * - id_equipe: identifiant de l'équipe
+ *
+ * Output:
+ * - derniersFlashs : tableau contenant les 50 derniers flashs de la partie par l'équipe
+ */
+function getDerniersFlashsEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$derniersFlashs=array();
+	$req = $bdd->prepare('
+		SELECT date_flash, qrcode, joueur
+		FROM infos_flashs
+		WHERE partie = :id_partie	
+		AND equipe = :id_equipe	
+		ORDER BY date_flash DESC');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	while ($row = $req->fetch()) {
+		$derniersFlashs[] = array(
+			'date_flash' => $row['date_flash'],
+			'qrcode' => $row['qrcode'],
+			'joueur' => $row['joueur']
+		);
+	}
+	return $derniersFlashs;
+}
+
+/*
+* Input:
+* -id_partie : identifiant de la partie
+*
+* Output:
+* TABLEAU contenant les derniers flashs de chaque équipe (chaque case du tableau est un tableau)
+*/
+function getDerniersFlashsEquipes ($id_partie) {
+	global $bdd;
+	$derniersFlashsEquipes = array(
+    "1" => getDerniersFlashsEquipe($id_partie, 1),
+    "2" => getDerniersFlashsEquipe($id_partie, 2),
+    "3" => getDerniersFlashsEquipe($id_partie, 3),
+    "4" => getDerniersFlashsEquipe($id_partie, 4)
+	);
+	return $derniersFlashsEquipes;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ * - id_joueur: identifiant du joueur
+ *
+ * Output:
+ * - derniersFlashs : tableau contenant les 50 derniers flashs de la partie par le joueur
+ */
+function getDerniersFlashsJoueur ($id_partie, $id_joueur) {
+	global $bdd;
+	$derniersFlashs=array();
+	$req = $bdd->prepare('
+		SELECT date_flash, qrcode, equipe
+		FROM infos_flashs
+		WHERE partie = :id_partie	
+		AND joueur = :id_joueur	
+		ORDER BY date_flash DESC');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_joueur' => $id_joueur
+	));
+	while ($row = $req->fetch()) {
+		$derniersFlashs[] = array(
+			'date_flash' => $row['date_flash'],
+			'qrcode' => $row['qrcode'],
+			'equipe' => $row['equipe']
+		);
+	}
+	return $derniersFlashs;
+}
+
 
 /*
  * Input:
