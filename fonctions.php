@@ -227,7 +227,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	global $bdd;
 	$result = false;
 	
-	$equipe = $index_equipe + 1; // $index_equipe (0 -> 3)
+	$equipe = $index_equipe;
 
 	// Verif : la partie existe
 	$verif = $bdd->prepare('
@@ -419,7 +419,7 @@ function getActiveGamesList () {
 			'nom' => $row['nom'],
 			'date_debut' => $row['date_debut'],
 			'date_fin' => $row['date_fin'],
-			'partie_privee' => $row['password'] === NULL ? 'NO' : 'YES'
+			'partie_privee' => $row['password'] === sha1("") ? 'NO' : 'YES'
 		);
 	}
 	return $list;

@@ -89,6 +89,7 @@ CREATE OR REPLACE VIEW all_qrcodes AS
 	FROM parties p, qrcodes q
 	ORDER BY p.id_partie, q.zone, q.id_qrcode;
 
+<<<<<<< HEAD
 INSERT INTO equipes (hexcolor) VALUES ('#FF0055');
 INSERT INTO equipes (hexcolor) VALUES ('#0077DD');
 INSERT INTO equipes (hexcolor) VALUES ('#00CC66');
@@ -116,3 +117,50 @@ INSERT INTO `si28`.`parties` (`id_partie`, `nom`, `password`, `date_debut`, `dat
 INSERT INTO `si28`.`inscriptions` (`id_inscription`, `date_inscription`, `partie`, `equipe`, `joueur`) VALUES (NULL, '2015-04-08 00:00:00', '1', '1', '1'), (NULL, '2015-04-13 00:00:00', '1', '2', '2'), (NULL, '2015-04-13 00:00:00', '1', '3', '3'), (NULL, '2015-04-13 00:00:00', '1', '4', '2');
 
 INSERT INTO `si28`.`flashs` (`id_flash`, `date_flash`, `joueur`, `qrcode`, `nbpoints`) VALUES (NULL, '2015-05-01 00:00:00', '1', '1', '1'), (NULL, '2015-05-02 00:00:00', '2', '1', '1');
+=======
+INSERT INTO
+	equipes (hexcolor)
+VALUES
+	('#FF0055'),
+	('#0077DD'),
+	('#00CC66'),
+	('#EEEE22');
+
+INSERT INTO
+	zones (nom_zone)
+VALUES
+	('Picasso'),
+	('Phil'),
+	('BU'),
+	('6eme');
+
+INSERT INTO
+	qrcodes (zone)
+VALUES
+	(1),
+	(2),
+	(3),
+	(4);
+
+INSERT INTO
+	joueurs (login)
+VALUES
+	('aperdria'),
+	('roccajos'),
+	('tricciol'),
+	('amatoba');
+
+INSERT INTO
+	parties (nom, password, date_debut, date_fin)
+VALUES
+	('Partie 1', NULL, '2015-02-01 00:00:00', '2015-07-01 00:00:00'),
+	('Partie 2', NULL, '2015-03-01 00:00:00', '2015-08-01 00:00:00');
+
+INSERT INTO
+	inscriptions (date_inscription, partie, equipe, joueur)
+VALUES
+	('2015-04-08 00:00:00', '1', '1', '1'),
+	('2015-04-08 00:00:00', '1', '2', '1'),
+	('2015-04-08 00:00:00', '1', '3', '1'),
+	('2015-04-08 00:00:00', '1', '4', '1');
+>>>>>>> origin/master
