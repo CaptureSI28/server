@@ -27,9 +27,7 @@
 			// Rejoindre une partie
 			case 'joinGame':
 				$success = joinGame(date('Y-m-d H:i:s', time()), $_POST['game_id'], $_POST['team_id'], getIdForPlayer($_SESSION['login']), $_POST['password']);
-				$succes = array();
-				$succes[] = $success ? 'YES' : 'NO';
-				$response['success'] = $succes;
+				$response['success'] = $success ? 'YES' : 'NO';
 				break;
 				
 			// Flasher un QRCode
