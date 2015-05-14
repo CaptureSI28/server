@@ -6,17 +6,6 @@
 	require_once('../fonctions.php');
 	
 	$response = array();
-	/*
-	$_SESSION['login']='aperdria';
-	$_POST['game_id']='1';
-	$_POST["player_id"]=1;
-	$_POST['service'] = 'infos_partie';
-	$_POST["infos_equipes"] = true;
-	$_POST["infos_joueur"] = true;
-	$_POST["couleur_zones"] = true;
-	$_POST["equipe_zones"] = true;
-	$_POST["password"] = 'test';
-	*/
 	
 	if ($_POST['service'] === 'login' && !isset($_POST['session_id'])) {
 		$response = validateCasTicket($_POST['cas_ticket'], $_POST['cas_service']);
