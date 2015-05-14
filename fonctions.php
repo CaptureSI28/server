@@ -227,7 +227,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	global $bdd;
 	$result = false;
 	
-	$equipe = $index_equipe + 1; // $index_equipe (0 -> 3)
+	$equipe = $index_equipe;
 
 	// Verif : la partie existe
 	$verif = $bdd->prepare('
