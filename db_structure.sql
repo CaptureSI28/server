@@ -89,35 +89,6 @@ CREATE OR REPLACE VIEW all_qrcodes AS
 	FROM parties p, qrcodes q
 	ORDER BY p.id_partie, q.zone, q.id_qrcode;
 
-<<<<<<< HEAD
-INSERT INTO equipes (hexcolor) VALUES ('#FF0055');
-INSERT INTO equipes (hexcolor) VALUES ('#0077DD');
-INSERT INTO equipes (hexcolor) VALUES ('#00CC66');
-INSERT INTO equipes (hexcolor) VALUES ('#EEEE22');
-
-INSERT INTO zones (id_zone, nom_zone) VALUES (1, "Picasso");
-INSERT INTO zones (id_zone, nom_zone) VALUES (2, "Phil");
-INSERT INTO zones (id_zone, nom_zone) VALUES (3, "BU");
-INSERT INTO zones (id_zone, nom_zone) VALUES (4, "6eme");
-
-INSERT INTO qrcodes (zone) VALUES (1);
-INSERT INTO qrcodes (zone) VALUES (2);
-INSERT INTO qrcodes (zone) VALUES (3);
-INSERT INTO qrcodes (zone) VALUES (4);
-
-INSERT INTO joueurs (login) VALUES ("aperdria");
-INSERT INTO joueurs (login) VALUES ("roccajos");
-INSERT INTO joueurs (login) VALUES ("tricciol");
-INSERT INTO joueurs (login) VALUES ("amatobap");
-
-INSERT INTO `si28`.`parties` (`id_partie`, `nom`, `password`, `date_debut`, `date_fin`) VALUES (NULL, 'MaSuperPartie', 'test', '2015-02-01 00:00:00', '2015-05-01 00:00:00');
-
-INSERT INTO `si28`.`parties` (`id_partie`, `nom`, `password`, `date_debut`, `date_fin`) VALUES (NULL, 'MaPartie2', '', '2015-03-01 00:00:00', '2015-04-01 00:00:00');
-
-INSERT INTO `si28`.`inscriptions` (`id_inscription`, `date_inscription`, `partie`, `equipe`, `joueur`) VALUES (NULL, '2015-04-08 00:00:00', '1', '1', '1'), (NULL, '2015-04-13 00:00:00', '1', '2', '2'), (NULL, '2015-04-13 00:00:00', '1', '3', '3'), (NULL, '2015-04-13 00:00:00', '1', '4', '2');
-
-INSERT INTO `si28`.`flashs` (`id_flash`, `date_flash`, `joueur`, `qrcode`, `nbpoints`) VALUES (NULL, '2015-05-01 00:00:00', '1', '1', '1'), (NULL, '2015-05-02 00:00:00', '2', '1', '1');
-=======
 INSERT INTO
 	equipes (hexcolor)
 VALUES
@@ -148,7 +119,7 @@ VALUES
 	('aperdria'),
 	('roccajos'),
 	('tricciol'),
-	('amatoba');
+	('amatobap');
 
 INSERT INTO
 	parties (nom, password, date_debut, date_fin)
@@ -163,4 +134,3 @@ VALUES
 	('2015-04-08 00:00:00', '1', '2', '1'),
 	('2015-04-08 00:00:00', '1', '3', '1'),
 	('2015-04-08 00:00:00', '1', '4', '1');
->>>>>>> origin/master
