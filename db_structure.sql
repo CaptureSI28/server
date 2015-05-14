@@ -107,7 +107,7 @@ INSERT INTO qrcodes (zone) VALUES (4);
 INSERT INTO joueurs (login) VALUES ("aperdria");
 INSERT INTO joueurs (login) VALUES ("roccajos");
 INSERT INTO joueurs (login) VALUES ("tricciol");
-INSERT INTO joueurs (login) VALUES ("amatoba");
+INSERT INTO joueurs (login) VALUES ("amatobap");
 
 INSERT INTO `si28`.`parties` (`id_partie`, `nom`, `password`, `date_debut`, `date_fin`) VALUES (NULL, 'MaSuperPartie', 'test', '2015-02-01 00:00:00', '2015-05-01 00:00:00');
 
