@@ -60,7 +60,6 @@ function newFlash ($date, $id_joueur, $qrcode) {
 	$partieActiveJoueur = getPartieActiveJoueur ($id_joueur);
 	$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 	$nbZones = 1+getNombreZonesEquipePartie ($partieActiveJoueur, $equipe);
-	echo "Nombre de points : ".$nbZones;
 	try {
 	$req = $bdd->prepare('
 			INSERT INTO flashs (date_flash, joueur, qrcode, nbpoints) 
@@ -867,7 +866,6 @@ function getNombreZonesEquipePartie ($id_partie, $id_equipe) {
 			$nbZonesEquipe++;
 		}
 	}
-	echo "<br> L'équipe ".$id_equipe." détient ".$nbZonesEquipe." zones";
 	return $nbZonesEquipe;
 }
 
