@@ -71,7 +71,6 @@ function newFlash ($date, $id_joueur, $qrcode) {
 			'nbPoints' => $nbZones
 		));
 	} catch (Exception $e) {
-		echo $e;
 		return false;
 	}
 	return true;
@@ -261,115 +260,14 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 					));
 					$result = true;
 				} catch (Exception $e) {
-					echo $e;
 					return false;
 				}
-			} else {
-				echo "Joueur inexistant";
 			}
-		} else {
-				echo "MDP invalide";
 		}
-	} else {
-				echo "Partie inexistante";
 	}
 	
 	return $result;
 }
-
-
-/*
- * Input:
- * - date_insc: date d'inscription du joueur (DATETIME)
- * - partie: ID de la partie a laquelle s'inscrire
- * - index_equipe: index de l'equipe dans laquelle s'inscrire (0 -> 3)
- * - joueur: ID du joueur a inscrire
- * - password: chaine de caracteres ('NULL' si non renseigne)
- *
- * Output:
- * -booleen: true si tout se passe bien, false sinon
- */
-/*
-function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
-	global $bdd;
-	
-	$equipe = $index_equipe + 1; // $index_equipe (0 -> 3)
-
-	//verif : la partie a laquelle on s'inscrit doit exister
-	$verif = $bdd->prepare('
-		SELECT COUNT(id_partie)
-		FROM parties 
-		WHERE id_partie = :partie');
-	$verif->execute(array(
-				'partie' => $partie
-			));
-	$nb = $verif->fetchColumn();	//nombre de parties correspondant a l'ID entre (0 ou 1)
-
-	//verif2 : le joueur qu'on veut inscrire doit exister
-	$verif2 = $bdd->prepare('
-		SELECT COUNT(id_joueur)
-		FROM joueurs 
-		WHERE id_joueur = :joueur');
-	$verif2->execute(array(
-				'joueur' => $joueur
-			));
-	$nb2 = $verif2->fetchColumn();	//nombre de joueurs correspondant a l'ID entre (0 ou 1)
-
-	//verif3 : le joueur ne doit pas deja etre inscrit a la partie
-	$verif3 = $bdd->prepare('
-		SELECT COUNT(id_inscription)
-		FROM inscriptions 
-		WHERE partie = :partie
-		AND joueur = :joueur');
-	$verif3->execute(array(
-				'partie' => $partie,
-				'joueur' => $joueur
-			));
-	$nb3 = $verif3->fetchColumn();	//nombre de fois où le joueur s'est inscrit a la partie (0 ou 1)
-	
-	if (($nb != 0)&&($equipe >= 1)&&($equipe <= 4)&&($nb2 != 0))
-	{
-		//recherche du mot de passe de la partie
-		try {
-				$req = $bdd->prepare('
-					SELECT password 
-					FROM parties 
-					WHERE id_partie = :partie');
-				$req->execute(array(
-					'partie' => $partie
-				));
-			} catch (Exception $e) {
-				return false;
-			}
-		while ($row = $req->fetch()) 
-		{
-			//verification de la correspondance du mot de passe
-				if (($row[0] != NULL)&&($row[0]!=sha1($password)))
-				{
-					return false;
-				}
-				else 
-				{
-					try {
-							$req = $bdd->prepare('
-								INSERT INTO inscriptions (date_inscription, partie, equipe, joueur) 
-								VALUES (:date_insc, :partie, :equipe, :joueur)');
-							$req->execute(array(
-								'date_insc' => $date_insc,
-								'partie' => $partie,
-								'equipe' => $equipe,
-								'joueur' => $joueur
-							));
-						} catch (Exception $e) {
-							return false;
-						}
-					return true;
-				}
-		}
-	}
-	return false;
-}
-*/
 
 /*
  * Input:
@@ -553,43 +451,6 @@ function getListeJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
 	return $list;
 }
 
-
-/*
- * Input:
- * - id_partie: identifiant de la partie dont on veut la liste des joueurs
- *
- * Output:
- * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
- */
- /*
-function getNombreJoueursActifsPartieEquipes ($id_partie) {
-	global $bdd;
-	$req = $bdd->prepare('
-		SELECT k.equipe, COUNT(DISTINCT(k.joueur)) as nbJoueurs
-		FROM (
-			SELECT *
-			FROM( 
-				SELECT *
-				FROM inscriptions
-				ORDER BY date_inscription DESC) i
-			GROUP BY i.joueur) k
-		WHERE k.partie=:id_partie
-        GROUP BY k.equipe
-        ');
-	$req->execute(array(
-		'id_partie' => $id_partie
-	));
-	$list = array();
-	while ($row = $req->fetch()) {
-		$list[] = array(
-			'equipe' => $row['equipe'],
-			'nbJoueurs' => $row['nbJoueurs']
-		);
-	}
-	print_r($list);
-	return $list;
-}
-*/
 /*
  * Input:
  * - id_partie: identifiant de la partie dont on veut la liste des joueurs
@@ -621,40 +482,6 @@ function getNombreJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
 	$joueurs = getListeJoueursActifsPartieEquipe($id_partie, $id_equipe);
 	return count($joueurs);
 }
-
-
-
-
-
-/*
- * Input:
- * - id_partie: identifiant de la partie dont on veut la liste des joueurs
- *
- * Output:
- * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
- */
- /*
-function getListeJoueursActifsPartie ($id_partie) {
-	global $bdd;
-	$req = $bdd->prepare('
-		SELECT i.joueur, j.login, i.equipe
-		FROM inscriptions i, joueurs j
-		WHERE i.joueur=j.id_joueur and partie = :id_partie
-		ORDER BY equipe');			//l'ordre sert pour getNbJoueursEquipe
-	$req->execute(array(
-		'id_partie' => $id_partie
-	));
-	$list = array();
-	while ($row = $req->fetch()) {
-		$list[] = array(
-			'id_joueur' => $row['joueur'],
-			'login' => $row['login'],
-			'equipe' => $row['equipe']
-		);
-	}
-	return $list;
-}*/
-
 
 /*
  * Input:
