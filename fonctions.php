@@ -209,6 +209,36 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 		return false;
 }
 
+
+/*
+ * Input:
+ * - id_partie : id de la partie
+ * - id_joueur : id du joueur
+ *
+ * Output:
+ * -result: 0 si le joueur s'inscrit à la partie pour la première fois ; 1,2,3,4 correspondant à l'équipe dans laquelle était le joueur la dernière fois
+ */
+
+function equipeAncienneInscriptionPartie ($id_partie,$id_joueur) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT equipe
+		FROM inscriptions
+		WHERE partie = :id_partie
+		AND joueur = :id_joueur
+		LIMIT 1');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_joueur' => $id_joueur
+	));
+	$result=0;
+	if ($row = $req->fetch()) {
+		$result=$row[0];
+	}
+	return $result;
+	
+}
+
 /*
  * Input:
  * - date_insc: date d'inscription du joueur (DATETIME)
@@ -225,6 +255,8 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	global $bdd;
 	$result = false;
 	
+	$ancienneEquipe = equipeAncienneInscriptionPartie ($id_partie,$id_joueur);
+
 	$equipe = $index_equipe;
 
 	// Verif : la partie existe
@@ -255,8 +287,8 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 					$req->execute(array(
 						'date_insc' => $date_insc,
 						'partie' => $partie,
-						'equipe' => $equipe,
-						'joueur' => $joueur
+						'equipe' => ($ancienneEquipe!=0)?$ancienneEquipe:$equipe,
+						'joueur' => $joueur)
 					));
 					$result = true;
 				} catch (Exception $e) {
