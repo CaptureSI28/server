@@ -19,7 +19,13 @@
 				
 			// Créer une nouvelle partie
 			case 'createNewGame':
-				$newGame = newGame($_POST['name'], $_POST['debut'], $_POST['fin'], $_POST['password']);
+				if (!isset($_POST['start_date'])) {
+					$_POST['start_date'] = $_POST['debut'];
+				}
+				if (!isset($_POST['end_date'])) {
+					$_POST['end_date'] = $_POST['fin'];
+				}
+				$newGame = newGame($_POST['name'], $_POST['start_date'], $_POST['end_date'], $_POST['password']);
 				$response['success'] = $newGame ? 'YES' : 'NO';
 				$response['new_game'] = $newGame;
 				break;
