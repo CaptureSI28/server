@@ -255,9 +255,11 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	global $bdd;
 	$result = false;
 	
-	$ancienneEquipe = equipeAncienneInscriptionPartie ($id_partie,$id_joueur);
-
-	$equipe = $index_equipe;
+	$ancienneEquipe = equipeAncienneInscriptionPartie ($partie,$joueur);
+	if($ancienneEquipe!=0)
+		$equipe=$ancienneEquipe;
+	else
+		$equipe=$index_equipe;
 
 	// Verif : la partie existe
 	$verif = $bdd->prepare('
@@ -287,7 +289,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 					$req->execute(array(
 						'date_insc' => $date_insc,
 						'partie' => $partie,
-						'equipe' => ($ancienneEquipe!=0)?$ancienneEquipe:$equipe,
+						'equipe' => $equipe,
 						'joueur' => $joueur
 					));
 					$result = true;
@@ -738,10 +740,10 @@ function getNombreZonesEquipePartie ($id_partie, $id_equipe) {
 function getClassementEquipesPartie ($id_partie) {
 	global $bdd;
 	$array = array(
-    "1" => getScoreEquipePartie($id_partie, 1),
-    "2" => getScoreEquipePartie($id_partie, 2),
-    "3" => getScoreEquipePartie($id_partie, 3),
-    "4" => getScoreEquipePartie($id_partie, 4)
+    "Equipe 1" => getScoreEquipePartie($id_partie, 1),
+    "Equipe 2" => getScoreEquipePartie($id_partie, 2),
+    "Equipe 3" => getScoreEquipePartie($id_partie, 3),
+    "Equipe 4" => getScoreEquipePartie($id_partie, 4)
 	);
 	arsort($array);
 	return $array;
