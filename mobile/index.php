@@ -104,8 +104,31 @@
 				else {
 					 	$response['success'] = 'NO';
 				}
-					 	
-			break;
+
+				break;
+
+			// Récupérer les classements
+			case 'classements' :
+				switch($_POST['classement']){
+					case 'equipes' :
+						$classement=getClassementEquipesPartie ($_POST['game_id']);
+						break;
+					case 'equipesZones' :
+						$classement=getClassementEquipesZonePartie ($_POST['game_id'],$_POST['zone_id']);
+						break;
+					case 'joueurs' :
+						$classement=getClassementJoueursPartie ($_POST['game_id']);
+						break;
+					case 'joueursEquipe' :
+						$classement=getClassementJoueursEquipePartie ($_POST['game_id'],$_POST['team_id']);
+						break;
+					case 'joueursQRCode' :
+						$classement=getClassementJoueursQRCodePartie ($_POST['game_id'],$_POST['qrcode']);
+						break;
+				}
+
+				$response['classement']=$classement;
+				break;
 					
 			// Défault
 			default:
