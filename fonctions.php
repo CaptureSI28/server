@@ -760,10 +760,10 @@ function getClassementEquipesPartie ($id_partie) {
 function getClassementEquipesZonePartie ($id_partie, $id_zone) {
 	global $bdd;
 	$array = array(
-    "1" => getNombreFlashsEquipeZonePartie ($id_partie, 1, $id_zone),
-    "2" => getNombreFlashsEquipeZonePartie ($id_partie, 2, $id_zone),
-    "3" => getNombreFlashsEquipeZonePartie ($id_partie, 3, $id_zone),
-    "4" => getNombreFlashsEquipeZonePartie ($id_partie, 4, $id_zone)
+    "Equipe 1" => getNombreFlashsEquipeZonePartie ($id_partie, 1, $id_zone),
+    "Equipe 2" => getNombreFlashsEquipeZonePartie ($id_partie, 2, $id_zone),
+    "Equipe 3" => getNombreFlashsEquipeZonePartie ($id_partie, 3, $id_zone),
+    "Equipe 4" => getNombreFlashsEquipeZonePartie ($id_partie, 4, $id_zone)
 	);
 	arsort($array);
 	return $array;
@@ -1023,7 +1023,7 @@ function getClassementJoueursPartie ($id_partie) {
 	$array = array();
 	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
 		{
-			$array[$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+			$array["Joueur ".$i] = getNombreFlashsJoueurPartie($id_partie,$i);
 		}
 	arsort($array);
 	return $array;
@@ -1043,7 +1043,7 @@ function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
 		{
 			if($id_equipe == getEquipeJoueurPartieActive ($id_partie, $i))
-				$array[$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+				$array["Joueur ".$i] = getNombreFlashsJoueurPartie($id_partie,$i);
 		}
 	arsort($array);
 	return $array;
@@ -1062,7 +1062,7 @@ function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
 	$array = array();
 	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
 		{
-			$array[$i] = getNombreFlashsJoueurQRCodePartie ($id_partie, $i, $id_qrcode);
+			$array["Joueur ".$i] = getNombreFlashsJoueurQRCodePartie ($id_partie, $i, $id_qrcode);
 		}
 	arsort($array);
 	return $array;
