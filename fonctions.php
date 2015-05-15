@@ -237,7 +237,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 			));
 	if ($row = $verif->fetch()) {
 		// Verif : Le mot de passe est correct
-		if(sha1($password) == $row['password']) {
+		if(sha1($password) == $row['password'] || $row['password'] === NULL) {
 			// Verif : Le joueur existe
 			$verif2 = $bdd->prepare('
 				SELECT id_joueur
