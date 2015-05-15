@@ -288,7 +288,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 						'date_insc' => $date_insc,
 						'partie' => $partie,
 						'equipe' => ($ancienneEquipe!=0)?$ancienneEquipe:$equipe,
-						'joueur' => $joueur)
+						'joueur' => $joueur
 					));
 					$result = true;
 				} catch (Exception $e) {
