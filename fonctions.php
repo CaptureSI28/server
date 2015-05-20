@@ -917,7 +917,7 @@ function getCouleurEquipe($id_equipe){
 	$req->execute(array(
 		'id_equipe' => $id_equipe
 	));
-	if ($row = $req->fetchColumn()) {
+	if ($row = $req->fetch()) {
 		return $row['hexcolor'];
 	} else {
 		return NULL;
