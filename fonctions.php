@@ -654,6 +654,39 @@ function getScoreJoueurPartie ($id_partie, $id_joueur) {
 
 /*
  * Input:
+ * - id_partie: identifiant de la partie
+ * - id_joueur : identifiant du joueur
+ *
+ * Output:
+ * - timePlayed : temps joue en secondes
+ */
+function getTimePlayed ($id_partie, $id_joueur) {
+	global $bdd;
+	$req = $bdd->prepare('		
+		SELECT (
+			SELECT TIME_TO_SEC(TIMEDIFF(NOW(),(
+				SELECT date_inscription
+				FROM inscriptions
+				WHERE partie = :id_partie
+					AND joueur = :id_joueur
+				ORDER BY date_inscription
+				LIMIT 1
+			)))
+		) as time_played
+	');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_joueur' => $id_joueur
+	));
+	$timePlayed = 0;
+	if ($row = $req->fetch()) {
+		$timePlayed = $row['time_played'];
+	}
+	return $timePlayed;
+}
+
+/*
+ * Input:
  * - id_partie : identifiant de la partie
  * - id_equipe : identifiant de l'équipe
  * - id_zone : numéro de la zone
