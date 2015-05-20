@@ -48,6 +48,42 @@ function newPlayer ($login) {
 
 /*
  * Input:
+ * - partie: identifiant de la partie
+ * - qrcode: identifiant du qrcode flashé
+ *
+ * Output:
+ * -booleen: true si le qrcode est ouvert, false sinon (false si le qrcode a été flashé dans les 5 minutes précédentes)
+ */
+function qrcodeOuvert ($partie, $qrcode) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT date_flash
+		FROM infos_flashs
+		WHERE partie = :partie
+		AND qrcode = :qrcode
+		ORDER BY date_flash DESC
+		LIMIT 1');
+	$req->execute(array(
+		'partie' => $partie,
+		'qrcode' => $qrcode
+	));
+	if ($row = $req->fetch())
+		$previousFlash=$row[0];		//récupération de la date du dernier flash de ce qrcode 
+	else
+		return true;
+	$date_dernier_flash = new DateTime(trim($previousFlash));		//création de l'objet DATETIME date_dernier_flash
+	$time = new DateTimeZone("Europe/Paris"); 
+	$now = new DateTime(date("Y-m-d H:i:s"), $time);				//création de l'objet DATETIME date actuelle
+	$tempsEcoule = $now->diff($date_dernier_flash);		//affichage : %d jours %h heures %i minutes %s secondes
+	if (($tempsEcoule->format('%d')=='0')&&($tempsEcoule->format('%h')=='00')&&($tempsEcoule->format('%i')<'05'))
+		//si le temps entre le flash actuel et le dernier flash est de 0 jour, 0 heure, et moins de 5 minutes, alors le qrcode est fermé
+		return false;
+	else 
+		return true;
+}
+
+/*
+ * Input:
  * -date: date du flash DATETIME
  * -joueur: id du joueur qui flash
  * -qrcode: id du qrcode flashé
@@ -536,8 +572,8 @@ function getNombreFlashsEquipePartie ($id_partie, $id_equipe) {
 		'id_partie' => $id_partie,
 		'id_equipe' => $id_equipe
 	));
-	$nb = $req->fetchColumn();
-	return $nb;	
+	if ($row = $req->fetch())
+		return $row['nbFlashs'];
 }
 
 /*
@@ -634,8 +670,8 @@ function getNombreFlashsEquipeZonePartie ($id_partie, $id_equipe, $id_zone) {
 		'id_equipe' => $id_equipe,
 		'id_zone' => $id_zone
 	));
-	$nb = $req->fetchColumn();
-	return $nb;	
+	if ($row = $req->fetch())
+		return $row['nbFlashs'];
 }
 
 /*
@@ -872,8 +908,8 @@ function getNombreFlashsJoueurPartie ($id_partie, $id_joueur) {
 		'id_partie' => $id_partie,
 		'id_joueur' => $id_joueur
 	));
-	$nb = $req->fetchColumn();
-	return $nb;	
+	if ($row = $req->fetch())
+		return $row['nbFlashs'];
 }
 
 /*
@@ -892,8 +928,8 @@ function getNombreFlashsJoueur ($id_joueur) {
 	$req->execute(array(
 		'id_joueur' => $id_joueur
 	));
-	$nb = $req->fetchColumn();
-	return $nb;	
+	if ($row = $req->fetch())
+		return $row['nbFlashs'];
 }
 
 /*
@@ -918,8 +954,8 @@ function getNombreFlashsJoueurQRCodePartie ($id_partie, $id_joueur, $id_qrcode) 
 		'id_joueur' => $id_joueur,
 		'id_qrcode' => $id_qrcode
 	));
-	$nb = $req->fetchColumn();
-	return $nb;	
+	if ($row = $req->fetch())
+		return $row['nbFlashs'];
 }
 
 /*
