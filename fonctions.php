@@ -94,22 +94,27 @@ function qrcodeOuvert ($partie, $qrcode) {
 function newFlash ($date, $id_joueur, $qrcode) {
 	global $bdd;
 	$partieActiveJoueur = getPartieActiveJoueur ($id_joueur);
-	$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
-	$nbZones = 1+getNombreZonesEquipePartie ($partieActiveJoueur, $equipe);
-	try {
-	$req = $bdd->prepare('
-			INSERT INTO flashs (date_flash, joueur, qrcode, nbpoints) 
-			VALUES (:date, :id_joueur, :qrcode, :nbPoints)');
-		$req->execute(array(
-			'date' => $date,
-			'id_joueur' => $id_joueur,
-			'qrcode' => $qrcode,
-			'nbPoints' => $nbZones
-		));
-	} catch (Exception $e) {
+	if(qrcodeOuvert($partieActiveJoueur, $qrcode) == true)			//si le qrcode est ouvert
+		{
+			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
+			$nbZones = 1+getNombreZonesEquipePartie ($partieActiveJoueur, $equipe);
+			try {
+			$req = $bdd->prepare('
+					INSERT INTO flashs (date_flash, joueur, qrcode, nbpoints) 
+					VALUES (:date, :id_joueur, :qrcode, :nbPoints)');
+				$req->execute(array(
+					'date' => $date,
+					'id_joueur' => $id_joueur,
+					'qrcode' => $qrcode,
+					'nbPoints' => $nbZones
+				));
+			} catch (Exception $e) {
+				return false;
+			}
+			return true;
+		}
+	else 					//si le qrcode est fermé
 		return false;
-	}
-	return true;
 }
 
 
