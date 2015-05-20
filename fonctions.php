@@ -54,7 +54,7 @@ function newPlayer ($login) {
  * Output:
  * -booleen: true si le qrcode est ouvert, false sinon (false si le qrcode a été flashé dans les 5 minutes précédentes)
  */
-function qrcodeOuvert ($partie, $qrcode) {
+function qrcodeOuvert ($partie, $qrcode, $date) {
 	global $bdd;
 	$req = $bdd->prepare('
 		SELECT date_flash
@@ -72,9 +72,8 @@ function qrcodeOuvert ($partie, $qrcode) {
 	else
 		return true;
 	$date_dernier_flash = new DateTime(trim($previousFlash));		//création de l'objet DATETIME date_dernier_flash
-	$time = new DateTimeZone("Europe/Paris"); 
-	$now = new DateTime(date("Y-m-d H:i:s"), $time);				//création de l'objet DATETIME date actuelle
-	$tempsEcoule = $now->diff($date_dernier_flash);		//affichage : %d jours %h heures %i minutes %s secondes
+	$date_flash = new DateTime(trim($date));		//création de l'objet DATETIME date
+	$tempsEcoule = $date_flash->diff($date_dernier_flash);		//affichage : %d jours %h heures %i minutes %s secondes
 	if (($tempsEcoule->format('%d')=='0')&&($tempsEcoule->format('%h')=='00')&&($tempsEcoule->format('%i')<'05'))
 		//si le temps entre le flash actuel et le dernier flash est de 0 jour, 0 heure, et moins de 5 minutes, alors le qrcode est fermé
 		return false;
@@ -94,7 +93,7 @@ function qrcodeOuvert ($partie, $qrcode) {
 function newFlash ($date, $id_joueur, $qrcode) {
 	global $bdd;
 	$partieActiveJoueur = getPartieActiveJoueur ($id_joueur);
-	if(qrcodeOuvert($partieActiveJoueur, $qrcode) == true)			//si le qrcode est ouvert
+	if(qrcodeOuvert($partieActiveJoueur, $qrcode, $date) == true)			//si le qrcode est ouvert
 		{
 			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 			$nbZones = 1+getNombreZonesEquipePartie ($partieActiveJoueur, $equipe);
