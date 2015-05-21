@@ -98,32 +98,7 @@
 						);
 						break;
 					case 'rankings':
-						$response['rankings'] = array(
-							array(
-								'name' => 'Amélie P',
-								'score' => '140'
-							),
-							array(
-								'name' => 'Baptiste A',
-								'score' => '135',
-							),
-							array(
-								'name' => 'Thomas R',
-								'score' => '100',
-							),
-							array(
-								'name' => 'Joseph R',
-								'score' => '80',
-							),
-							array(
-								'name' => 'Benjamin S',
-								'score' => '75',
-							),
-							array(
-								'name' => 'Baptiste R',
-								'score' => '50'
-							)
-						);
+						$response['rankings'] = getOverallRankings($gameid);
 						break;
 					case 'settings':
 						$response['nb_players'] = '14';

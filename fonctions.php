@@ -1086,6 +1086,40 @@ function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 
 /*
  * Input:
+ * - gameId : identifiant de la partie
+ *
+ * Output:
+ * - rankings: tableau d'objets json contenant le nom du joueur 'name' et le score 'score'
+ */
+function getOverallRankings ($gameId) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT (
+			SELECT login
+			FROM joueurs
+			WHERE id_joueur = i.joueur
+			LIMIT 1
+		) AS name, count(*) AS score
+		FROM infos_flashs i
+		WHERE partie = :game_id
+		GROUP BY name
+		ORDER BY score DESC;
+	');
+	$req->execute(array(
+		'game_id' => $gameId
+	));
+	$rankings = array();
+	while ($row = $req->fetch()) {
+		$rankings[] = array(
+			'name' => $row['name'],
+			'score' => strval($row['score'])
+		);
+	}
+	return $rankings;
+}
+
+/*
+ * Input:
  * - id_partie : identifiant de la partie
  *
  * Output:
