@@ -42,6 +42,98 @@
 				$response['success'] = $success ? 'YES' : 'NO';
 				break;
 				
+			case 'gameInfo':
+				$playerid = getIdForPlayer($_SESSION['login']);
+				$gameid = getPartieActiveJoueur($playerid);
+				$nbJoueurs=getNombreJoueursActifsPartieEquipes($gameid);
+				$scoreEquipes=getScoreEquipesPartie($gameid);
+				$scoreJoueur=getScoreJoueurPartie($gameid,$playerid);
+				$team_info = array();
+				for ($i = 0; $i < 4; $i++) {
+					$team_info[strval($i + 1)] = array(
+						'score' => $scoreEquipes[$i]['score'],
+						'nb_players' => $nbJoueurs[$i]['nbJoueurs']
+					);
+				}
+				$response['success'] = 'YES';
+				$response['game_info'] = array(
+					'player_score' => $scoreJoueur,
+					'team_info' => $team_info
+				);
+				switch ($_POST['sub_service']) {
+					case 'playerProfile':
+						$timePlayed = getTimePlayed($gameid,$playerid);
+						$response['player_name'] = $_SESSION['login'];
+						$response['time_played'] = $timePlayed;
+						$response['profile_info'] = array(
+							'20 captures',
+							'15 missions accomplies',
+							'2 missions en cours'
+						);
+						break;
+					case 'teamProfile':
+						$teamId = $_POST['team_id'];
+						$response['team_info'] = array(
+							'15 joueurs',
+							'300 captures',
+							'45 missions accomplies',
+							'15 missions en cour'
+						);
+						break;
+					case 'map':
+						$equipesZones=getIdEquipeParZone($gameid);
+						$map = array();
+						foreach ($equipesZones as $value) {
+							$map[$value['zone']] = strval($value['equipe']);
+						}
+						$response['map'] = $map;
+						break;
+					case 'history':
+						$response['history'] = array(
+							'Amélie P flash zone A1',
+							'Baptiste A flash zone B1',
+							'Thomas R flash zone B1',
+							'Benjamin S réalise la mission \'Course folle\'',
+							'Amélie P rejoint la partie'
+						);
+						break;
+					case 'rankings':
+						$response['rankings'] = array(
+							array(
+								'name' => 'Amélie P',
+								'score' => '140'
+							),
+							array(
+								'name' => 'Baptiste A',
+								'score' => '135',
+							),
+							array(
+								'name' => 'Thomas R',
+								'score' => '100',
+							),
+							array(
+								'name' => 'Joseph R',
+								'score' => '80',
+							),
+							array(
+								'name' => 'Benjamin S',
+								'score' => '75',
+							),
+							array(
+								'name' => 'Baptiste R',
+								'score' => '50'
+							)
+						);
+						break;
+					case 'settings':
+						$response['nb_players'] = '14';
+						break;
+					default:
+						$response['success'] = 'NO';
+						$response['failure'] = 'Unknown sub-service';
+						break;
+				}
+
 			// Récupérer les infos sur la partie
 			case 'infos_partie' :
 			
