@@ -1094,9 +1094,10 @@ function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 function getClassementJoueursPartie ($id_partie) {
 	global $bdd;
 	$array = array();
-	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	foreach($listeJoueursPartie as $value)
 		{
-			$array["Joueur ".$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+			$array["".$value['login']] = getNombreFlashsJoueurPartie($id_partie,$value['id_joueur']);
 		}
 	arsort($array);
 	return $array;
@@ -1133,9 +1134,10 @@ function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
 	global $bdd;
 	$array = array();
-	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	foreach($listeJoueursPartie as $value)
 		{
-			$array["Joueur ".$i] = getNombreFlashsJoueurQRCodePartie ($id_partie, $i, $id_qrcode);
+			$array["".$value['login']] = getNombreFlashsJoueurQRCodePartie($id_partie,$value['id_joueur'],$id_qrcode);
 		}
 	arsort($array);
 	return $array;
