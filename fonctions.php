@@ -1128,9 +1128,10 @@ function getOverallRankings ($gameId) {
 function getClassementJoueursPartie ($id_partie) {
 	global $bdd;
 	$array = array();
-	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	foreach($listeJoueursPartie as $value)
 		{
-			$array["Joueur ".$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+			$array["".$value['login']] = getNombreFlashsJoueurPartie($id_partie,$value['id_joueur']);
 		}
 	arsort($array);
 	return $array;
@@ -1147,10 +1148,10 @@ function getClassementJoueursPartie ($id_partie) {
 function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 	global $bdd;
 	$array = array();
-	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+	$listeJoueursPartieEquipe=getListeJoueursActifsPartieEquipe($id_partie, $id_equipe);
+	foreach($listeJoueursPartieEquipe as $value)
 		{
-			if($id_equipe == getEquipeJoueurPartieActive ($id_partie, $i))
-				$array["Joueur ".$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+			$array["".$value['login']] = getNombreFlashsJoueurPartie($id_partie,$value['id_joueur']);
 		}
 	arsort($array);
 	return $array;
@@ -1167,9 +1168,10 @@ function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
 	global $bdd;
 	$array = array();
-	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	foreach($listeJoueursPartie as $value)
 		{
-			$array["Joueur ".$i] = getNombreFlashsJoueurQRCodePartie ($id_partie, $i, $id_qrcode);
+			$array["".$value['login']] = getNombreFlashsJoueurQRCodePartie($id_partie,$value['id_joueur'],$id_qrcode);
 		}
 	arsort($array);
 	return $array;
