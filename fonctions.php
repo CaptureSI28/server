@@ -1113,10 +1113,10 @@ function getClassementJoueursPartie ($id_partie) {
 function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 	global $bdd;
 	$array = array();
-	for($i=1;$i<=getNbJoueursActifsPartie($id_partie);$i++)
+	$listeJoueursPartieEquipe=getListeJoueursActifsPartieEquipe($id_partie, $id_equipe);
+	foreach($listeJoueursPartieEquipe as $value)
 		{
-			if($id_equipe == getEquipeJoueurPartieActive ($id_partie, $i))
-				$array["Joueur ".$i] = getNombreFlashsJoueurPartie($id_partie,$i);
+			$array["".$value['login']] = getNombreFlashsJoueurPartie($id_partie,$value['id_joueur']);
 		}
 	arsort($array);
 	return $array;
