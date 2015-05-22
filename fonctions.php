@@ -206,7 +206,7 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 	if (($date_debut<$date_fin)&&($date_debut < date('Y-m-d H:i:s', time())))		//si la date de début est antérieure à la date actuelle,
 		$date_debut = date('Y-m-d H:i:s', time());									//on ramène la date de début à celle actuelle
 	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:i:s', time()))) {
-		if ($password == 'NULL') {
+		if ($password == NULL || $password == '') {
 			$req = $bdd->prepare('
 				INSERT INTO parties (nom, date_debut, date_fin) 
 				VALUES (:nom, :date_debut, :date_fin)');
