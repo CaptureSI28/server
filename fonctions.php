@@ -94,7 +94,6 @@ function newFlash ($date, $id_joueur, $qrcode) {
 		{
 			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 			$nbZones = getNombreZonesEquipePartie($partieActiveJoueur, $equipe);
-			echo "<br>".$nbZones;
 			$nbPoints=pow(2,$nbZones);	
 			try {
 			$req = $bdd->prepare('
