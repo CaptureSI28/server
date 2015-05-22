@@ -74,7 +74,7 @@ function qrcodeOuvert ($partie, $qrcode, $date) {
 	$date_dernier_flash = new DateTime(trim($previousFlash));		//création de l'objet DATETIME date_dernier_flash
 	$date_flash = new DateTime(trim($date));		//création de l'objet DATETIME date
 	$tempsEcoule = $date_flash->diff($date_dernier_flash);		//affichage : %d jours %h heures %i minutes %s secondes
-	if (($tempsEcoule->format('%d')=='0')&&($tempsEcoule->format('%h')=='00')&&($tempsEcoule->format('%i')<'05'))
+	if (($tempsEcoule->format('%d')=='0')&&($tempsEcoule->format('%h')=='00')&&($tempsEcoule->format('%i')<'00'))
 		//si le temps entre le flash actuel et le dernier flash est de 0 jour, 0 heure, et moins de 5 minutes, alors le qrcode est fermé
 		return false;
 	else 

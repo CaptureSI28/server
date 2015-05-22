@@ -50,14 +50,15 @@
 				$scoreJoueur=getScoreJoueurPartie($gameid,$playerid);
 				$team_info = array();
 				for ($i = 0; $i < 4; $i++) {
-					$team_info[strval($i + 1)] = array(
-						'score' => $scoreEquipes[$i]['score'],
-						'nb_players' => $nbJoueurs[$i]['nbJoueurs']
+					$team_info[] = array(
+						'score' => intval($scoreEquipes[$i]['score']),
+						'nb_players' => intval($nbJoueurs[$i]['nbJoueurs'])
 					);
 				}
 				$response['success'] = 'YES';
 				$response['game_info'] = array(
-					'player_score' => $scoreJoueur,
+					'player_team' => intval(getEquipeJoueurPartieActive($gameid, $playerid)),
+					'player_score' => intval($scoreJoueur),
 					'team_info' => $team_info
 				);
 				switch ($_POST['sub_service']) {
