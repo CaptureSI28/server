@@ -108,7 +108,7 @@
 						$response['rankings'] = getOverallRankings($gameid);
 						break;
 					case 'settings':
-						$response['nb_players'] = '14';
+						$response['nb_players_game'] = getNbJoueursActifsPartie ($id_partie);
 						break;
 					default:
 						$response['success'] = 'NO';
