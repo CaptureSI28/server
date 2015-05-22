@@ -105,6 +105,7 @@ function newFlash ($date, $id_joueur, $qrcode) {
 					'date' => $date,
 					'id_joueur' => $id_joueur,
 					'qrcode' => $qrcode,
+					'nbPoints' => $nbZones+1
 				));
 			} catch (Exception $e) {
 				return false;
