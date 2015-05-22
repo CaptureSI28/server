@@ -64,21 +64,28 @@
 				switch ($_POST['sub_service']) {
 					case 'playerProfile':
 						$timePlayed = getTimePlayed($gameid,$playerid);
+						$playerid = getIdForPlayer($_SESSION['login']);
+						$gameid = getPartieActiveJoueur($playerid);
+						$nbFlashsJoueurPartie = getNombreFlashsJoueurPartie ($gameid, $playerid)
 						$response['player_name'] = $_SESSION['login'];
 						$response['time_played'] = $timePlayed;
 						$response['profile_info'] = array(
-							'20 captures',
+							$nbFlashsJoueurPartie . ' captures',
 							'15 missions accomplies',
 							'2 missions en cours'
 						);
 						break;
 					case 'teamProfile':
 						$teamId = $_POST['team_id'];
+						$playerid = getIdForPlayer($_SESSION['login']);
+						$gameid = getPartieActiveJoueur($playerid);
+						$nbJoueursEquipes = getNombreJoueursActifsPartieEquipe ($gameid, $teamId);
+						$nbFlashsEquipePartie = getNombreFlashsEquipePartie ($gameid, $teamId);
 						$response['team_info'] = array(
-							'15 joueurs',
-							'300 captures',
+							$nbJoueursEquipes . ' joueurs',
+							$nbFlashsEquipePartie . ' captures',
 							'45 missions accomplies',
-							'15 missions en cour'
+							'15 missions en cours'
 						);
 						break;
 					case 'map':
