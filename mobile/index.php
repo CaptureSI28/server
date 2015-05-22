@@ -180,8 +180,8 @@
 
 			// Récupérer les classements
 			case 'classements' :
-				switch($_POST['classement']){
 					$success = true;
+				switch($_POST['classement']){
 					case 'equipes' :
 						$classement=getClassementEquipesPartie ($_POST['game_id']);
 						break;
@@ -202,9 +202,7 @@
 
 				$response['classement'] = $classement;
 				$response['success'] = $success;
-				break;
-
-					
+			break;		
 			// Défault
 			default:
 				$response['failure'] = 'Unknown service';
