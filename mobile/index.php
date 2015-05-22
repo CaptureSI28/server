@@ -97,13 +97,12 @@
 						$response['map'] = $map;
 						break;
 					case 'history':
-						$response['history'] = array(
-							'Amélie P flash zone A1',
-							'Baptiste A flash zone B1',
-							'Thomas R flash zone B1',
-							'Benjamin S réalise la mission \'Course folle\'',
-							'Amélie P rejoint la partie'
-						);
+						$derniersFlashs = getDerniersFlashs ($gameid);
+						$phrases = array();
+						foreach ($derniersFlashs as $key => $row) {
+							$phrases[] = $row['joueur'] . ' (equipe ' . $row['equipe'] . ') flash la zone ' . $row['qrcode'];
+						}
+						$response['history'] = $phrases;
 						break;
 					case 'rankings':
 						$response['rankings'] = getOverallRankings($gameid);
