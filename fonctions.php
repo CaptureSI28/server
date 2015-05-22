@@ -57,7 +57,7 @@ function newPlayer ($login) {
 function qrcodeOuvert ($partie, $qrcode, $date) {
 	global $bdd;
 	$req = $bdd->prepare('
-		SELECT date_flash
+		SELECT TIME_TO_SEC(TIMEDIFF(NOW(),date_flash)) as delai
 		FROM infos_flashs
 		WHERE partie = :partie
 		AND qrcode = :qrcode
@@ -68,14 +68,11 @@ function qrcodeOuvert ($partie, $qrcode, $date) {
 		'qrcode' => $qrcode
 	));
 	if ($row = $req->fetch())
-		$previousFlash=$row[0];		//récupération de la date du dernier flash de ce qrcode 
+		$delai=$row['delai'];		//récupération de la date du dernier flash de ce qrcode 
 	else
 		return true;
-	$date_dernier_flash = new DateTime(trim($previousFlash));		//création de l'objet DATETIME date_dernier_flash
-	$date_flash = new DateTime(trim($date));		//création de l'objet DATETIME date
-	$tempsEcoule = $date_flash->diff($date_dernier_flash);		//affichage : %d jours %h heures %i minutes %s secondes
-	if (($tempsEcoule->format('%d')=='0')&&($tempsEcoule->format('%h')=='00')&&($tempsEcoule->format('%i')<'00'))
-		//si le temps entre le flash actuel et le dernier flash est de 0 jour, 0 heure, et moins de 5 minutes, alors le qrcode est fermé
+	//if($delai < (5*60))		//si le temps écoulé entre maintenant et le dernier flash est inférieur à 5 minutes, alors le QRcode est fermé
+	if($delai < (0*60))	//pour les tests
 		return false;
 	else 
 		return true;
