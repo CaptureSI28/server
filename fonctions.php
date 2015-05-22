@@ -94,6 +94,7 @@ function newFlash ($date, $id_joueur, $qrcode) {
 		{
 			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 			$nbZones = getNombreZonesEquipePartie ($partieActiveJoueur, $equipe);
+			$nbPoints=2^($nbZones);	
 			try {
 			$req = $bdd->prepare('
 					INSERT INTO flashs (date_flash, joueur, qrcode, nbpoints) 
@@ -102,7 +103,7 @@ function newFlash ($date, $id_joueur, $qrcode) {
 					'date' => $date,
 					'id_joueur' => $id_joueur,
 					'qrcode' => $qrcode,
-					'nbPoints' => $nbZones+1
+					'nbPoints' => $nbPoints
 				));
 			} catch (Exception $e) {
 				return false;
