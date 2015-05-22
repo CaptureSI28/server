@@ -66,7 +66,7 @@
 						$timePlayed = getTimePlayed($gameid,$playerid);
 						$playerid = getIdForPlayer($_SESSION['login']);
 						$gameid = getPartieActiveJoueur($playerid);
-						$nbFlashsJoueurPartie = getNombreFlashsJoueurPartie ($gameid, $playerid)
+						$nbFlashsJoueurPartie = getNombreFlashsJoueurPartie ($gameid, $playerid);
 						$response['player_name'] = $_SESSION['login'];
 						$response['time_played'] = $timePlayed;
 						$response['profile_info'] = array(
