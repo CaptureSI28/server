@@ -778,7 +778,8 @@ function getNombreZones() {
 		FROM zones;
 	');
 	$req->execute();
-	$nbzones = $req->fetchColumn();
+	if ($row = $req->fetch())
+		$nbzones = $row[0];
 	return $nbzones;
 }
 
