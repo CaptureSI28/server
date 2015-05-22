@@ -391,6 +391,7 @@ function getActiveGamesList () {
 			'date_debut' => $row['date_debut'],
 			'date_fin' => $row['date_fin'],
 			'partie_privee' => $row['password'] === sha1("") ? 'NO' : 'YES'
+			'players' => getListeJoueursActifsPartie($row['id_partie']);
 		);
 	}
 	return $list;

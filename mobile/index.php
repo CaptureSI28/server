@@ -14,7 +14,7 @@
 			// Récupérer la liste des parties en cours
 			case 'fetchGamesList':
 				$response['success'] = 'YES';
-				$response['games_list'] = getActiveGamesList();
+				$response['games_list'] = getActiveGamesList();				
 				break;
 				
 			// Créer une nouvelle partie
@@ -128,6 +128,8 @@
 				// Nombre de joueurs et score de chaque équipe
 				// "nbJoueursEquipes":[{"equipe":1,"nbJoueurs":0},...]
 				if($_POST["infos_equipes"] == "true") {
+					$listeJoueursEquipePartie = getListeJoueursActifsPartieEquipe($gameid, $teamId);
+					$response['listeJoueursEquipePartie'] = $nbJoueurs;
 					$nbJoueurs=getNombreJoueursActifsPartieEquipes($gameid);
 					$response['nbJoueursEquipes'] = $nbJoueurs;
 					
