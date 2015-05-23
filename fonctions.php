@@ -1123,6 +1123,41 @@ function getOverallRankings ($gameId) {
 
 /*
  * Input:
+ * - gameId : identifiant de la partie
+ *
+ * Output:
+ * - rankings: tableau d'objets json contenant le nom du joueur 'name' et le score 'score'
+ */
+function getTeamRankings ($gameId) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT (
+			SELECT login
+			FROM joueurs
+			WHERE id_joueur = i.joueur
+			LIMIT 1
+		) AS name, sum(nbpoints) AS score
+		FROM infos_flashs i
+		WHERE partie = :game_id
+		GROUP BY name
+		ORDER BY score DESC;
+	');
+	$req->execute(array(
+		'game_id' => $gameId
+	));
+	$rankings = array();
+	while ($row = $req->fetch()) {
+		$rankings[] = array(
+			'name' => $row['name'],
+			'score' => strval($row['score']),
+			'team' => intval(getEquipeJoueurPartieActive($gameid, $playerid))
+		);
+	}
+	return $rankings;
+}
+
+/*
+ * Input:
  * - id_partie : identifiant de la partie
  *
  * Output:
