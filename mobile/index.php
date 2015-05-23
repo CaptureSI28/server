@@ -105,7 +105,7 @@
 						$response['history'] = $phrases;
 						break;
 					case 'rankings':
-						$rankingsId = $_POST['team_id'];
+						$rankingsId = $_POST['rankings_id'];
 						switch ($rankingsId) {
 							default:
 							case 0:
@@ -192,11 +192,20 @@
 			case 'classements' :
 					$success = true;
 				switch($_POST['classement']){
-					case 'points' :
-						$classement=getClassementPoints($_POST['game_id']);
+					case 'equipes' :
+						$classement=getClassementEquipesPartie ($_POST['game_id']);
 						break;
-					case 'flashs' :
-						$classement=getClassementFlashs($_POST['game_id']);
+					case 'equipesZones' :
+						$classement=getClassementEquipesZonePartie ($_POST['game_id'],$_POST['zone_id']);
+						break;
+					case 'joueurs' :
+						$classement=getClassementJoueursPartie ($_POST['game_id']);
+						break;
+					case 'joueursEquipe' :
+						$classement=getClassementJoueursEquipePartie ($_POST['game_id'],$_POST['team_id']);
+						break;
+					case 'joueursQRCode' :
+						$classement=getClassementJoueursQRCodePartie ($_POST['game_id'],$_POST['qrcode']);
 						break;
 					default : $success = false;
 				}
