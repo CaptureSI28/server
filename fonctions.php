@@ -647,10 +647,12 @@ function getScoreJoueurPartie ($id_partie, $id_joueur) {
 		'id_joueur' => $id_joueur
 	));
 	if ($row = $req->fetch()) {
-		return $row['score'];
-	} else {
-		return 0;
+		$result = $row['score'];
 	}
+	if($result == NULL)
+		return 0;
+	else
+		return $result;
 }
 
 /*
@@ -1366,6 +1368,36 @@ function getClassementFlashs ($id_partie) {
 			$i++;
 		}
 	return $classementFlashs;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ *
+ * Output:
+ * - classementPoints : tableau contenant le nb de points, la place, le login et l'équipe de chaque joueur de la partie
+ */
+function getClassementPoints ($id_partie) {
+	global $bdd;
+	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	//tableau contenant id_joueur, login et equipe
+	foreach($listeJoueursPartie as $value)
+		{
+			$classementPoints[] = array(
+			'score' => getScoreJoueurPartie($id_partie,$value['id_joueur']),
+			'place' => 0,
+			'login' => $value['login'],
+			'team' => $value['equipe']
+			);
+		}
+	arsort($classementPoints);
+	$i=1;
+	foreach($classementPoints as &$value)
+		{
+			$value['place'] = $i;
+			$i++;
+		}
+	return $classementPoints;
 }
 
 /*
