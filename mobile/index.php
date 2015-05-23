@@ -186,6 +186,7 @@
 						$classement=getClassementPoints($_POST['game_id']);
 						break;
 					case 'flashs' :
+						$classement=getClassementFlashs($_POST['game_id']);
 						break;
 					default : $success = false;
 				}
