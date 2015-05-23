@@ -1114,7 +1114,8 @@ function getOverallRankings ($gameId) {
 	while ($row = $req->fetch()) {
 		$rankings[] = array(
 			'name' => $row['name'],
-			'score' => strval($row['score'])
+			'score' => strval($row['score']),
+			'team' => intval(getEquipeJoueurPartieActive($gameid, $playerid))
 		);
 	}
 	return $rankings;
