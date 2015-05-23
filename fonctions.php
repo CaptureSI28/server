@@ -1101,10 +1101,10 @@ function getOverallRankings ($gameId) {
 			FROM joueurs
 			WHERE id_joueur = i.joueur
 			LIMIT 1
-		) AS name, count(*) AS score
+		) AS name, i.joueur as joueur, count(*) AS score
 		FROM infos_flashs i
 		WHERE partie = :game_id
-		GROUP BY name
+		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
 	$req->execute(array(
@@ -1115,7 +1115,7 @@ function getOverallRankings ($gameId) {
 		$rankings[] = array(
 			'name' => $row['name'],
 			'score' => strval($row['score']),
-			'team' => intval(getEquipeJoueurPartieActive($gameid, $playerid))
+			'team' => intval(getEquipeJoueurPartieActive($gameId, $row['joueur']))
 		);
 	}
 	return $rankings;
@@ -1136,10 +1136,10 @@ function getTeamRankings ($gameId) {
 			FROM joueurs
 			WHERE id_joueur = i.joueur
 			LIMIT 1
-		) AS name, sum(nbpoints) AS score
+		) AS name, i.joueur as joueur, sum(nbpoints) AS score
 		FROM infos_flashs i
 		WHERE partie = :game_id
-		GROUP BY name
+		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
 	$req->execute(array(
@@ -1150,7 +1150,7 @@ function getTeamRankings ($gameId) {
 		$rankings[] = array(
 			'name' => $row['name'],
 			'score' => strval($row['score']),
-			'team' => intval(getEquipeJoueurPartieActive($gameid, $playerid))
+			'team' => intval(getEquipeJoueurPartieActive($gameId, $row['joueur']))
 		);
 	}
 	return $rankings;
