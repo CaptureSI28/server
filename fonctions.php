@@ -647,10 +647,12 @@ function getScoreJoueurPartie ($id_partie, $id_joueur) {
 		'id_joueur' => $id_joueur
 	));
 	if ($row = $req->fetch()) {
-		return $row['score'];
-	} else {
-		return 0;
+		$result = $row['score'];
 	}
+	if($result == NULL)
+		return 0;
+	else
+		return $result;
 }
 
 /*
