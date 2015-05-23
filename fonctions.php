@@ -1340,6 +1340,36 @@ function getDerniersFlashsJoueur ($id_partie, $id_joueur) {
 
 /*
  * Input:
+ * - id_partie: identifiant de la partie
+ *
+ * Output:
+ * - classementFlashs : tableau contenant le nb de flashs, la place, le login et l'équipe de chaque joueur de la partie
+ */
+function getClassementFlashs ($id_partie) {
+	global $bdd;
+	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	//tableau contenant id_joueur, login et equipe
+	foreach($listeJoueursPartie as $value)
+		{
+			$classementFlashs[] = array(
+			'score' => getNombreFlashsJoueurPartie($id_partie,$value['id_joueur']),
+			'place' => 0,
+			'login' => $value['login'],
+			'team' => $value['equipe']
+			);
+		}
+	arsort($classementFlashs);
+	$i=1;
+	foreach($classementFlashs as &$value)
+		{
+			$value['place'] = $i;
+			$i++;
+		}
+	return $classementFlashs;
+}
+
+/*
+ * Input:
  * - id_partie: id de la partie à laquelle on est inscrit
  *
  * Output:
