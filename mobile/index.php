@@ -105,7 +105,17 @@
 						$response['history'] = $phrases;
 						break;
 					case 'rankings':
-						$response['rankings'] = getOverallRankings($gameid);
+						$rankingsId = $_POST['team_id'];
+						switch ($rankingsId) {
+							default:
+							case 0:
+								$rankings = getOverallRankings($gameid);
+								break;
+							case 1:
+								$rankings = getTeamRankings($gameid);
+								break;
+						}
+						$response['rankings'] = $rankings;
 						break;
 					case 'settings':
 						$response['nb_players_game'] = getNbJoueursActifsPartie ($id_partie);
