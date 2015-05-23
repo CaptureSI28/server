@@ -192,20 +192,11 @@
 			case 'classements' :
 					$success = true;
 				switch($_POST['classement']){
-					case 'equipes' :
-						$classement=getClassementEquipesPartie ($_POST['game_id']);
+					case 'flashs' :
+						$classement=getClassementFlashs($_POST['game_id']);
 						break;
-					case 'equipesZones' :
-						$classement=getClassementEquipesZonePartie ($_POST['game_id'],$_POST['zone_id']);
-						break;
-					case 'joueurs' :
-						$classement=getClassementJoueursPartie ($_POST['game_id']);
-						break;
-					case 'joueursEquipe' :
-						$classement=getClassementJoueursEquipePartie ($_POST['game_id'],$_POST['team_id']);
-						break;
-					case 'joueursQRCode' :
-						$classement=getClassementJoueursQRCodePartie ($_POST['game_id'],$_POST['qrcode']);
+					case 'points' :
+						$classement=getClassementPoints($_POST['game_id']);
 						break;
 					default : $success = false;
 				}
