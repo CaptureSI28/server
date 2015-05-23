@@ -174,17 +174,13 @@
 					}
 				}
 				
-				if ($success) {
-						$response['success'] = 'YES';
-				}
-				else {
-					 	$response['success'] = 'NO';
-				}
+				$response['success'] = 'YES';
 
 				break;
 
 			// Récupérer les classements
 			case 'classements' :
+					$success = true;
 				switch($_POST['classement']){
 					case 'equipes' :
 						$classement=getClassementEquipesPartie ($_POST['game_id']);
@@ -201,11 +197,12 @@
 					case 'joueursQRCode' :
 						$classement=getClassementJoueursQRCodePartie ($_POST['game_id'],$_POST['qrcode']);
 						break;
+					default : $success = false;
 				}
 
-				$response['classement']=$classement;
-				break;
-					
+				$response['classement'] = $classement;
+				$response['success'] = $success;
+			break;		
 			// Défault
 			default:
 				$response['failure'] = 'Unknown service';
