@@ -203,6 +203,7 @@ function getNbFlashsEquipe ($equipeID) {
  */
 function newGame ($nom, $date_debut, $date_fin, $password) {
 	global $bdd;
+	$createur = $_SESSION['login'];
 	if (($date_debut<$date_fin)&&($date_debut < date('Y-m-d H:i:s', time())))		//si la date de début est antérieure à la date actuelle,
 		$date_debut = date('Y-m-d H:i:s', time());									//on ramène la date de début à celle actuelle
 	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:i:s', time()))) {
@@ -239,6 +240,7 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 			$newGame = array(
 				'id_partie' => $row['id_partie'],
 				'nom' => $row['nom'],
+				'createur' => $createur,
 				'date_debut' => $row['date_debut'],
 				'date_fin' => $row['date_fin'],
 				'partie_privee' => $row['password'] === NULL ? 'NO' : 'YES'
