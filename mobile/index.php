@@ -65,7 +65,7 @@
 					case 'publicGameInfo':
 						$teams = array();
 						for ($i = 0; $i < 4; $i++) { 
-							$players = getListeJoueursActifsPartieEquipe($gameid, $i + 1);
+							$players = getListeJoueursActifsPartieEquipe($_POST['game_id'], $i + 1);
 							$team = array();
 							foreach ($players as $key => $row) {
 								$team[] = $row['login'];
