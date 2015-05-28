@@ -62,6 +62,18 @@
 					'team_info' => $team_info
 				);
 				switch ($_POST['sub_service']) {
+					case 'publicGameInfo':
+						$teams = array();
+						for ($i = 0; $i < 4; $i++) { 
+							$players = getListeJoueursActifsPartieEquipe($gameid, $i + 1);
+							$team = array();
+							foreach ($players as $key => $row) {
+								$team[] = $row['login'];
+							}
+							$teams[] = $team;
+						}
+						$response['teams'] = $teams;
+						break;
 					case 'playerProfile':
 						$timePlayed = getTimePlayed($gameid,$playerid);
 						$playerid = getIdForPlayer($_SESSION['login']);
