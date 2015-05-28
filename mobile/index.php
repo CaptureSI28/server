@@ -70,7 +70,7 @@
 						$response['player_name'] = $_SESSION['login'];
 						$response['time_played'] = $timePlayed;
 						$response['profile_info'] = array(
-							$nbFlashsJoueurPartie . ' capture' . ($nbFlashsJoueurPartie > 0 ? 's' : ''),
+							$nbFlashsJoueurPartie . ' capture' . ($nbFlashsJoueurPartie > 1 ? 's' : ''),
 							'15 missions accomplies',
 							'2 missions en cours'
 						);
@@ -82,8 +82,8 @@
 						$nbJoueursEquipes = getNombreJoueursActifsPartieEquipe ($gameid, $teamId);
 						$nbFlashsEquipePartie = getNombreFlashsEquipePartie ($gameid, $teamId);
 						$response['team_info'] = array(
-							$nbJoueursEquipes . ' joueur' . ($nbJoueursEquipes > 0 ? 's' : ''),
-							$nbFlashsEquipePartie . ' capture' . ($nbFlashsEquipePartie > 0 ? 's' : ''),
+							$nbJoueursEquipes . ' joueur' . ($nbJoueursEquipes > 1 ? 's' : ''),
+							$nbFlashsEquipePartie . ' capture' . ($nbFlashsEquipePartie > 1 ? 's' : ''),
 							'45 missions accomplies',
 							'15 missions en cours'
 						);
