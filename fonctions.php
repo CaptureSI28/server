@@ -378,7 +378,6 @@ function getPartieActiveJoueur ($joueurID) {
  */
 function getActiveGamesList () {
 	global $bdd;
-	$createur = $_SESSION['login'];
 	$req = $bdd->prepare('
 		SELECT *
 		FROM parties
@@ -392,7 +391,7 @@ function getActiveGamesList () {
 		$list[] = array(
 			'id_partie' => $row['id_partie'],
 			'nom' => $row['nom'],
-			'createur' => $createur,
+			'createur' => $row['createur'],
 			'date_debut' => $row['date_debut'],
 			'date_fin' => $row['date_fin'],
 			'partie_privee' => ($row['password'] === sha1('') || $row['password'] === NULL) ? 'NO' : 'YES',
