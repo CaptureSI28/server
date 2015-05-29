@@ -1243,8 +1243,12 @@ function getDerniersFlashs ($id_partie) {
 	global $bdd;
 	$derniersFlashs=array();
 	$req = $bdd->prepare('
-		SELECT date_flash, qrcode, equipe, joueur
-		FROM infos_flashs
+		SELECT date_flash, qrcode, equipe, joueur, (
+			SELECT login
+			FROM joueurs
+			WHERE id_joueur = i.joueur
+		) as login
+		FROM infos_flashs i
 		WHERE partie = :id_partie		
 		ORDER BY date_flash DESC');
 	$req->execute(array(
@@ -1255,7 +1259,8 @@ function getDerniersFlashs ($id_partie) {
 			'date_flash' => $row['date_flash'],
 			'qrcode' => $row['qrcode'],
 			'equipe' => $row['equipe'],
-			'joueur' => $row['joueur']
+			'joueur' => $row['joueur'],
+			'login' => $row['login']
 		);
 	}
 	return $derniersFlashs;

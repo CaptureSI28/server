@@ -64,7 +64,7 @@
 				switch ($_POST['sub_service']) {
 					case 'publicGameInfo':
 						$teams = array();
-						for ($i = 0; $i < 4; $i++) { 
+						for ($i = 0; $i < 4; $i++) {
 							$players = getListeJoueursActifsPartieEquipe($_POST['game_id'], $i + 1);
 							$team = array();
 							foreach ($players as $key => $row) {
@@ -109,10 +109,10 @@
 						$response['map'] = $map;
 						break;
 					case 'history':
-						$derniersFlashs = getDerniersFlashs ($gameid);
+						$derniersFlashs = getDerniersFlashs($gameid);
 						$phrases = array();
 						foreach ($derniersFlashs as $key => $row) {
-							$phrases[] = $row['joueur'] . ' (equipe ' . $row['equipe'] . ') flash la zone ' . $row['qrcode'];
+							$phrases[] = $row['login'] . ' (équipe ' . $row['equipe'] . ') a flashé la zone ' . $row['qrcode'];
 						}
 						$response['history'] = $phrases;
 						break;
