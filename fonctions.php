@@ -218,11 +218,12 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 			));
 		} else {
 			$req = $bdd->prepare('
-				INSERT INTO parties (nom, date_debut, date_fin, password)
-				VALUES (:nom, :date_debut, :date_fin, :password)
+				INSERT INTO parties (nom, createur, date_debut, date_fin, password)
+				VALUES (:nom, :createur, :date_debut, :date_fin, :password)
 			');
 			$req->execute(array(
 				'nom' => $nom,
+				'createur' => $createur,
 				'date_debut' => $date_debut,
 				'date_fin' => $date_fin,
 				'password' => sha1($password)
