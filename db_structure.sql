@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS parties (
 	date_debut DATETIME NOT NULL,
 	date_fin DATETIME NOT NULL,
 	PRIMARY KEY (id_partie),
-	FOREIGN KEY (createur) REFERENCES joueurs (id_joueur) ON DELETE CASCADE,
+	FOREIGN KEY (createur) REFERENCES joueurs (id_joueur) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS equipes (
