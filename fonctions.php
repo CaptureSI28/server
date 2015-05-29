@@ -374,10 +374,11 @@ function getPartieActiveJoueur ($joueurID) {
 /*
  * Output:
  * - partiesActives : tableau contenant toutes les parties non terminees
- * (id_partie, nom, password, date_debut, date_fin)
+ * (id_partie, nom, createur, password, date_debut, date_fin)
  */
 function getActiveGamesList () {
 	global $bdd;
+	$createur = $_SESSION['login'];
 	$req = $bdd->prepare('
 		SELECT *
 		FROM parties
@@ -391,6 +392,7 @@ function getActiveGamesList () {
 		$list[] = array(
 			'id_partie' => $row['id_partie'],
 			'nom' => $row['nom'],
+			'createur' => $createur,
 			'date_debut' => $row['date_debut'],
 			'date_fin' => $row['date_fin'],
 			'partie_privee' => ($row['password'] === sha1('') || $row['password'] === NULL) ? 'NO' : 'YES',
