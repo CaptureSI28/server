@@ -2,9 +2,11 @@ CREATE TABLE IF NOT EXISTS parties (
 	id_partie INT NOT NULL AUTO_INCREMENT,
 	nom VARCHAR(255),
 	password VARCHAR(255),
+	createur INT,
 	date_debut DATETIME NOT NULL,
 	date_fin DATETIME NOT NULL,
-	PRIMARY KEY (id_partie)
+	PRIMARY KEY (id_partie),
+	FOREIGN KEY (createur) REFERENCES joueurs (id_joueur) ON DELETE CASCADE,
 );
 
 CREATE TABLE IF NOT EXISTS equipes (
@@ -122,10 +124,10 @@ VALUES
 	('amatobap');
 
 INSERT INTO
-	parties (nom, password, date_debut, date_fin)
+	parties (nom, password, createur, date_debut, date_fin)
 VALUES
-	('Partie 1', NULL, '2015-02-01 00:00:00', '2015-07-01 00:00:00'),
-	('Partie 2', NULL, '2015-03-01 00:00:00', '2015-08-01 00:00:00');
+	('Partie 1', NULL, '1', '2015-02-01 00:00:00', '2015-07-01 00:00:00'),
+	('Partie 2', NULL, '2', '2015-03-01 00:00:00', '2015-08-01 00:00:00');
 
 INSERT INTO
 	inscriptions (date_inscription, partie, equipe, joueur)
