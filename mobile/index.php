@@ -51,6 +51,9 @@
 			case 'gameInfo':
 				$playerid = getIdForPlayer($_SESSION['login']);
 				$gameid = getPartieActiveJoueur($playerid);
+				if (isset($_POST['game_id'])) {
+					$gameid = $_POST['game_id'];
+				}
 				$nbJoueurs=getNombreJoueursActifsPartieEquipes($gameid);
 				$scoreEquipes=getScoreEquipesPartie($gameid);
 				$scoreJoueur=getScoreJoueurPartie($gameid,$playerid);
