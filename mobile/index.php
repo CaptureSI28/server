@@ -11,6 +11,12 @@
 		$response = validateCasTicket($_POST['cas_ticket'], $_POST['cas_service']);
 	} else if (isset($_SESSION['login'])) {
 		switch ($_POST['service']) {
+			// Récupérer le nom des zones
+			case 'fetchZone':
+				$response['success'] = 'YES';
+				$response['zones_list'] = getZonesList();				
+				break;
+		
 			// Récupérer la liste des parties en cours
 			case 'fetchGamesList':
 				$response['success'] = 'YES';
@@ -192,6 +198,15 @@
 					$equipesZones=getIdEquipeParZone($gameid);
 					$response['equipesZones'] = $equipesZones;
 					if(!$equipesZones) {
+						$success = false;
+					}
+				}
+				
+				// Derniers flashs de la partie
+				if($_POST["historique_flashs"] == "true") {
+					$historique=getDerniersFlashs($gameid);
+					$response['historique'] = $historique;
+					if(!$historique) {
 						$success = false;
 					}
 				}

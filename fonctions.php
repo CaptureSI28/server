@@ -159,13 +159,35 @@ function getIdForPlayer ($login) {
 	$req = $bdd->prepare('
 		SELECT id_joueur
 		FROM joueurs
-		WHERE login = ?;
+		WHERE login = :login;
 	');
-	$req->execute(array($login));
+	$req->execute(array('login' => $login));
 	if ($row = $req->fetch()) {
 		$player_id = $row['id_joueur'];
 	}
 	return $player_id;
+}
+
+/*
+ * Input:
+ * - id: id du joueur
+ *
+ * Output:
+ * - player_login: login du joueur correspondant, false si le joueur n'existe pas
+ */
+function getLoginForPlayer ($id_joueur) {
+	global $bdd;
+	$player_login = false;
+	$req = $bdd->prepare('
+		SELECT login
+		FROM joueurs
+		WHERE id_joueur = :id_joueur;
+	');
+	$req->execute(array('id_joueur' => $id_joueur));
+	if ($row = $req->fetch()) {
+		$player_login = $row['login'];
+	}
+	return $player_login;
 }
 
 /*
@@ -203,16 +225,17 @@ function getNbFlashsEquipe ($equipeID) {
  */
 function newGame ($nom, $date_debut, $date_fin, $password) {
 	global $bdd;
-	$createur = $_SESSION['login'];
+	$createur = getIdForPlayer($_SESSION['login']);
 	if (($date_debut<$date_fin)&&($date_debut < date('Y-m-d H:i:s', time())))		//si la date de début est antérieure à la date actuelle,
 		$date_debut = date('Y-m-d H:i:s', time());									//on ramène la date de début à celle actuelle
 	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:i:s', time()))) {
 		if ($password == NULL || $password == '') {
 			$req = $bdd->prepare('
-				INSERT INTO parties (nom, date_debut, date_fin) 
-				VALUES (:nom, :date_debut, :date_fin)');
+				INSERT INTO parties (nom, createur, date_debut, date_fin) 
+				VALUES (:nom, :createur, :date_debut, :date_fin)');
 			$req->execute(array(
 				'nom' => $nom,
+				'createur' => $createur,
 				'date_debut' => $date_debut,
 				'date_fin' => $date_fin
 			));
@@ -241,7 +264,7 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 			$newGame = array(
 				'id_partie' => $row['id_partie'],
 				'nom' => $row['nom'],
-				'createur' => $createur,
+				'createur' => $row['createur'],
 				'date_debut' => $row['date_debut'],
 				'date_fin' => $row['date_fin'],
 				'partie_privee' => $row['password'] === NULL ? 'NO' : 'YES'
@@ -391,7 +414,7 @@ function getActiveGamesList () {
 		$list[] = array(
 			'id_partie' => $row['id_partie'],
 			'nom' => $row['nom'],
-			'createur' => $row['createur'],
+			'createur' => getLoginForPlayer($row['createur']),
 			'date_debut' => $row['date_debut'],
 			'date_fin' => $row['date_fin'],
 			'partie_privee' => ($row['password'] === sha1('') || $row['password'] === NULL) ? 'NO' : 'YES',
@@ -1245,7 +1268,7 @@ function getDerniersFlashs ($id_partie) {
 	global $bdd;
 	$derniersFlashs=array();
 	$req = $bdd->prepare('
-		SELECT date_flash, qrcode, equipe, joueur, (
+		SELECT date_flash, qrcode, equipe, nbpoints, joueur, (
 			SELECT login
 			FROM joueurs
 			WHERE id_joueur = i.joueur
@@ -1262,10 +1285,78 @@ function getDerniersFlashs ($id_partie) {
 			'qrcode' => $row['qrcode'],
 			'equipe' => $row['equipe'],
 			'joueur' => $row['joueur'],
-			'login' => $row['login']
+			'nbpoints' => $row['nbpoints'],
+			'login' => $row['login'],
+			'zone' => getIdZoneByQrcode($row['qrcode'])
 		);
 	}
 	return $derniersFlashs;
+}
+
+/*
+* Input
+* - qrcode : qrcode d'une zone
+*
+* Output
+* - nom_zone : id de la zone à laquelle appartient le qrcode
+*/
+function getIdZoneByQrcode ($qrcode) {
+	global $bdd;
+	$id_zone = "";
+	$req = $bdd->prepare('
+		SELECT zone
+		FROM qrcodes q
+		WHERE q.id_qrcode = :qrcode');
+	$req->execute(array(
+		'qrcode' => $qrcode
+	));
+	if ($row = $req->fetch())
+		$id_zone = $row['zone'];
+	return $id_zone;
+}
+
+
+
+/*
+* Input
+* - qrcode : qrcode d'une zone
+*
+* Output
+* - nom_zone : nom de la zone à laquelle appartient le qrcode
+*/
+function getNomZoneByQrcode ($qrcode) {
+	global $bdd;
+	$nom_zone = "";
+	$req = $bdd->prepare('
+		SELECT nom_zone
+		FROM zones z, qrcodes q
+		WHERE q.zone = z.id_zone AND q.id_qrcode = :qrcode');
+	$req->execute(array(
+		'qrcode' => $qrcode
+	));
+	if ($row = $req->fetch())
+		$nom_zone = $row['nom_zone'];
+	return $nom_zone;
+}
+
+/*
+* Output
+* - nom_zone : nom de la zone à laquelle appartient le qrcode
+*/
+function getZonesList () {
+	global $bdd;
+	$zones=array();
+	$req = $bdd->prepare('
+		SELECT id_zone, nom_zone
+		FROM zones');
+	$req->execute();
+	while ($row = $req->fetch()) {
+		$zones[] = array(
+			'id_zone' => $row['id_zone'],
+			'nom_zone' => $row['nom_zone']
+		);
+	}
+	return $zones;
 }
 
 /*
@@ -1371,7 +1462,7 @@ function getClassementFlashs ($id_partie) {
 		}
 	arsort($classementFlashs);
 	$i=1;
-	foreach($classementFlashs as &$value)
+	foreach($classementFlashs as $value)
 		{
 			$value['place'] = $i;
 			$i++;
@@ -1401,7 +1492,7 @@ function getClassementPoints ($id_partie) {
 		}
 	arsort($classementPoints);
 	$i=1;
-	foreach($classementPoints as &$value)
+	foreach($classementPoints as $value)
 		{
 			$value['place'] = $i;
 			$i++;
