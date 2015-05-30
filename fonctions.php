@@ -328,7 +328,7 @@ function equipeAncienneInscriptionPartie ($id_partie,$id_joueur) {
  * Input:
  * - date_insc: date d'inscription du joueur (DATETIME)
  * - partie: ID de la partie a laquelle s'inscrire
- * - index_equipe: index de l'equipe dans laquelle s'inscrire (0 -> 3)
+ * - index_equipe: index de l'equipe dans laquelle s'inscrire
  * - joueur: ID du joueur a inscrire
  * - password: chaine de caracteres ('NULL' si non renseigne)
  *
