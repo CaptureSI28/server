@@ -311,6 +311,7 @@ function equipeAncienneInscriptionPartie ($id_partie,$id_joueur) {
 		FROM inscriptions
 		WHERE partie = :id_partie
 		AND joueur = :id_joueur
+		ORDER BY date_inscription DESC
 		LIMIT 1');
 	$req->execute(array(
 		'id_partie' => $id_partie,
