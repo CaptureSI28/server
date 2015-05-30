@@ -80,21 +80,40 @@ function qrcodeOuvert ($partie, $qrcode, $date) {
 
 /*
  * Input:
+ *
+ * Output:
+ * -multiplicateur : 1 ou 2 aléatoirement	(1 chance sur 5 d'avoir x2)
+ */
+function flashBonus () {
+	global $bdd;
+	$random = rand(1,5);
+	if ($random == 5)
+		$multiplicateur = 2;
+	else
+		$multiplicateur = 1;
+	return $multiplicateur;
+}
+
+/*
+ * Input:
  * -date: date du flash DATETIME
  * -joueur: id du joueur qui flash
  * -qrcode: id du qrcode flashé
  *
  * Output:
- * -booleen: true si tout se passe bien, false sinon, l'équipe gagne autant de points par flash que ce qu'elle possède de zones (1 zone = 1 point par flash, 2 zones = 2 points par flash etc.)
+ * -booleen: 1 si tout se passe bien, 0 si le flash ne peut pas se faire ; l'équipe gagne un nombre de points égal à 2 puissance le nombre de zones 
+ *			 et 2 s'il s'agit d'un flash bonus (points x2)
  */
 function newFlash ($date, $id_joueur, $qrcode) {
 	global $bdd;
 	$partieActiveJoueur = getPartieActiveJoueur ($id_joueur);
 	if(qrcodeOuvert($partieActiveJoueur, $qrcode, $date) == true)			//si le qrcode est ouvert
 		{
+			$bonus = flashBonus();
 			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 			$nbZones = getNombreZonesEquipePartie($partieActiveJoueur, $equipe);
 			$nbPoints=pow(2,$nbZones);	
+			$nbPoints*=$bonus;
 			try {
 			$req = $bdd->prepare('
 					INSERT INTO flashs (date_flash, joueur, qrcode, nbpoints) 
@@ -106,12 +125,12 @@ function newFlash ($date, $id_joueur, $qrcode) {
 					'nbPoints' => $nbPoints
 				));
 			} catch (Exception $e) {
-				return false;
+				return 0;
 			}
-			return true;
+			return $bonus;
 		}
 	else 					//si le qrcode est fermé
-		return false;
+		return 0;
 }
 
 
