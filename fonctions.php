@@ -1150,19 +1150,18 @@ function getOverallRankings ($gameId) {
 			FROM joueurs
 			WHERE id_joueur = i.joueur
 			LIMIT 1
-		) AS name, i.joueur as joueur, count(*) AS score
-		FROM infos_flashs i, (
-			SELECT joueur
-			FROM inscriptions
-			WHERE partie = :game_id2
-		) j
-		WHERE partie = :game_id AND j.joueur = i.joueur
+		) AS name, i.joueur as joueur, (
+            SELECT count(*)
+			FROM infos_flashs
+			WHERE i.joueur = joueur AND nbpoints IS NOT NULL
+		) AS score
+		FROM inscriptions i
+		WHERE partie = :game_id
 		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
 	$req->execute(array(
-		'game_id' => $gameId,
-		'game_id2' => $gameId
+		'game_id' => $gameId
 	));
 	$rankings = array();
 	while ($row = $req->fetch()) {
@@ -1190,19 +1189,18 @@ function getTeamRankings ($gameId) {
 			FROM joueurs
 			WHERE id_joueur = i.joueur
 			LIMIT 1
-		) AS name, i.joueur as joueur, sum(nbpoints) AS score
-		FROM infos_flashs i, (
-			SELECT joueur
-			FROM inscriptions
-			WHERE partie = :game_id2
-		) j
-		WHERE partie = :game_id AND j.joueur = i.joueur
+		) AS name, i.joueur as joueur, (
+            SELECT IFNULL(sum(nbpoints), 0)
+			FROM infos_flashs
+			WHERE i.joueur = joueur AND nbpoints IS NOT NULL
+		) AS score
+		FROM inscriptions i
+		WHERE partie = :game_id
 		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
 	$req->execute(array(
-		'game_id' => $gameId,
-		'game_id2' => $gameId
+		'game_id' => $gameId
 	));
 	$rankings = array();
 	while ($row = $req->fetch()) {
