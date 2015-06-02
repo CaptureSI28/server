@@ -1151,13 +1151,18 @@ function getOverallRankings ($gameId) {
 			WHERE id_joueur = i.joueur
 			LIMIT 1
 		) AS name, i.joueur as joueur, count(*) AS score
-		FROM infos_flashs i
-		WHERE partie = :game_id
+		FROM infos_flashs i, (
+			SELECT joueur
+			FROM inscriptions
+			WHERE partie = :game_id2
+		) j
+		WHERE partie = :game_id AND j.joueur = i.joueur
 		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
 	$req->execute(array(
-		'game_id' => $gameId
+		'game_id' => $gameId,
+		'game_id2' => $gameId
 	));
 	$rankings = array();
 	while ($row = $req->fetch()) {
@@ -1186,13 +1191,18 @@ function getTeamRankings ($gameId) {
 			WHERE id_joueur = i.joueur
 			LIMIT 1
 		) AS name, i.joueur as joueur, sum(nbpoints) AS score
-		FROM infos_flashs i
-		WHERE partie = :game_id
+		FROM infos_flashs i, (
+			SELECT joueur
+			FROM inscriptions
+			WHERE partie = :game_id2
+		) j
+		WHERE partie = :game_id AND j.joueur = i.joueur
 		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
 	$req->execute(array(
-		'game_id' => $gameId
+		'game_id' => $gameId,
+		'game_id2' => $gameId
 	));
 	$rankings = array();
 	while ($row = $req->fetch()) {
