@@ -1155,8 +1155,11 @@ function getOverallRankings ($gameId) {
 			FROM infos_flashs
 			WHERE i.joueur = joueur AND nbpoints IS NOT NULL
 		) AS score
-		FROM inscriptions i
-		WHERE partie = :game_id
+		FROM (
+			SELECT DISTINCT joueur
+			FROM inscriptions
+			WHERE partie = :game_id
+		) i
 		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
@@ -1194,8 +1197,11 @@ function getTeamRankings ($gameId) {
 			FROM infos_flashs
 			WHERE i.joueur = joueur AND nbpoints IS NOT NULL
 		) AS score
-		FROM inscriptions i
-		WHERE partie = :game_id
+		FROM (
+			SELECT DISTINCT joueur
+			FROM inscriptions
+			WHERE partie = :game_id
+		) i
 		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
