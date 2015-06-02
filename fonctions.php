@@ -1192,13 +1192,10 @@ function getTeamRankings ($gameId) {
 		) AS name, i.joueur as joueur, (
             SELECT IFNULL(sum(nbpoints), 0)
 			FROM infos_flashs
-			WHERE i.joueur = joueur AND nbpoints IS NOT NULL
+			WHERE i.joueur = joueur AND i.partie = partie AND nbpoints IS NOT NULL
 		) AS score
-		FROM (
-			SELECT DISTINCT joueur
-			FROM inscriptions
-			WHERE partie = :game_id
-		) i
+		FROM inscriptions i
+		WHERE partie = :game_id
 		GROUP BY joueur, name
 		ORDER BY score DESC;
 	');
