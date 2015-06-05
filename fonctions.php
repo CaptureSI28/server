@@ -952,16 +952,20 @@ function getCouleurZone ($id_partie, $id_zone) {
  * - couleurZone : TABLEAU contenant l'identifiant de chaque zone ainsi que la couleur de l'équipe qui détient la zone (qui a le plus flashé cette zone et a flashé en dernier)
  */
 function getCouleursZones ($id_partie) {
-	$nbTotalZones = getNombreZones();
-	$couleursTab = array();
-	for ($zone=1; $zone<=$nbTotalZones; $zone++) {
-		$meilleureEquipe = getMeilleureEquipeZone($id_partie, $zone);
-			$couleursTab[] = array(
-				'zone' => $zone,
-				'couleur' => getCouleurEquipe($meilleureEquipe)
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT id_zone, nom_zone
+		FROM zones;
+	');
+	$req->execute();
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'zone' => strval($row['id_zone']),
+			'couleur' => strval(getCouleurEquipe(getMeilleureEquipeZone($id_partie, $row['id_zone'])))
 		);
 	}
-	return $couleursTab;
+	return $list;
 }
 
 /*
