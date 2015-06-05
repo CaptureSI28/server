@@ -143,7 +143,7 @@ VALUES
 	(54, NULL),
 	(55, NULL),
 	(56, NULL),
-	(57, NULL),
+	(57, NULL);
 
 INSERT INTO
 	qrcodes (zone)
@@ -189,7 +189,7 @@ VALUES
 	(54),
 	(55),
 	(56),
-	(57),
+	(57);
 
 INSERT INTO
 	joueurs (login)
