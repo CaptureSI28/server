@@ -45,7 +45,7 @@
 			// Flasher un QRCode
 			case 'flash':
 				$success = newFlash(date('Y-m-d H:i:s', time()), getIdForPlayer($_SESSION['login']), $_POST['qrcode']);
-				if ($succes == 2)
+				if ($success == 2)
 					$response['bonus'] = 'YES';
 				else
 					$response['bonus'] = 'NO';
