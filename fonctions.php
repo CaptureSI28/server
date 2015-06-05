@@ -503,6 +503,38 @@ function getEquipeJoueurPartieActive ($id_partie, $id_joueur) {
 
 }
 
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
+ */
+function getListeJoueursPartie ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT DISTINCT k.joueur, k.equipe, j.login
+		FROM (
+			SELECT *
+			FROM( 
+				SELECT *
+				FROM inscriptions
+				ORDER BY date_inscription DESC) i) k, joueurs j
+		WHERE k.joueur=j.id_joueur AND k.partie=:id_partie');
+	$req->execute(array(
+		'id_partie' => $id_partie
+	));
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'id_joueur' => $row['joueur'],
+			'login' => $row['login'],
+			'equipe' => $row['equipe']
+		);
+	}
+	return $list;
+}
+
 
 /*
  * Input:
