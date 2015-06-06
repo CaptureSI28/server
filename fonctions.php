@@ -103,7 +103,7 @@ function flashBonus () {
  * -booleen: 1 si tout se passe bien, 0 si le flash ne peut pas se faire ; l'équipe gagne un nombre de points égal à 2 puissance le nombre de zones 
  *			 et 2 s'il s'agit d'un flash bonus (points x2)
  */
-function newFlash ($date, $id_joueur, $qrcode) {
+function newFlash ($date, $id_joueur, $qrcode, &$failure) {
 	global $bdd;
 	$partieActiveJoueur = getPartieActiveJoueur ($id_joueur);
 	if(qrcodeOuvert($partieActiveJoueur, $qrcode, $date) == true)			//si le qrcode est ouvert
@@ -128,8 +128,10 @@ function newFlash ($date, $id_joueur, $qrcode) {
 			}
 			return $bonus;
 		}
-	else 					//si le qrcode est fermé
+	else {					//si le qrcode est fermé
+		$failure = 'Vous avez récemment flashé ce code. Vous devez patienter';
 		return 0;
+	}
 }
 
 

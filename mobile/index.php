@@ -44,12 +44,15 @@
 				
 			// Flasher un QRCode
 			case 'flash':
-				$success = newFlash(date('Y-m-d H:i:s', time()), getIdForPlayer($_SESSION['login']), $_POST['qrcode']);
+				$success = newFlash(date('Y-m-d H:i:s', time()), getIdForPlayer($_SESSION['login']), $_POST['qrcode'], $failure);
 				if ($success == 2)
 					$response['bonus'] = 'YES';
 				else
 					$response['bonus'] = 'NO';
 				$response['success'] = $success ? 'YES' : 'NO';
+				if (!$success) {
+					$response['failure'] = $failure;
+				}
 				break;
 				
 			case 'gameInfo':
