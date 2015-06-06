@@ -568,7 +568,38 @@ function getListeJoueursActifsPartie ($id_partie) {
 	return $list;
 }
 
-
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
+ */
+function getListeJoueursPartieEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT DISTINCT k.joueur, k.equipe, j.login
+		FROM (
+			SELECT *
+			FROM( 
+				SELECT *
+				FROM inscriptions
+				ORDER BY date_inscription DESC) i) k, joueurs j
+		WHERE k.joueur=j.id_joueur AND k.partie=:id_partie AND k.equipe=:id_equipe');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'id_joueur' => $row['joueur'],
+			'login' => $row['login'],
+			'equipe' => $row['equipe']
+		);
+	}
+	return $list;
+}
 
 /*
  * Input:
@@ -611,6 +642,24 @@ function getListeJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
  * Output:
  * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
  */
+function getNombreJoueursPartieEquipes ($id_partie) {
+	$nombreTab = array();
+	for ($i=1;$i<=4;$i++) {
+		$nombreTab[] = array(
+			'equipe' => $i,
+			'nbJoueurs' => getNombreJoueursPartieEquipe($id_partie, $i)
+		);
+	}
+	return $nombreTab;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
+ */
 function getNombreJoueursActifsPartieEquipes ($id_partie) {
 	$nombreTab = array();
 	for ($i=1;$i<=4;$i++) {
@@ -620,6 +669,20 @@ function getNombreJoueursActifsPartieEquipes ($id_partie) {
 		);
 	}
 	return $nombreTab;
+}
+
+/*
+ * Input:
+ * - partie: identifiant de la partie
+ * - equipe: identifiant de l'équipe
+ *
+ * Output:
+ * - nbJoueurs: nombre de joueurs de l'équipe
+ */
+function getNombreJoueursPartieEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$joueurs = getListeJoueursPartieEquipe($id_partie, $id_equipe);
+	return count($joueurs);
 }
 
 /*
@@ -1311,6 +1374,20 @@ function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
 	arsort($array);
 	return $array;
 }
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ *
+ * Output:
+ * - nbJoueurs : nombre de joueurs dans la partie
+ */
+function getNbJoueursPartie ($id_partie) {
+	global $bdd;
+	$joueurs = getListeJoueursPartie ($id_partie);
+	return count($joueurs);
+}
+
 
 /*
  * Input:

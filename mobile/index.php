@@ -58,7 +58,7 @@
 				if (isset($_POST['game_id'])) {
 					$gameid = $_POST['game_id'];
 				}
-				$nbJoueurs=getNombreJoueursActifsPartieEquipes($gameid);
+				$nbJoueurs=getNombreJoueursPartieEquipes($gameid);
 				$scoreEquipes=getScoreEquipesPartie($gameid);
 				$scoreJoueur=getScoreJoueurPartie($gameid,$playerid);
 				$team_info = array();
@@ -78,7 +78,7 @@
 					case 'publicGameInfo':
 						$teams = array();
 						for ($i = 0; $i < 4; $i++) {
-							$players = getListeJoueursActifsPartieEquipe($_POST['game_id'], $i + 1);
+							$players = getListeJoueursPartieEquipe($_POST['game_id'], $i + 1);
 							$team = array();
 							foreach ($players as $key => $row) {
 								$team[] = $row['login'];
@@ -104,7 +104,7 @@
 						$teamId = $_POST['team_id'];
 						$playerid = getIdForPlayer($_SESSION['login']);
 						$gameid = getPartieActiveJoueur($playerid);
-						$nbJoueursEquipes = getNombreJoueursActifsPartieEquipe ($gameid, $teamId);
+						$nbJoueursEquipes = getNombreJoueursPartieEquipe ($gameid, $teamId);
 						$nbFlashsEquipePartie = getNombreFlashsEquipePartie ($gameid, $teamId);
 						$response['team_info'] = array(
 							$nbJoueursEquipes . ' joueur' . ($nbJoueursEquipes > 1 ? 's' : ''),
@@ -143,7 +143,7 @@
 						$response['rankings'] = $rankings;
 						break;
 					case 'settings':
-						$response['nb_players_game'] = getNbJoueursActifsPartie ($id_partie);
+						$response['nb_players_game'] = getNbJoueursPartie ($id_partie);
 						break;
 					default:
 						$response['success'] = 'NO';
@@ -163,9 +163,9 @@
 				// Nombre de joueurs et score de chaque équipe
 				// "nbJoueursEquipes":[{"equipe":1,"nbJoueurs":0},...]
 				if($_POST["infos_equipes"] == "true") {
-					$listeJoueursEquipePartie = getListeJoueursActifsPartieEquipe($gameid, $teamId);
+					$listeJoueursEquipePartie = getListeJoueursPartieEquipe($gameid, $teamId);
 					$response['listeJoueursEquipePartie'] = $nbJoueurs;
-					$nbJoueurs=getNombreJoueursActifsPartieEquipes($gameid);
+					$nbJoueurs=getNombreJoueursPartieEquipes($gameid);
 					$response['nbJoueursEquipes'] = $nbJoueurs;
 					
 					if(!$nbJoueurs) {
