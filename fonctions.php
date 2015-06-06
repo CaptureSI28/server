@@ -1388,9 +1388,12 @@ function getNbJoueursPartie ($id_partie) {
 	global $bdd;
 	$req = $bdd->prepare('
 		SELECT COUNT(*) AS nb_players
-		FROM inscriptions i
-		WHERE partie = :game_id
-		GROUP BY joueur;
+		FROM (
+			SELECT *
+			FROM inscriptions
+			WHERE partie = :game_id
+			GROUP BY joueur
+		) i;
 	');
 	$req->execute(array(
 		'game_id' => $id_partie
