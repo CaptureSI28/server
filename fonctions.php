@@ -1386,8 +1386,20 @@ function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
  */
 function getNbJoueursPartie ($id_partie) {
 	global $bdd;
-	$joueurs = getListeJoueursPartie ($id_partie);
-	return count($joueurs);
+	$req = $bdd->prepare('
+		SELECT COUNT(*) AS nb_players
+		FROM inscriptions i
+		WHERE partie = :game_id
+		GROUP BY joueur;
+	');
+	$req->execute(array(
+		'game_id' => $id_partie
+	));
+	$nb_players = 0;
+	if ($row = $req->fetch()) {
+		$nb_players = $row['nb_players'];
+	}
+	return $nb_players;
 }
 
 

@@ -146,7 +146,7 @@
 						$response['rankings'] = $rankings;
 						break;
 					case 'settings':
-						$response['nb_players_game'] = getNbJoueursPartie ($id_partie);
+						$response['nb_players'] = strval(getNbJoueursPartie($id_partie));
 						break;
 					default:
 						$response['success'] = 'NO';
