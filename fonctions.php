@@ -103,7 +103,7 @@ function flashBonus () {
  * -booleen: 1 si tout se passe bien, 0 si le flash ne peut pas se faire ; l'équipe gagne un nombre de points égal à 2 puissance le nombre de zones 
  *			 et 2 s'il s'agit d'un flash bonus (points x2)
  */
-function newFlash ($date, $id_joueur, $qrcode) {
+function newFlash ($date, $id_joueur, $qrcode, &$failure) {
 	global $bdd;
 	$partieActiveJoueur = getPartieActiveJoueur ($id_joueur);
 	if(qrcodeOuvert($partieActiveJoueur, $qrcode, $date) == true)			//si le qrcode est ouvert
@@ -128,8 +128,10 @@ function newFlash ($date, $id_joueur, $qrcode) {
 			}
 			return $bonus;
 		}
-	else 					//si le qrcode est fermé
+	else {					//si le qrcode est fermé
+		$failure = 'Vous avez récemment flashé ce code. Vous devez patienter';
 		return 0;
+	}
 }
 
 
@@ -581,7 +583,38 @@ function getListeJoueursActifsPartie ($id_partie) {
 	return $list;
 }
 
-
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant la liste des joueurs de la partie id_partie : id du joueur, login et id de l'équipe
+ */
+function getListeJoueursPartieEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT DISTINCT k.joueur, k.equipe, j.login
+		FROM (
+			SELECT *
+			FROM( 
+				SELECT *
+				FROM inscriptions
+				ORDER BY date_inscription DESC) i) k, joueurs j
+		WHERE k.joueur=j.id_joueur AND k.partie=:id_partie AND k.equipe=:id_equipe');
+	$req->execute(array(
+		'id_partie' => $id_partie,
+		'id_equipe' => $id_equipe
+	));
+	$list = array();
+	while ($row = $req->fetch()) {
+		$list[] = array(
+			'id_joueur' => $row['joueur'],
+			'login' => $row['login'],
+			'equipe' => $row['equipe']
+		);
+	}
+	return $list;
+}
 
 /*
  * Input:
@@ -624,6 +657,24 @@ function getListeJoueursActifsPartieEquipe ($id_partie, $id_equipe) {
  * Output:
  * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
  */
+function getNombreJoueursPartieEquipes ($id_partie) {
+	$nombreTab = array();
+	for ($i=1;$i<=4;$i++) {
+		$nombreTab[] = array(
+			'equipe' => $i,
+			'nbJoueurs' => getNombreJoueursPartieEquipe($id_partie, $i)
+		);
+	}
+	return $nombreTab;
+}
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie dont on veut la liste des joueurs
+ *
+ * Output:
+ * - joueurs : retourne un tableau contenant le nombre de joueurs de la partie id_partie par équipe : equipe, nbJoueurs
+ */
 function getNombreJoueursActifsPartieEquipes ($id_partie) {
 	$nombreTab = array();
 	for ($i=1;$i<=4;$i++) {
@@ -633,6 +684,20 @@ function getNombreJoueursActifsPartieEquipes ($id_partie) {
 		);
 	}
 	return $nombreTab;
+}
+
+/*
+ * Input:
+ * - partie: identifiant de la partie
+ * - equipe: identifiant de l'équipe
+ *
+ * Output:
+ * - nbJoueurs: nombre de joueurs de l'équipe
+ */
+function getNombreJoueursPartieEquipe ($id_partie, $id_equipe) {
+	global $bdd;
+	$joueurs = getListeJoueursPartieEquipe($id_partie, $id_equipe);
+	return count($joueurs);
 }
 
 /*
@@ -1324,6 +1389,35 @@ function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
 	arsort($array);
 	return $array;
 }
+
+/*
+ * Input:
+ * - id_partie: identifiant de la partie
+ *
+ * Output:
+ * - nbJoueurs : nombre de joueurs dans la partie
+ */
+function getNbJoueursPartie ($id_partie) {
+	global $bdd;
+	$req = $bdd->prepare('
+		SELECT COUNT(*) AS nb_players
+		FROM (
+			SELECT *
+			FROM inscriptions
+			WHERE partie = :game_id
+			GROUP BY joueur
+		) i;
+	');
+	$req->execute(array(
+		'game_id' => $id_partie
+	));
+	$nb_players = 0;
+	if ($row = $req->fetch()) {
+		$nb_players = $row['nb_players'];
+	}
+	return $nb_players;
+}
+
 
 /*
  * Input:
