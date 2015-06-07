@@ -163,15 +163,9 @@
 				// Nombre de joueurs et score de chaque équipe
 				// "nbJoueursEquipes":[{"equipe":1,"nbJoueurs":0},...]
 				if($_POST["infos_equipes"] == "true") {
-					$listeJoueursEquipePartie = getListeJoueursActifsPartieEquipe($gameid, $teamId);
-					$response['listeJoueursEquipePartie'] = $nbJoueurs;
-					$nbJoueurs=getNombreJoueursActifsPartieEquipes($gameid);
-					$response['nbJoueursEquipes'] = $nbJoueurs;
+					$listeJoueursPartie = getListeJoueursPartie($gameid);
+					$response['listeJoueursPartie'] = $listeJoueursPartie;
 					
-					if(!$nbJoueurs) {
-						$success = false;
-					}
-				
 					$scoreEquipes=getScoreEquipesPartie($gameid);
 					$response['scoreEquipes'] = $scoreEquipes;
 					
@@ -186,19 +180,7 @@
 					$scoreJoueur=getScoreJoueurPartie($gameid,$playerid);
 					$response['scoreJoueur'] = $scoreJoueur;
 				}
-				
-				// TODO Je ne sais pas si c'est plus pratique pour toi Joseph d'avoir la couleur ou l'identifiant de l'équipe ? Je mets les deux on supprimera la partie inutile après
-				
-				// Couleur de chaque zone
-				// "couleursZones":[{"zone":1,...]	
-				if($_POST["couleur_zones"] == "true") {
-					$couleursZones=getCouleursZones($gameid);
-					$response['couleursZones'] = $couleursZones;
-					if(!$couleursZones) {
-						$success = false;
-					}
-				}
-				
+			
 				// Id équipe ayant capturé chaque zone
 				// "equipesZones":[{"zone":1,"equipe":"2"},...]
 				if($_POST["equipe_zones"] == "true") {
