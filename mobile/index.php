@@ -120,7 +120,16 @@
 						$equipesZones=getIdEquipeParZone($gameid);
 						$map = array();
 						foreach ($equipesZones as $value) {
-							$map[$value['zone']] = strval($value['equipe']);
+							$validZones = array(
+								'1', '2', '3', '4', '5', '6', '7',
+								'11', '12', '13', '14', '15', '16', '17',
+								'21', '25', '26', '27',
+								'31', '35', '36',
+								'41', '46',
+								'51', '56',);
+							if (in_array($value['zone'], $validZones)) {
+								$map[$value['zone']] = strval($value['equipe']);
+							}
 						}
 						$response['map'] = $map;
 						break;
