@@ -127,7 +127,8 @@
 								'31', '35', '36', '37',
 								'41', '45', '46',
 								'51', '56',
-								'61', '66',);
+								'61', '66'
+							);
 							if (in_array($value['zone'], $validZones)) {
 								$map[$value['zone']] = strval($value['equipe']);
 							}
