@@ -111,7 +111,7 @@ function newFlash ($date, $id_joueur, $qrcode, &$failure) {
 			$bonus = flashBonus();
 			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 			$nbZones = getNombreZonesEquipePartie($partieActiveJoueur, $equipe);
-			$nbPoints=pow(2,$nbZones);	
+			$nbPoints = $nbZones;	
 			$nbPoints*=$bonus;
 			try {
 			$req = $bdd->prepare('
@@ -248,49 +248,63 @@ function newGame ($nom, $date_debut, $date_fin, $password) {
 	$createur = getIdForPlayer($_SESSION['login']);
 	if (($date_debut<$date_fin)&&($date_debut < date('Y-m-d H:i:s', time())))		//si la date de début est antérieure à la date actuelle,
 		$date_debut = date('Y-m-d H:i:s', time());									//on ramène la date de début à celle actuelle
+		
 	if (($date_debut<$date_fin)&&($date_debut >= date('Y-m-d H:i:s', time()))) {
-		if ($password == NULL || $password == '') {
-			$req = $bdd->prepare('
-				INSERT INTO parties (nom, createur, date_debut, date_fin) 
-				VALUES (:nom, :createur, :date_debut, :date_fin)');
-			$req->execute(array(
-				'nom' => $nom,
-				'createur' => $createur,
-				'date_debut' => $date_debut,
-				'date_fin' => $date_fin
-			));
-		} else {
-			$req = $bdd->prepare('
-				INSERT INTO parties (nom, createur, date_debut, date_fin, password)
-				VALUES (:nom, :createur, :date_debut, :date_fin, :password)
-			');
-			$req->execute(array(
-				'nom' => $nom,
-				'createur' => $createur,
-				'date_debut' => $date_debut,
-				'date_fin' => $date_fin,
-				'password' => sha1($password)
-			));
-		}
 		$req = $bdd->prepare('
-			SELECT *
-			FROM parties
-			WHERE id_partie = LAST_INSERT_ID()
-			LIMIT 1;
-		');
-		$req->execute();
-		$newGame = false;
+				SELECT *
+				FROM parties
+				WHERE nom = :nom
+				');
+		$req->execute(array(
+			'nom'=>$nom
+		));
 		if ($row = $req->fetch()) {
-			$newGame = array(
-				'id_partie' => $row['id_partie'],
-				'nom' => $row['nom'],
-				'createur' => $row['createur'],
-				'date_debut' => $row['date_debut'],
-				'date_fin' => $row['date_fin'],
-				'partie_privee' => $row['password'] === NULL ? 'NO' : 'YES'
-			);
+			return false;
 		}
-		return $newGame;
+		else {
+			if ($password == NULL || $password == '') {
+				$req = $bdd->prepare('
+					INSERT INTO parties (nom, createur, date_debut, date_fin) 
+					VALUES (:nom, :createur, :date_debut, :date_fin)');
+				$req->execute(array(
+					'nom' => $nom,
+					'createur' => $createur,
+					'date_debut' => $date_debut,
+					'date_fin' => $date_fin
+				));
+			} else {
+				$req = $bdd->prepare('
+					INSERT INTO parties (nom, createur, date_debut, date_fin, password)
+					VALUES (:nom, :createur, :date_debut, :date_fin, :password)
+				');
+				$req->execute(array(
+					'nom' => $nom,
+					'createur' => $createur,
+					'date_debut' => $date_debut,
+					'date_fin' => $date_fin,
+					'password' => sha1($password)
+				));
+			}
+			$req = $bdd->prepare('
+				SELECT *
+				FROM parties
+				WHERE id_partie = LAST_INSERT_ID()
+				LIMIT 1;
+			');
+			$req->execute();
+			$newGame = false;
+			if ($row = $req->fetch()) {
+				$newGame = array(
+					'id_partie' => $row['id_partie'],
+					'nom' => $row['nom'],
+					'createur' => $row['createur'],
+					'date_debut' => $row['date_debut'],
+					'date_fin' => $row['date_fin'],
+					'partie_privee' => $row['password'] === NULL ? 'NO' : 'YES'
+				);
+			}
+			return $newGame;
+		}
 	} else
 		return false;
 }
@@ -390,6 +404,7 @@ function joinGame ($date_insc, $partie, $index_equipe, $joueur, $password) {
 	return $result;
 }
 
+
 /*
  * Input:
  * - joueurID: identifiant du joueur
@@ -425,8 +440,6 @@ function getActiveGamesList () {
 	$req = $bdd->prepare('
 		SELECT *
 		FROM parties
-		WHERE date_debut <= NOW()
-			AND date_fin >= NOW()
 		ORDER BY id_partie;
 	');
 	$req->execute();
@@ -439,7 +452,7 @@ function getActiveGamesList () {
 			'date_debut' => $row['date_debut'],
 			'date_fin' => $row['date_fin'],
 			'partie_privee' => ($row['password'] === sha1('') || $row['password'] === NULL) ? 'NO' : 'YES',
-			'players' => getListeJoueursActifsPartie($row['id_partie'])
+			'players' => getListeJoueursPartie($row['id_partie'])
 		);
 	}
 	return $list;
@@ -1160,7 +1173,7 @@ function getNombreFlashsJoueurQRCodePartie ($id_partie, $id_joueur, $id_qrcode) 
  */
 function getMeilleurFlasheurPartie ($id_partie) {
 	global $bdd;
-	$row = getListeJoueursActifsPartie($id_partie);
+	$row = getListeJoueursPartie($id_partie);
 	$nbFlashsMax = 0;
 	$compteur=0;
 	$meilleursFlasheurs = array();
@@ -1190,7 +1203,7 @@ function getMeilleurFlasheurPartie ($id_partie) {
  */
 function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
 	global $bdd;
-	$row = getListeJoueursActifsPartie($id_partie);
+	$row = getListeJoueursPartie($id_partie);
 	$nbFlashsMax = 0;
 	$compteur=0;
 	$meilleursFlasheurs = array();
@@ -1220,7 +1233,7 @@ function getMeilleurFlasheurEquipePartie ($id_partie, $id_equipe) {
  */
 function getMeilleurFlasheurQRCodePartie ($id_partie, $id_qrcode) {
 	global $bdd;
-	$row = getListeJoueursActifsPartie($id_partie);
+	$row = getListeJoueursPartie($id_partie);
 	$nbFlashsMax = 0;
 	$compteur=0;
 	$meilleursFlasheurs = array();
@@ -1328,7 +1341,7 @@ function getTeamRankings ($gameId) {
 function getClassementJoueursPartie ($id_partie) {
 	global $bdd;
 	$array = array();
-	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	$listeJoueursPartie=getListeJoueursPartie($id_partie);
 	foreach($listeJoueursPartie as $value)
 		{
 			$array["".$value['login']] = getNombreFlashsJoueurPartie($id_partie,$value['id_joueur']);
@@ -1348,7 +1361,7 @@ function getClassementJoueursPartie ($id_partie) {
 function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 	global $bdd;
 	$array = array();
-	$listeJoueursPartieEquipe=getListeJoueursActifsPartieEquipe($id_partie, $id_equipe);
+	$listeJoueursPartieEquipe=getListeJoueursPartieEquipe($id_partie, $id_equipe);
 	foreach($listeJoueursPartieEquipe as $value)
 		{
 			$array["".$value['login']] = getNombreFlashsJoueurPartie($id_partie,$value['id_joueur']);
@@ -1368,7 +1381,7 @@ function getClassementJoueursEquipePartie ($id_partie, $id_equipe) {
 function getClassementJoueursQRCodePartie ($id_partie, $id_qrcode) {
 	global $bdd;
 	$array = array();
-	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	$listeJoueursPartie=getListeJoueursPartie($id_partie);
 	foreach($listeJoueursPartie as $value)
 		{
 			$array["".$value['login']] = getNombreFlashsJoueurQRCodePartie($id_partie,$value['id_joueur'],$id_qrcode);
@@ -1611,7 +1624,7 @@ function getDerniersFlashsJoueur ($id_partie, $id_joueur) {
  */
 function getClassementFlashs ($id_partie) {
 	global $bdd;
-	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	$listeJoueursPartie=getListeJoueursPartie($id_partie);
 	//tableau contenant id_joueur, login et equipe
 	foreach($listeJoueursPartie as $value)
 		{
@@ -1641,7 +1654,7 @@ function getClassementFlashs ($id_partie) {
  */
 function getClassementPoints ($id_partie) {
 	global $bdd;
-	$listeJoueursPartie=getListeJoueursActifsPartie($id_partie);
+	$listeJoueursPartie=getListeJoueursPartie($id_partie);
 	//tableau contenant id_joueur, login et equipe
 	foreach($listeJoueursPartie as $value)
 		{
