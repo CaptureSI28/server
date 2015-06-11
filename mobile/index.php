@@ -140,7 +140,7 @@
 						foreach ($derniersFlashs as $key => $row) {
 							$phrases[] = array(
 								'login' => $row['login'],
-								'team_id' => $row['equipe'],
+								'team_id' => intval($row['equipe']),
 								'qrcode' => getNomZoneByQrcode($row['qrcode'])
 							);
 						}
