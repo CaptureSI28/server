@@ -111,7 +111,7 @@ function newFlash ($date, $id_joueur, $qrcode, &$failure) {
 			$bonus = flashBonus();
 			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 			$nbZones = getNombreZonesEquipePartie($partieActiveJoueur, $equipe);
-			$nbPoints = $nbZones;	
+			$nbPoints = 1+$nbZones;	
 			$nbPoints*=$bonus;
 			try {
 			$req = $bdd->prepare('
