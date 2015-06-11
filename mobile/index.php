@@ -138,7 +138,11 @@
 						$derniersFlashs = getDerniersFlashs($gameid);
 						$phrases = array();
 						foreach ($derniersFlashs as $key => $row) {
-							$phrases[] = $row['login'] . ' (équipe ' . $row['equipe'] . ') a flashé la zone ' . $row['qrcode'];
+							$phrases[] = array(
+								'login' => $row['login'],
+								'team_id' => $row['team_id'],
+								'qrcode' => $row['qrcode']
+							);
 						}
 						$response['history'] = $phrases;
 						break;
