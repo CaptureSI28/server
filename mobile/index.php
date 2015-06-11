@@ -141,7 +141,7 @@
 							$phrases[] = array(
 								'login' => $row['login'],
 								'team_id' => $row['equipe'],
-								'qrcode' => $row['qrcode']
+								'qrcode' => getNomZoneByQrcode($row['qrcode'])
 							);
 						}
 						$response['history'] = $phrases;
