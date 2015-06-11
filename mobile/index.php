@@ -140,7 +140,7 @@
 						foreach ($derniersFlashs as $key => $row) {
 							$phrases[] = array(
 								'login' => $row['login'],
-								'team_id' => $row['team_id'],
+								'team_id' => $row['equipe'],
 								'qrcode' => $row['qrcode']
 							);
 						}
