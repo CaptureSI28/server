@@ -52,7 +52,7 @@ function newPlayer ($login) {
  * - qrcode: identifiant du qrcode flashé
  *
  * Output:
- * -booleen: true si le qrcode est ouvert, false sinon (false si le qrcode a été flashé dans les 5 minutes précédentes)
+ * -booleen: true si le qrcode est ouvert, false sinon (false si le qrcode a été flashé dans la minute précédente)
  */
 function qrcodeOuvert ($partie, $qrcode, $date) {
 	global $bdd;
@@ -71,7 +71,7 @@ function qrcodeOuvert ($partie, $qrcode, $date) {
 		$delai=$row['delai'];		//récupération de la date du dernier flash de ce qrcode 
 	else
 		return true;
-	if($delai < (3*60))		//si le temps écoulé entre maintenant et le dernier flash est inférieur à 3 minutes, alors le QRcode est fermé
+	if($delai < (60))		//si le temps écoulé entre maintenant et le dernier flash est inférieur à 1 minute, alors le QRcode est fermé
 		return false;
 	else 
 		return true;
@@ -111,7 +111,7 @@ function newFlash ($date, $id_joueur, $qrcode, &$failure) {
 			$bonus = flashBonus();
 			$equipe = getEquipeJoueurPartieActive ($partieActiveJoueur, $id_joueur);
 			$nbZones = getNombreZonesEquipePartie($partieActiveJoueur, $equipe);
-			$nbPoints = $nbZones;	
+			$nbPoints = 1+$nbZones;	
 			$nbPoints*=$bonus;
 			try {
 			$req = $bdd->prepare('
