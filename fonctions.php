@@ -71,7 +71,7 @@ function qrcodeOuvert ($partie, $qrcode, $date) {
 		$delai=$row['delai'];		//récupération de la date du dernier flash de ce qrcode 
 	else
 		return true;
-	if($delai < (60))		//si le temps écoulé entre maintenant et le dernier flash est inférieur à 1 minute, alors le QRcode est fermé
+	if($delai < (20))		//si le temps écoulé entre maintenant et le dernier flash est inférieur à 20 secondes, alors le QRcode est fermé
 		return false;
 	else 
 		return true;
